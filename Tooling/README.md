@@ -5,8 +5,8 @@ These notes assess how different enterprise software development toolchains can 
 They are readiness assessments, not product endorsements. Each one should be read as a scenario rather than a mandated stack.
 
 - [Microsoft Ecosystem Readiness](MICROSOFT-ADM.md)
-- [GitHub Enterprise and GitHub Copilot](GITHUB-ADM.md)
-- [GitLab Duo](GITLAB-ADM.md)
-- [Amazon Q Developer in AWS-heavy enterprise development](AWS-ADM.md)
-- [Atlassian Rovo Dev](ATLASSIAN-ADM.md)
-- [Claude Code and the Anthropic Agent SDK](CLAUDE-CODE-ADM.md)
+- [GitHub Ecosystem Readiness](GITHUB-ADM.md)
+- [GitLab Ecosystem Readiness](GITLAB-ADM.md)
+- [AWS Ecosystem Readiness](AWS-ADM.md)
+- [Atlassian Ecosystem Readiness](ATLASSIAN-ADM.md)
+- [Claude Code and Agent SDK Ecosystem Readiness](CLAUDE-CODE-ADM.md)

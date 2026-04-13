@@ -1,140 +1,183 @@
-# How Claude Code and the Anthropic Agent SDK Could Support the ADM
+# Claude Code and Agent SDK Ecosystem Readiness for the ADM
 
-> **Alpha.** This tooling guidance reflects the current state of the Claude Code and Agent SDK ecosystem and will be updated as tooling matures and practical experience grows.
+> **Alpha.** This tooling guidance reflects the current state of Claude Code and the Agent SDK, and will be updated as tooling matures and practical experience grows.
 
-This note sets out how Claude Code and the Anthropic Agent SDK could support the Agentic Delivery Model in an enterprise software delivery context.
+This document assesses how Claude Code and the Anthropic Agent SDK can support the Agentic Delivery Model across the full delivery lifecycle: requirements, execution, governance, compliance and release. It identifies where these tools are ready, where gaps exist and where complementary tooling is needed.
 
-It is a practical implementation note, not a product endorsement. It focuses on enterprise software development rather than general collaboration tooling.
+It is a readiness assessment, not a product endorsement. Organisations adopting Claude Code and the Agent SDK should use it to understand what is available today and where to plan for integration or complementary tooling.
 
-## 1. Scope and caveat
+Claude Code and the Agent SDK plug into whatever development platform the organisation already uses. For platform-specific guidance, refer to the companion assessments for [Microsoft](MICROSOFT-ADM.md), [GitHub](GITHUB-ADM.md), [GitLab](GITLAB-ADM.md), [AWS](AWS-ADM.md) or [Atlassian](ATLASSIAN-ADM.md).
 
-Claude Code is Anthropic's agentic coding tool. It runs in the terminal, operates directly against a codebase and can plan, implement, test and iterate autonomously within a scoped environment.
+## 1. The ADM Delivery Lifecycle
 
-The Anthropic Agent SDK extends this further. It provides a framework for building managed agent systems where a parent agent orchestrates multiple sub-agents, each configured with specific tools, context and permissions. This maps closely to how the ADM defines agent roles as configurations of a general-purpose capability rather than distinct products.
+The ADM needs tooling support across five areas:
 
-MCP (Model Context Protocol) is the open standard that underpins tool access. It allows agents to connect to external systems (repositories, CI/CD, databases, documentation, backlog tools) through a consistent interface. MCP servers define what an agent can see and do. This is directly relevant to how the ADM scopes agent access.
+1. **Requirements and intent design.** Capturing business intent, running structured discovery, producing Intent Specifications.
+2. **Agent execution.** Autonomous agents implementing, testing and documenting code changes against approved specifications.
+3. **Governance and human review.** Pull request review, verification, validation and approval by people at the Governance Tier.
+4. **Identity, compliance and audit.** Named agent identities, scoped permissions, provenance trails and regulatory evidence.
+5. **Release, operations and feedback.** CI/CD pipelines, environment management, monitoring and operational feedback loops.
 
-## 2. Where Claude Code fits in the ADM
+The assessment below maps Claude Code and Agent SDK capabilities against each area.
 
-Claude Code is strongest in three ADM areas:
+## 2. Requirements and Intent Design
 
-1. implementation against approved Intent Specifications
-2. testing, review and documentation as distinct agent configurations
-3. orchestrated multi-agent delivery through managed sub-agents
+**Readiness: Partial.**
 
-This makes it a strong candidate for the Execution Tier and a contributor to Governance Tier workflows through its review and documentation capabilities.
+Claude Code can assist in drafting Intent Specifications by analysing existing codebase context, architecture documents, design decisions and conversation history. It can extract requirements from unstructured sources and structure them into the ADM's Intent Specification template.
 
-## 3. Agent roles as configurations
+The Model Context Protocol (MCP) extends Claude Code's reach to external systems. Through MCP connections, Claude Code can read from Jira, Confluence, Slack, GitHub Discussions and other business systems. This enables a Requirements Agent configured within Claude Code to gather context across tools without copying data manually.
 
-The ADM defines agent roles (Requirements, Implementation, Testing, Review, Documentation, Platform, Refactoring, Security, Scheduling) not as separate products but as configurations of general-purpose agents. Each role is differentiated by its configured context, access scope and assigned tools rather than by inherent capability.
+However, Claude Code is not a requirements discovery platform. It assists in structuring and documenting requirements but does not own the discovery workflow. The organisation's existing requirements tools (Jira, Azure DevOps, Linear, etc.) remain the authoritative backlog platform.
 
-Claude Code and the Agent SDK implement this pattern directly. A single Claude model can be configured as any ADM agent role by varying:
+**Gaps.** Claude Code cannot run structured stakeholder discovery sessions on its own. It requires stakeholders to provide context (documents, conversation transcripts, design docs) as input. There is no native "discovery session" mode. Integration with an organisation's backlog tool (through MCP or direct API) is needed to write Intent Specifications as work items, and custom conventions must be established to indicate the specification is ready for agent execution.
 
-- **The system prompt and project context.** A CLAUDE.md file (the agent configuration file referenced in the ADM) defines what the agent knows, what conventions it follows and what boundaries it observes.
-- **The tool set.** MCP servers control which external systems the agent can access. An Implementation Agent might have access to the repository, CI/CD pipeline and documentation. A Security Agent might have access to vulnerability scanners, dependency audit tools and compliance databases. The tools define the role.
-- **The access scope.** File system permissions, branch protections and API credentials are scoped per agent session. Agents operate in isolated environments with only the access they need.
+## 3. Agent Execution
 
-This is the ADM's "configured context" model in concrete form.
+**Readiness: Strong.**
 
-## 4. Managed agents and the Scheduling Agent
+Claude Code is a fully autonomous coding agent. It operates directly against a Git repository, understands the codebase, plans changes, implements them, runs tests and creates pull requests. It works on isolated feature branches, never committing directly to protected branches.
 
-The Agent SDK's managed agent pattern is particularly relevant to the ADM's Scheduling Agent (SCH-1) and its coordination model.
+Each Claude Code session includes:
 
-In the Agent SDK, a parent agent can launch sub-agents to handle specific tasks. Each sub-agent runs with its own context, tools and permissions. The parent agent decides what to delegate, how to sequence the work and how to handle the results.
+- full read and write access to the codebase (within configured scope)
+- ability to run test suites, linters and build tools
+- integration with Git and GitHub/GitLab/Azure DevOps APIs
+- session logs and full provenance of every action taken
 
-This maps to three ADM patterns:
+The Anthropic Agent SDK extends this capability further. A parent agent can spawn managed sub-agents, each configured with:
 
-**Single-agent delivery.** For most Intent Specifications, a single Claude Code agent works in an isolated branch, implements the change, runs tests and raises a pull request. This is the default ADM execution pattern.
+- a specific role and context (implementation, testing, security analysis, documentation)
+- scoped tools and permissions via MCP
+- isolated execution environment
+- ability to read and write code, run commands and create artefacts
 
-**Coordinated multi-agent delivery.** For complex specifications that require multiple skills (implementation, security analysis, performance testing), a parent agent orchestrates multiple sub-agents against the same feature branch. Each sub-agent is configured for its specific role. The parent sequences their contributions and maintains context across the work. The output remains a single PR for governance review.
+This maps directly to the ADM's concept of agent roles as configurations of a general-purpose model, not capability limitations.
 
-**Agent-to-agent resolution.** When a sub-agent encounters technical ambiguity that another agent can resolve (a testing agent identifying an edge case that the implementation agent can address), the parent agent routes the issue between sub-agents without requiring human intervention. Only intent-level questions escalate to the Governance Tier.
+**Gaps.** Claude Code and the Agent SDK have no native CI/CD integration. They generate code changes and create pull requests. All downstream activity (build verification, test execution, deployment, monitoring) depends on the organisation's existing CI/CD platform (GitHub Actions, Azure Pipelines, GitLab CI/CD, Jenkins, etc.) and must be triggered through existing pull request workflows.
 
-## 5. MCP as the access control layer
+## 4. Agent Orchestration and Coordination
 
-The ADM requires that agents operate in isolated sandboxes with scoped identity and authentication. MCP provides the mechanism for this.
+**Readiness: Strong.**
 
-Each MCP server defines a set of capabilities: reading files, executing commands, querying databases, calling APIs. By configuring which MCP servers an agent session can access, the organisation controls what the agent can see and do without modifying the agent itself.
+The Agent SDK's managed agent pattern is the closest implementation of the ADM's Scheduling Agent concept. A parent agent orchestrates multiple sub-agents, each with specialised context and scoped tools:
 
-This matters for enterprise governance because:
+- a Requirements Agent gathers context from business systems via MCP
+- an Implementation Agent translates specifications into code
+- a Testing Agent runs test suites and validates behaviour
+- a Security Agent performs static analysis and scans
+- a Documentation Agent updates relevant docs
+- a Review Agent formats code and prepares pull requests
 
-- access controls are defined outside the agent, not inside it
-- the same agent model can be scoped differently for different roles
-- audit trails capture which tools were invoked, by which agent, against which specification
-- new capabilities can be added by connecting new MCP servers without reconfiguring the agent
+The parent agent sequences their work (serial or parallel), routes technical ambiguities between agents (agent-to-agent resolution) and escalates intent-level questions to humans. Each sub-agent runs in an isolated sandbox with specific tools and permissions configured through MCP.
 
-For regulated environments, MCP's explicit tool boundary model supports the separation of concerns the ADM requires.
+MCP (Model Context Protocol) is the open standard for tool access. An MCP server wraps external systems (GitHub API, Jira, Slack, databases, internal services) and exposes only the tools a specific agent needs. This provides both capability and governance: each agent role can be configured with precise tool access.
 
-## 6. The agent configuration file
+**Gaps.** The Agent SDK is new. Practical patterns for coordinating multiple agents through complex delivery workflows are still being established. Documentation and examples for agent-to-agent communication patterns and escalation handling are evolving. Organisations will need to develop and test their own orchestration logic.
 
-The ADM references agent configuration files as the mechanism for defining how agents behave within a specific codebase or project. In Claude Code, this is the CLAUDE.md file.
+## 5. Governance and Human Review
 
-CLAUDE.md sits in the repository root and defines:
+**Readiness: Partial.**
 
-- coding conventions and architectural standards
-- project-specific rules and constraints
-- references to key files and patterns
-- boundaries on what the agent should and should not modify
+Claude Code creates pull requests that route to whatever review surface the organisation uses (GitHub, GitLab, Azure DevOps). The governance controls themselves (required reviewers, branch protections, approval workflows, status checks) belong to the source control platform, not to Claude Code.
 
-This is a practical implementation of the ADM's principle that architecture and standards should be encoded where agents can read them, not locked in documents that only people consult.
+Claude Code provides full provenance: session logs show every action, decision and reasoning. This supports the Verification Engineer's review process but does not replace the need for a pull request review surface and approval workflow.
 
-## 7. Where Claude Code is strongest
+For teams using GitHub, the experience is seamless: Claude Code creates PRs, humans review them with all standard GitHub controls (comments, suggestions, dismissals, required approvals). For organisations using other platforms, Claude Code's PR creation integrates with their native workflows.
 
-For the ADM, Claude Code is especially strong in:
+**Gaps.** Claude Code does not own the governance layer. It is the execution tool, not the review infrastructure. The organisation must have a pull request workflow and approval process already in place. Additionally, there is no consolidated governance dashboard showing all pending agent work (specifications in flight, PRs awaiting review, blocked items, escalations) across the tools Claude Code uses. Most organisations will need to build or configure this visibility layer.
 
-- autonomous implementation from specification to pull request
-- multi-agent orchestration through managed sub-agents
-- flexible role configuration through prompts, tools and access scoping
-- MCP-based integration with enterprise toolchains
-- repository-native operation with direct codebase access
-- iterative rework in response to review feedback
+## 6. Identity, Compliance and Audit
 
-## 8. Where Claude Code needs complements
+**Readiness: Partial.**
 
-Claude Code is not the whole ADM operating model on its own.
+Claude Code sessions are scoped to a specific Git repository and branch. Access is controlled through the organisation's existing Git credentials (GitHub tokens, Azure DevOps PATs, GitLab tokens, etc.). A Claude Code session runs with the identity and permissions of the authenticated user or service account.
 
-Most organisations will still need complementary tooling for:
+MCP provides explicit tool boundaries. An MCP server defines precisely which operations an agent can perform on an external system. For example, an MCP server for Jira might expose "read work items" and "post comments" but not "delete work items" or "modify permissions". This scoping is explicit and auditable.
 
-- backlog management and specification workflow (Jira, Azure DevOps, Linear or similar)
-- repository hosting and pull request governance (GitHub, GitLab, Azure Repos)
-- CI/CD pipeline execution
-- enterprise identity and access management
-- cost tracking and model usage governance across a wider agent estate
+However, Claude Code does not provide enterprise identity management. It does not create or manage named service accounts, define role-based access controls, enforce conditional access policies or aggregate audit logs across systems. These capabilities depend on the organisation's surrounding infrastructure (GitHub Enterprise with Entra ID integration, native platform SSO, log aggregation tools, etc.).
 
-Claude Code operates within the development environment. The broader ADM operating model spans requirements discovery, governance workflow, release management and operational feedback loops that sit in surrounding systems.
+Session audit logs are available but are not automatically forwarded to a centralised audit system. Compliance teams must configure forwarding if required.
 
-## 9. Reference operating pattern
+**Gaps.** For regulated environments, audit trail completeness is a gap. Claude Code provides full session logs. The organisation's Git platform (GitHub, GitLab, Azure DevOps) provides additional commit and PR logs. External systems accessed through MCP provide their own audit logs. Joining these into a single provenance chain from specification to deployed code requires deliberate integration and is not automatic.
 
-A practical Claude Code and Agent SDK pattern for the ADM could look like this:
+## 7. Release, Operations and Feedback
 
-1. Intent Specifications are approved and marked Ready in the backlog tool.
-2. A Scheduling Agent (built on the Agent SDK) picks up the highest-priority ready item.
-3. The Scheduling Agent checks specification boundaries against work in progress and assigns the item to an implementation sub-agent.
-4. The implementation sub-agent (Claude Code) works in an isolated branch against the CLAUDE.md configuration and project conventions.
-5. For complex specifications, the Scheduling Agent launches additional sub-agents (testing, security, documentation) and orchestrates their contributions.
-6. The agent raises a pull request linked to the originating specification.
-7. People review the pull request through the Governance Tier.
-8. Repository branch protections, CI checks and approval controls act as enterprise guardrails.
-9. Agent session logs, MCP tool invocation records and pull request history provide provenance.
+**Readiness: Not available.**
 
-## 10. Recommended position in the ADM
+Claude Code has no CI/CD capability, no deployment machinery, no monitoring, no alerting and no operational feedback loops. It generates code changes. Everything downstream is owned by the organisation's existing infrastructure.
 
-The ADM should present Claude Code and the Anthropic Agent SDK as a strong route for organisations that want to implement the ADM's multi-agent orchestration model directly.
+When a Claude Code session creates a pull request, the subsequent workflow is entirely outside Claude Code:
 
-It is particularly compelling where:
+- CI/CD platform (GitHub Actions, Azure Pipelines, etc.) detects the PR and runs build, test and quality checks
+- Human or automated approval gates determine if the change can merge
+- Deployment platform executes the merge and releases the change
+- Monitoring tools (Datadog, New Relic, Azure Monitor, etc.) track the change's effect in production
+- Feedback (metrics, errors, logs) flows back to humans and agents
 
-- the organisation wants to configure agent roles from a single general-purpose model rather than assembling separate products
-- multi-agent coordination (the Scheduling Agent pattern) is a priority
-- MCP-based integration with diverse enterprise toolchains is needed
-- the team values terminal-native, developer-oriented tooling
+Claude Code does not participate in this workflow. It is a code generation and change submission tool, not a deployment or operations tool.
 
-## 11. Source notes
+**Gaps.** Complete. Release, operations and feedback are entirely outside Claude Code's scope.
 
-This note is based on public Anthropic documentation, including:
+## 8. Ecosystem Readiness Summary
 
-- [Claude Code overview](https://docs.anthropic.com/en/docs/claude-code/overview)
-- [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents/agent-sdk)
+| ADM Area | Capability | Readiness | Key Gap |
+|---|---|---|---|
+| Requirements and intent design | Claude Code + MCP for context gathering | Partial | Not a discovery platform. Requires integration with backlog tooling |
+| Agent execution (coding) | Claude Code, Agent SDK with sub-agents | Strong | No native CI/CD. Depends on external platform |
+| Agent orchestration | Agent SDK managed agents, MCP tool scoping | Strong | Patterns for complex orchestration still evolving |
+| Governance and review | Pull requests via native platform APIs | Partial | No consolidated governance dashboard |
+| Identity and compliance | Git identity, MCP tool scoping | Partial | No enterprise identity management. Cross-system provenance requires integration |
+| Release and operations | Not available | Not available | Entirely dependent on external CI/CD and ops platforms |
+
+## 9. Reference Operating Pattern
+
+A practical Claude Code and Agent SDK centred ADM pattern:
+
+1. Product Owner and Intent Architect define business intent through existing channels (Confluence, Slack, Jira, etc.).
+2. A Requirements Agent (Agent SDK) reads context from these systems via MCP and drafts an Intent Specification.
+3. Product Owner and Intent Architect review and approve the specification in the backlog tool.
+4. The specification is marked Ready for agent execution.
+5. A Scheduling Agent (parent Agent SDK) reads the specification and spawns task-specific sub-agents.
+6. An Implementation Agent reads the specification and codebase, plans changes and begins implementation on an isolated branch.
+7. A Testing Agent runs the test suite against each change and provides feedback.
+8. A Security Agent performs static analysis and scanning.
+9. A Documentation Agent updates relevant docs and architecture diagrams.
+10. A Review Agent formats the code, prepares commit messages and creates a pull request.
+11. The Scheduling Agent orchestrates agent-to-agent communication for any technical issues (implementation asks testing to validate a specific scenario).
+12. The pull request appears in GitHub/GitLab/Azure DevOps with full session provenance available.
+13. The Verification Engineer reviews the PR at the daily governance session with branch protections, required approvals and status checks as controls.
+14. On approval and merge, the organisation's CI/CD platform (GitHub Actions, Azure Pipelines, etc.) runs builds, tests and deployments.
+15. Monitoring tools provide feedback on the deployment.
+16. The Scheduling Agent can be configured to monitor feedback and raise new specifications for follow-up work if needed.
+
+## 10. Key Decision Points for Adopters
+
+Organisations assessing Claude Code and the Agent SDK for ADM adoption should consider:
+
+**Agent configuration and MCP scope.** Each agent role needs precise configuration: context (documents, codebase excerpts, role description), tools (via MCP servers) and constraints (branch naming, code review standards, testing requirements). Plan for defining these configurations per agent role and per project. MCP servers need to be written for each external system the agents access.
+
+**Backlog and specification tooling.** Claude Code does not own requirements discovery. The organisation's existing backlog tool (Jira, Linear, Azure DevOps, etc.) remains authoritative. Plan for integrating Claude Code with that tool via MCP so agents can read specifications and update status.
+
+**Orchestration complexity.** Multi-agent coordination is powerful but requires careful design. Plan for testing your orchestration logic: how agents sequence work, how they escalate technical issues, when and how the Scheduling Agent escalates to humans. Start simple and iterate.
+
+**Governance dashboard.** There is no native dashboard showing all pending agent work. Organisations will need to build visibility into specification status, PR queue, blocked items and escalations. This might be a custom integration, a GitHub Projects board, a Jira dashboard or a purpose-built tool.
+
+**CI/CD integration.** Claude Code creates pull requests that trigger your existing CI/CD workflows. Ensure your pipelines are configured for frequent merges (the ADM assumes daily releases). Ensure approval gates at each environment are clear and fast.
+
+**Provenance and compliance.** Audit trail requirements vary. Claude Code provides session logs. Your Git platform provides commit logs. External systems accessed via MCP provide their own logs. If regulations require a complete end-to-end audit trail from specification to deployed code, plan for integrating these logs into a centralised system early.
+
+**Operational feedback loops.** Claude Code itself does not monitor deployments or ingest operational feedback. However, you can configure the Scheduling Agent to read from monitoring tools via MCP (Datadog, Prometheus, CloudWatch, etc.) and raise new specifications for follow-up work based on production metrics or errors. This closes the feedback loop from operations back to agents.
+
+**Cost and model governance.** Anthropic provides API usage tracking that shows token consumption and cost per session. However, mapping cost to individual Intent Specifications requires custom instrumentation. Organisations should tag agent sessions with specification identifiers and aggregate cost data from Claude API usage, MCP tool invocations and external platform costs to achieve the ADM's cost-per-specification tracking.
+
+## 11. Source Notes
+
+This assessment is based on public documentation from:
+
+- [Claude Code Overview](https://docs.anthropic.com/en/docs/claude-code/overview)
+- [Anthropic Agent SDK](https://docs.anthropic.com/en/docs/agents/agent-sdk)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
-- [Claude Code best practices](https://docs.anthropic.com/en/docs/claude-code/best-practices)
+- [Claude Code Best Practices](https://docs.anthropic.com/en/docs/claude-code/best-practices)
 
-Anthropic's agent tooling is evolving quickly. This note should be updated as the platform matures.
+Claude Code and the Agent SDK are evolving rapidly. This assessment should be revisited as capabilities mature and practical delivery patterns emerge.

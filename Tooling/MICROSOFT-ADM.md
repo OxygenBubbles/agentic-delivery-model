@@ -6,6 +6,8 @@ This document assesses how the Microsoft enterprise ecosystem can support the Ag
 
 It is a readiness assessment, not a product endorsement. Organisations building on the Microsoft stack should use it to understand what is available today and where to plan for investment or integration.
 
+Organisations using GitHub without the rest of the Microsoft stack should refer to the [GitHub ecosystem assessment](GITHUB-ADM.md) for a standalone GitHub perspective.
+
 ## 1. The ADM Delivery Lifecycle
 
 The ADM needs tooling support across five areas:
@@ -149,6 +151,8 @@ Organisations assessing the Microsoft ecosystem for ADM adoption should consider
 **Orchestration strategy.** If the organisation wants a single control surface for all agents (business workflow and coding), that integration does not exist today within Microsoft. Plan for separate orchestration of business-facing agents (Copilot Studio) and coding agents (GitHub), with integration at the governance layer.
 
 **Provenance and compliance.** The building blocks exist (Entra ID, audit logs, pipeline records), but a joined-up provenance chain from specification to deployment requires deliberate design. Regulated organisations should plan for this integration work early.
+
+**Cost and model governance.** Azure provides cost management tooling that can track agent-related compute and API spend. GitHub Copilot usage is tracked at the organisation level. However, mapping cost to individual Intent Specifications (which the ADM requires) needs custom configuration. Plan for linking agent usage metrics to specification identifiers early.
 
 ## 11. Source Notes
 
