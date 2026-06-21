@@ -22,3 +22,7 @@ Hands-on guides that map every step of the model onto a specific toolchain: wher
 - [GitHub Copilot with Claude](GITHUB-COPILOT-CLAUDE-ADM.md)
 - [Claude Agentic Loops and Dynamic Workflow](CLAUDE-AGENTIC-LOOPS-ADM.md)
 - [Factory.ai (Droids)](FACTORY-ADM.md)
+- [AWS Kiro](AWS-KIRO-ADM.md)
+- [GitLab Duo Agent Platform](GITLAB-DUO-ADM.md)
+- [Microsoft (Copilot Studio, Azure DevOps and Agent 365)](MICROSOFT-COPILOT-ADM.md)
+- [Atlassian (Rovo, Jira and Bitbucket)](ATLASSIAN-ROVO-ADM.md)

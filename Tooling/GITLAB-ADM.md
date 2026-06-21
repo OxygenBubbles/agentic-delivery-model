@@ -34,7 +34,7 @@ However, GitLab is not typically where business stakeholder discovery happens. R
 
 **Readiness: Strong.**
 
-The GitLab Duo Agent Platform provides multiple agents across the software development lifecycle: foundational agents for common tasks, custom agents for organisation-specific workflows and external agents that integrate third-party capabilities.
+The GitLab Duo Agent Platform, generally available since January 2026, provides multiple agents across the software development lifecycle: foundational agents for common tasks, custom agents for organisation-specific workflows and external agents that integrate third-party capabilities.
 
 These agents can:
 

@@ -2,6 +2,21 @@
 
 All notable changes to the Agentic Delivery Model will be documented in this file.
 
+## [1.0.3] - 2026-06-21
+
+### Implementation guides
+
+- Added hands-on implementation guides to Tooling for seven toolchains: GitHub Copilot with Claude, Claude agentic loops and dynamic workflow, Factory.ai droids, AWS Kiro, the GitLab Duo Agent Platform, the Microsoft stack and Atlassian Rovo. Each maps every step of the model onto the tool: where intent and standards are stored, how each agent role is configured and the end-to-end delivery cycle.
+
+### Currency refresh
+
+- Updated AWS readiness for Kiro replacing Amazon Q Developer as an autonomous, spec-first agent. Moved Agent Execution from Partial to Strong.
+- Updated GitHub readiness for Agent HQ multi-agent mission control and the Control Plane.
+- Refreshed Claude Code readiness for Dynamic Workflows (Claude Opus 4.8) and GitLab for Duo Agent Platform general availability.
+- Positioned the model relative to spec-driven development (Section 1).
+- Added AGENTS.md as the emergent cross-tool standard (Appendix C.4) and EARS as an acceptance-criteria alternative (Appendix B.2).
+- Strengthened agent security guidance with the OWASP Top 10 for Agentic Applications and recent MCP supply-chain incidents (Appendix C.9).
+
 ## [1.0.1] - 2026-04-13
 
 ### Tooling ecosystem readiness assessments

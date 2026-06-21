@@ -73,7 +73,7 @@ The parent agent sequences their work (serial or parallel), routes technical amb
 
 MCP (Model Context Protocol) is the open standard for tool access. An MCP server wraps external systems (GitHub API, Jira, Slack, databases, internal services) and exposes only the tools a specific agent needs. This provides both capability and governance: each agent role can be configured with precise tool access.
 
-**Gaps.** The Agent SDK is new. Practical patterns for coordinating multiple agents through complex delivery workflows are still being established. Documentation and examples for agent-to-agent communication patterns and escalation handling are evolving. Organisations will need to develop and test their own orchestration logic.
+**Gaps.** Orchestration logic is still yours to build and test, but the ground has firmed up. Dynamic Workflows, introduced with Claude Opus 4.8 in May 2026, productises the orchestration loop: Claude Code can plan a task and then run hundreds of parallel subagents in a single session, verifying outputs before reporting back. Patterns for agent-to-agent coordination and escalation are better documented than they were. A full implementation guide is in [CLAUDE-AGENTIC-LOOPS-ADM.md](CLAUDE-AGENTIC-LOOPS-ADM.md).
 
 ## 5. Governance and Human Review
 
@@ -179,5 +179,6 @@ This assessment is based on public documentation from:
 - [Anthropic Agent SDK](https://docs.anthropic.com/en/docs/agents/agent-sdk)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
 - [Claude Code Best Practices](https://docs.anthropic.com/en/docs/claude-code/best-practices)
+- [Claude Opus 4.8 and dynamic workflows](https://www.anthropic.com/news/claude-opus-4-8)
 
 Claude Code and the Agent SDK are evolving rapidly. This assessment should be revisited as capabilities mature and practical delivery patterns emerge.

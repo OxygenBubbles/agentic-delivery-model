@@ -49,19 +49,19 @@ This is repo-native agent execution. GitHub's branch isolation, pull request pri
 
 GitHub Actions provides workflow automation for CI/CD, linting, security analysis and test execution. Workflows do not run until a human approves the pull request, maintaining the Governance Tier's approval gate.
 
-**Gaps.** GitHub Copilot coding agent is a single coding agent capability. There is no native multi-agent orchestration for coordinating implementation, testing, security analysis and documentation agents. Organisations will need to either sequence agent work through GitHub workflows or introduce orchestration tooling outside GitHub.
+**Gaps.** GitHub Copilot's coding agent implements one issue at a time. Multi-agent orchestration and fleet visibility are now available through Agent HQ (see Section 4), though coordinating a backlog-aware fleet that detects specification overlap still needs an external scheduling layer.
 
 ## 4. Agent Orchestration and Coordination
 
-**Readiness: Limited.**
+**Readiness: Partial.**
 
-GitHub Copilot coding agent is a single autonomous coding agent. It implements changes against one issue at a time. There is no native capability within GitHub to coordinate a fleet of agents working across multiple specifications simultaneously.
+GitHub Agent HQ has changed this assessment. Agent HQ provides mission control, a single surface across GitHub, the IDE, the CLI and mobile for assigning work to multiple agents in parallel and tracking their progress. It hosts agents from several vendors, including Anthropic, OpenAI and Google, and adds a Control Plane with access policies, audit logging, agent allowlists and sandboxed execution. This is real multi-agent orchestration and fleet visibility, which did not exist natively a short time ago.
 
-GitHub Actions provides workflow automation that can sequence steps (build, test, lint, deploy), but this is pipeline orchestration, not agent orchestration. It does not support the ADM's pattern of a Scheduling Agent that reads the backlog, detects specification overlap, assigns work to agents and coordinates agent-to-agent resolution.
+What Agent HQ does not yet provide is a backlog-aware Scheduling Agent in the ADM sense: one that reads the Ready backlog, detects specification overlap across work items and routes work to avoid conflicts. Agent HQ assigns and monitors agents. It does not make the proactive scheduling and overlap decisions the model's Scheduling Agent owns.
 
-Organisations wanting multi-agent coordination within a GitHub-centred estate will need to introduce an external orchestration layer. The Claude Code Agent SDK, custom tooling built on model APIs or emerging agent orchestration platforms could fill this role.
+GitHub Actions still provides pipeline orchestration (build, test, lint, deploy), which is complementary to Agent HQ rather than a substitute for backlog-level scheduling.
 
-**Gaps.** No multi-agent orchestration exists within GitHub. There is no Scheduling Agent equivalent, no agent fleet management and no agent-to-agent communication pattern. Organisations must build or buy orchestration separately.
+**Gaps.** Multi-agent orchestration and a governance control plane now exist through Agent HQ. The remaining gap is the backlog-aware Scheduling Agent that detects specification overlap and routes work proactively. Organisations wanting that pattern can pair Agent HQ with an external orchestration layer such as the Claude Agent SDK loop described in [CLAUDE-AGENTIC-LOOPS-ADM.md](CLAUDE-AGENTIC-LOOPS-ADM.md).
 
 ## 5. Governance and Human Review
 
@@ -79,7 +79,7 @@ The pull request is the enforcement point for the ADM's Governance Tier. Verific
 
 GitHub Projects provides lightweight backlog and workflow management. Organisations can track specifications, in-progress work, blockers and escalations through project views and automation.
 
-**Gaps.** GitHub does not provide a consolidated governance dashboard. Verification Engineers must navigate across Issues, Projects and pull requests to get a complete view of pending work, review queues and governance status. Organisations will need custom dashboards (through GitHub API integration) or external tools to consolidate this view.
+**Gaps.** GitHub does not provide a single governance dashboard spanning specifications, review queues and escalations, though Agent HQ mission control now consolidates the view of in-flight agent work. Verification Engineers still navigate across Issues, Projects and pull requests for the full picture. Organisations will need custom dashboards (through GitHub API integration) or external tools to consolidate review and specification status.
 
 ## 6. Identity, Compliance and Audit
 
@@ -112,9 +112,9 @@ GitHub Actions provides no native monitoring or observability integration. Alert
 | ADM Area | GitHub Capability | Readiness | Key Gap |
 |---|---|---|---|
 | Requirements and intent design | Issues, Projects | Limited | No structured discovery capability. Business intent gathering happens outside GitHub |
-| Agent execution (coding) | GitHub Copilot coding agent | Strong | Single agent only. No native multi-agent orchestration |
-| Agent orchestration | None | Limited | No multi-agent fleet management or scheduling capability |
-| Governance and review | Branch protection, required reviewers, status checks, PRs | Strong | No consolidated governance dashboard. Requires custom integration |
+| Agent execution (coding) | GitHub Copilot coding agent and Agent HQ | Strong | Backlog-aware scheduling still needs an external layer |
+| Agent orchestration | Agent HQ mission control and Control Plane | Partial | Multi-agent orchestration now exists. No backlog-aware Scheduling Agent that detects specification overlap |
+| Governance and review | Branch protection, required reviewers, status checks, PRs | Strong | Agent HQ mission control partly consolidates the view. Full dashboard still needs custom integration |
 | Identity and compliance | Integration with external IdPs, EMUs, audit logs | Partial | Audit logs must be integrated with identity provider and infrastructure logs for compliance |
 | Release and operations | GitHub Actions, environment protection | Partial | No native feature flag management. No native monitoring or observability |
 
@@ -141,7 +141,7 @@ Organisations assessing the GitHub ecosystem for ADM adoption should consider:
 
 **Requirements tooling.** GitHub Issues and Projects are suitable for recording specifications but not for discovery. Plan for business stakeholder engagement, requirements workshops and discovery work to happen through channels outside GitHub (Slack, email, meeting notes, shared documents). Design a specification-to-Issue template and workflow that bridges this gap.
 
-**Agent orchestration.** If the organisation needs multiple coordinated agents (implementation, testing, documentation, security analysis), GitHub Actions provides limited sequencing but not true orchestration. Plan either to sequence work through Actions workflows or to introduce a dedicated orchestration layer outside GitHub.
+**Agent orchestration.** Agent HQ now provides multi-agent mission control and a Control Plane for governance. For the model's backlog-aware Scheduling Agent, which detects specification overlap and routes work proactively, plan to pair Agent HQ with a dedicated orchestration layer such as the Claude Agent SDK loop. GitHub Actions remains the pipeline orchestration layer.
 
 **Governance dashboard.** The ADM's Governance Tier needs visibility into pending work, review queues and blockers. GitHub does not provide this consolidated view out of the box. Consider building a custom dashboard through the GitHub API or integrating a project management tool that pulls data from GitHub.
 
@@ -163,5 +163,6 @@ This assessment is based on public product documentation from:
 - [GitHub branch protection rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches)
 - [GitHub Issues and Projects](https://docs.github.com/en/issues)
 - [GitHub audit log API](https://docs.github.com/en/rest/orgs/audit-logs)
+- [GitHub Agent HQ](https://github.blog/news-insights/company-news/welcome-home-agents/)
 
 GitHub product capabilities are evolving. This assessment should be revisited as the ecosystem matures.

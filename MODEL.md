@@ -22,6 +22,8 @@ One important distinction. Most organisations today experience AI agents as deve
 
 The ADM is different. It defines an operating model where a fleet of autonomous agents works collectively against a governed backlog, coordinated by architecture and governance rather than by individual developers. Agents are the delivery workforce. People define intent, maintain coherence, verify output and govern the process. The organisational structure, roles, cadence and governance all change to reflect this.
 
+The wider industry has converged on a related idea known as spec-driven development. The principle is that a written specification, not the code, is the primary artefact, and code becomes a regenerable output produced from the specification by agents. The Agentic Delivery Model shares that principle and goes further. Spec-driven development describes how one codebase works around a specification. This model describes how an organisation does: the roles, governance, cadence and accountability needed to run intent-driven delivery at scale. The two are complementary. Spec-driven tools are a natural execution layer beneath the operating model defined here.
+
 The model is sector-agnostic. It works for greenfield and brownfield environments. It scales from small teams to large technology functions.
 
 What follows is the complete methodology.
@@ -697,6 +699,9 @@ PROVENANCE
 - Refined by: [Intent Architect name]
 - Approved by: [Product Owner name]
 ```
+
+**A note on notation.** The template uses Gherkin because it is widely understood and maps cleanly to automated tests. Some spec-driven tooling uses EARS (Easy Approach to Requirements Syntax) instead. Either is acceptable. What matters is that acceptance criteria are precise, testable and unambiguous, not the notation that expresses them.
+
 ### B.3 Intent Specifications vs Epics and PBIs
 
 Organisations transitioning from traditional Agile will ask how Intent Specifications map to the familiar Epic, Feature and Product Backlog Item (PBI) hierarchy. The mapping is:
@@ -836,7 +841,7 @@ This distinction matters. Organisations should not treat agent roles as job desc
 
 ### C.4 Tooling Configuration
 
-At the time of writing, the main agent development tools each implement configuration differently. Claude Code uses CLAUDE.md files and `--allowedTools` flags. Cursor uses `.cursorrules` and workspace settings. GitHub Copilot uses `copilot-instructions.md` and repository-level policies. These examples are illustrative of current tooling. The specifics will change as tooling evolves. The model does not depend on any particular implementation.
+At the time of writing, the main agent development tools each implement configuration differently. Claude Code uses CLAUDE.md files and `--allowedTools` flags. Cursor uses `.cursorrules` and workspace settings. GitHub Copilot uses `copilot-instructions.md` and repository-level policies. A cross-tool standard has also emerged in the form of AGENTS.md, a single instructions file now read by several of the major tools, which reduces the need to maintain a separate configuration file per tool. These examples are illustrative of current tooling. The specifics will change as tooling evolves. The model does not depend on any particular implementation.
 
 Regardless of tooling, the principle is consistent: agents operate within explicitly defined boundaries. Standards, system constraints and access controls are codified in agent configuration files that sit alongside the codebase, not in documents that people read and hope agents follow. The Platform Engineer described in Section 7 is responsible for configuring and maintaining these boundaries.
 
@@ -899,11 +904,11 @@ Traditional application security focuses on protecting systems from external att
 
 **Poisoned memory and context.** Agents that persist context across sessions (through specification notes, configuration files or documentation) are vulnerable to context poisoning. If an attacker or a malfunctioning agent writes misleading information into a shared context source, subsequent agents inherit that false context and act on it. The ephemeral sandbox model described in [Appendix C.5](#c5-agent-sandboxes) mitigates this for implementation sessions, but shared artefacts like architectural documentation, configuration files and the Coherence Register are potential vectors. Changes to shared context should require the same governance review as code changes.
 
-**Third-party tools and MCP servers.** Agents connect to external systems through Model Context Protocol (MCP) servers and other tool integrations. Each connection is a trust boundary. A compromised MCP server could feed false data to an agent, redirect its actions or harvest information from its context. Organisations should audit third-party tool integrations with the same rigour they apply to software dependencies: verified sources, version pinning, regular security reviews and the principle of least privilege for what data each tool can access.
+**Third-party tools and MCP servers.** Agents connect to external systems through Model Context Protocol (MCP) servers and other tool integrations. Each connection is a trust boundary. A compromised MCP server could feed false data to an agent, redirect its actions or harvest information from its context. Organisations should audit third-party tool integrations with the same rigour they apply to software dependencies: verified sources, version pinning, regular security reviews and the principle of least privilege for what data each tool can access. This is no longer hypothetical. A large number of exposed MCP servers have been disclosed across IDEs and internal tools, and a widely used MCP package was found to be missing an authentication layer, leaving work items, repositories and credentials reachable without valid access. Tool poisoning, where instructions are hidden in tool metadata that the agent reads but the user does not see, is now a recognised attack pattern.
 
 **Supply chain attacks through agent tooling.** Agent configuration files, prompt templates and tool definitions are code. They should be treated as code: version-controlled, reviewed, signed and deployed through the same governance pipeline as application code. An attacker who gains write access to an agent's configuration can control its behaviour without touching the application codebase.
 
-The System Steward and Security/Compliance Lead should jointly own the agent threat model, reviewing it at the Strategic Tier alongside traditional application security concerns. This is a new discipline. Most organisations do not yet have mature practices for securing autonomous agent operations. Building those practices early, before the fleet scales, is considerably easier than retrofitting them.
+The System Steward and Security/Compliance Lead should jointly own the agent threat model, reviewing it at the Strategic Tier alongside traditional application security concerns. OWASP now publishes a Top 10 for Agentic Applications, which gives organisations a standardised starting framework for this work. This is a new discipline. Most organisations do not yet have mature practices for securing autonomous agent operations. Building those practices early, before the fleet scales, is considerably easier than retrofitting them.
 
 ### C.10 Dependency Governance and Software Controls
 

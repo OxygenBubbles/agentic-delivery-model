@@ -6,7 +6,7 @@ This document assesses how the AWS enterprise ecosystem can support the Agentic 
 
 It is a readiness assessment, not a product endorsement. Organisations building on the AWS stack should use it to understand what is available today and where to plan for investment or integration.
 
-AWS is an infrastructure and operational platform, not a development lifecycle platform. It will typically be paired with one of the repository-centred ecosystems assessed in the [GitHub](GITHUB-ADM.md), [GitLab](GITLAB-ADM.md) or [Atlassian](ATLASSIAN-ADM.md) companion notes.
+AWS has historically been an infrastructure and operational platform rather than a development lifecycle platform. With Kiro it now has an agentic development tool of its own, but it is still typically paired with one of the repository-centred ecosystems assessed in the [GitHub](GITHUB-ADM.md), [GitLab](GITLAB-ADM.md) or [Atlassian](ATLASSIAN-ADM.md) companion notes for source control and pull request governance.
 
 ## 1. The ADM Delivery Lifecycle
 
@@ -32,27 +32,27 @@ Intent Specifications cannot be captured or managed within AWS itself.
 
 ## 3. Agent Execution
 
-**Readiness: Partial.**
+**Readiness: Strong.**
 
-Amazon Q Developer is AWS's primary coding agent. It operates in IDEs (VS Code, JetBrains) and the CLI, providing implementation support, build validation, test execution and code review automation. It can support:
+AWS's primary coding agent is now Kiro, a spec-first agentic development tool that AWS positions as the successor to Amazon Q Developer. Q Developer is being retired: the newest coding models were removed from Q Developer Pro in May 2026 and end-of-support is set for April 2027. Organisations on Q Developer should plan a migration to Kiro.
 
-- implementing code changes against approved Intent Specifications
-- validating builds and running tests in real time
-- iterating on review feedback within the same session
-- application modernisation and refactoring work
-- working with AWS-native services where service context matters
+Kiro is built around specifications. It generates a structured specification from a request, a design from the specification and a task breakdown from the design, then implements against them. Its autonomous agent can:
 
-Amazon Q Developer is particularly strong for AWS-native development where understanding CloudFormation, Lambda, DynamoDB and other AWS services directly improves code quality. It provides session logs and provenance for every change.
+- take a work item from a backlog tool and implement against the approved specification
+- work on an isolated branch and open a pull request
+- monitor CI results and fix failures without a person re-prompting
+- pick up reviewer feedback and push updates
+- run headless in CI/CD against GitHub or GitLab
 
-**Gaps.** Amazon Q Developer is IDE and CLI-based agent execution, not repository-native. Unlike GitHub Copilot coding agent which operates directly in pull requests, Amazon Q works at the IDE level. Code changes must be committed and pushed to the repository separately. This introduces an extra step in the workflow and means agent execution is disconnected from the repository's branch protection and approval controls.
+This is a closer fit to the ADM execution model than Q Developer was. Kiro's specification, design and task structure maps almost one to one onto the Intent Specification, and its autonomous agent produces merge-ready pull requests rather than IDE-level assistance. For AWS-native work, Kiro retains strong context on services such as Lambda, DynamoDB and CloudFormation.
 
-The ADM's execution model assumes agents autonomously pick work from a backlog and produce pull requests as part of the delivery system. Amazon Q operates in the IDE and requires a developer to commit and push changes separately. This is assisted development, not fully autonomous agent execution in the ADM sense. Amazon Q delivers strong value for what it does (AWS-native development, build validation, code review assistance), but it cannot fulfil the ADM execution tier autonomously.
+**Gaps.** Kiro is newer and its autonomous capability should be evaluated against the organisation's specific delivery patterns before it becomes the primary execution layer. It also depends on an external repository platform, because AWS has no native repository or pull request surface (CodeCommit is deprecated). The governance surface therefore still sits in GitHub or GitLab, not in AWS.
 
 ## 4. Agent Orchestration and Coordination
 
 **Readiness: Limited.**
 
-Amazon Q Developer is a single coding agent. There is no native AWS capability for coordinating multiple agents across a delivery backlog.
+Kiro's autonomous agent works on one specification at a time. There is no native AWS capability for coordinating a fleet of agents across a delivery backlog.
 
 Amazon Bedrock provides model hosting and the Bedrock Agents capability allows organisations to build custom agents with tool access. This is a lower-level building block rather than a delivery orchestration surface. An organisation could theoretically build a Scheduling Agent on Bedrock, but this requires significant custom development and is not a pre-built capability.
 
@@ -64,9 +64,9 @@ Amazon Bedrock provides model hosting and the Bedrock Agents capability allows o
 
 The ADM's governance surface depends critically on the repository platform the organisation chooses. AWS does not own the repository layer. CodeCommit (AWS's native Git service) is deprecated. Most organisations will pair AWS infrastructure with GitHub, GitLab or Bitbucket for source control and pull request management.
 
-Amazon Q Developer can automate code reviews, but the pull request governance surface itself sits entirely outside AWS. Once a repository platform is chosen, pull request review, approval rules, branch protections and status checks follow that platform's capabilities, not AWS.
+Kiro can open and update pull requests, but the pull request governance surface itself sits entirely outside AWS. Once a repository platform is chosen, pull request review, approval rules, branch protections and status checks follow that platform's capabilities, not AWS.
 
-**Gaps.** AWS has no repository platform. Governance depends completely on whichever external repository platform the organisation uses. There is no native AWS pull request or branch protection surface. Amazon Q's code review automation is decoupled from the governance controls that enforce the decision. Organisations must integrate governance across two separate platforms: the external repository platform and AWS infrastructure.
+**Gaps.** AWS has no repository platform. Governance depends completely on whichever external repository platform the organisation uses. There is no native AWS pull request or branch protection surface. Kiro's pull requests are reviewed and governed on the external repository platform, not in AWS. Organisations must integrate governance across two separate platforms: the external repository platform and AWS infrastructure.
 
 ## 6. Identity, Compliance and Audit
 
@@ -95,7 +95,7 @@ AWS AppConfig provides feature flag management with targeting rules, rollout sch
 | ADM Area | AWS Capability | Readiness | Key Gap |
 |---|---|---|---|
 | Requirements and intent design | None | Not available | Requires external platform (Jira, Confluence, GitHub Issues) |
-| Agent execution (coding) | Amazon Q Developer | Partial | IDE-based, not autonomous. Requires developer to commit and push changes |
+| Agent execution (coding) | Kiro (successor to Amazon Q Developer) | Strong | Depends on an external repository platform for pull request governance |
 | Agent orchestration | Bedrock Agents (building blocks only) | Limited | No pre-built delivery orchestration. Must build from primitives |
 | Governance and human review | External repository platform (GitHub, GitLab, Bitbucket) | Partial | Repository platform sits outside AWS. Amazon Q code reviews are separate from governance controls |
 | Identity and compliance | IAM, CloudTrail, Config, Security Hub | Strong | Cross-system provenance chain requires configuration and integration |
@@ -107,10 +107,10 @@ A practical AWS-centred ADM pattern:
 
 1. Business stakeholders and teams work in external requirements and collaboration tooling (Jira, Confluence, Teams, Slack).
 2. Intent Specifications are created in the external requirements platform and approved by the Product Owner and Intent Architect.
-3. The approved specification is assigned to Amazon Q Developer.
-4. The developer runs Amazon Q in their IDE (VS Code, JetBrains) to implement code changes.
-5. Amazon Q executes builds and validates tests locally or in a development environment.
-6. The developer commits and pushes changes to the external repository (GitHub, GitLab, Bitbucket).
+3. The approved specification is assigned to Kiro.
+4. Kiro implements against the specification on an isolated branch and opens a pull request in the external repository (GitHub or GitLab).
+5. Kiro runs builds and tests, monitors CI and fixes failures without re-prompting.
+6. Reviewer feedback on the pull request is picked up by Kiro, which pushes updates.
 7. Pull requests are raised in the external repository platform for human review at the daily governance session.
 8. Repository branch protections, required reviewers and status checks enforce ADM governance controls.
 9. On approval, CodePipeline orchestrates CI/CD with approval gates per environment.
@@ -127,7 +127,7 @@ Organisations assessing the AWS ecosystem for ADM adoption should consider:
 
 **Repository platform.** AWS CodeCommit is deprecated. The organisation must choose GitHub, GitLab, Bitbucket or another Git hosting platform. This choice affects the ADM's governance surface directly. GitHub supports deeper integration with AWS through IAM, though all three platforms work with CodePipeline and CodeBuild.
 
-**Agent execution strategy.** Amazon Q Developer provides strong IDE-based coding agent capability but is not repository-native. If the organisation wants agent execution deeply integrated into pull requests and branch protection workflows, it may need to pair Amazon Q with repository-native capabilities (GitHub Copilot in GitHub Enterprise, or agent integrations in GitLab/Bitbucket) or accept IDE-based execution as the primary agent interface.
+**Agent execution strategy.** Kiro provides an autonomous, spec-first coding agent that opens and maintains pull requests against GitHub or GitLab, a closer fit to the ADM than the IDE-based Amazon Q Developer it replaces. Organisations on Amazon Q Developer should plan a migration to Kiro, and should still pair it with a repository platform for pull request governance because AWS has no native repository surface.
 
 **Governance surface integration.** The ADM's daily governance sessions require visibility across requirements, pull requests and infrastructure. This consolidated view does not exist out of the box in AWS. Plan for integration work using CloudWatch dashboards, repository APIs or custom tooling to join requirements status, pull request queues and deployment status into a single governance interface.
 
@@ -139,10 +139,9 @@ Organisations assessing the AWS ecosystem for ADM adoption should consider:
 
 This assessment is based on public product documentation from:
 
-- [Amazon Q Developer](https://aws.amazon.com/q/developer/)
-- [Amazon Q Developer agent builds, tests and validates code](https://aws.amazon.com/about-aws/whats-new/2025/01/amazon-q-developer-agent-builds-tests-validate-generated-code-real-time/)
-- [Amazon Q Developer agentic coding experience](https://aws.amazon.com/about-aws/whats-new/2025/05/amazon-q-developer-agentic-coding-experience-ide/)
-- [Amazon Q Developer code review automation](https://aws.amazon.com/about-aws/whats-new/2024/12/amazon-q-developer-automate-code-reviews/)
+- [Kiro](https://kiro.dev/)
+- [Kiro documentation (AWS)](https://aws.amazon.com/documentation-overview/kiro/)
+- [Amazon Q Developer](https://aws.amazon.com/q/developer/) (being retired in favour of Kiro)
 - [AWS IAM documentation](https://docs.aws.amazon.com/iam/)
 - [AWS CloudTrail](https://docs.aws.amazon.com/cloudtrail/)
 - [AWS CodePipeline](https://docs.aws.amazon.com/codepipeline/)
