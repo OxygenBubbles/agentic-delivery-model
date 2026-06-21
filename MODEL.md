@@ -259,6 +259,8 @@ The Verification Engineer is also the primary assessor of code quality at the go
 
 They operate as the final quality gate after automated review, testing and security scanning have filtered out basic failures. The role requires experienced engineers who understand systems at a level above individual functions and files. Junior engineers can assist with evidence gathering, but senior judgement is needed for the harder calls.
 
+**Verification is risk-tiered.** Human review does not scale linearly with agent output, so the Verification Engineer's attention is allocated by risk rather than spread evenly. A trivial, well-specified change that passes every automated check receives a light confirmation that the output matches the intent. A change that touches a shared service, a regulated calculation, a security boundary or a wide blast radius receives deep review. The complexity assessment in the Intent Specification and the automated pre-checks set the tier. This keeps verification a genuine quality gate as throughput rises, rather than a uniform queue that degrades into a rubber stamp when the fleet outpaces the reviewers.
+
 ### 6.3 System Steward
 
 The System Steward is responsible for coherence across the codebase and the surrounding delivery system. As agents work on individual specifications in isolation, the codebase will naturally drift towards local optimisation at the expense of global consistency. The System Steward owns the architectural direction, maintains the system-level configuration that constrains agent behaviour and identifies when refactoring is needed to restore coherence.
@@ -309,6 +311,10 @@ The Definition of Ready in [Appendix B.4](#b4-definition-of-ready-for-agents) re
 
 The ADM addresses this through empirical throughput data. Teams measure actual cycle times by complexity band: small specifications take X hours on average, medium Y, large Z. Over time this builds a reliable empirical model. The Product Owner uses this data to communicate expected delivery windows to business stakeholders. A forecast based on observed throughput is more accurate than one based on estimated story points, because it measures what actually happens rather than what people think will happen. The metrics in Section 14.1 formalise this. Practical guidance on forecasting and business readiness is in [ADOPTION.md](ADOPTION.md).
 
+#### 6.7.2 Raising Specification Throughput
+
+If specification production is the constraint on the whole model (see Section 19), then raising the rate at which good specifications are produced matters as much as governing the output. Three practices help. First, a specification pattern library: reusable templates for recurring shapes such as a CRUD form, an integration or a data pipeline, so common work is specified by adaptation rather than from a blank page. Second, treating specification debt as real: a specification rushed to keep the fleet fed surfaces later as rework, so the clarification rate and first-pass acceptance rate are watched as leading indicators of specification quality. Third, agent assistance for the Intent Architect, not only the requirements agent: a Review Agent that pre-checks a draft for missing acceptance criteria, undefined integration points and unclear boundaries removes mechanical work so the person spends judgement on the harder questions. The Specification Throughput metric in Section 14.1 tracks whether these practices are working.
+
 Detailed guidance on what people do day-to-day, where bottlenecks form and the leading indicators that teams should monitor is also provided in [ADOPTION.md](ADOPTION.md).
 
 ### 6.8 Roles That Change, Split or Remain
@@ -344,6 +350,8 @@ Detailed templates and worked examples are provided in [Appendix B](#appendix-b-
 The ADM is tool-agnostic, but it is not control-agnostic. Agents require explicit boundaries on access, identity, sandboxing, model usage, knowledge sources, resilience measures and security controls.
 
 **Tooling maturity note.** The tooling landscape for agentic software delivery is evolving rapidly. The guidance in this section and in [Appendix C](#appendix-c-tooling-and-agent-governance-considerations) reflects the current state of available tools at the time of writing. It should be treated as alpha guidance that will be updated as tooling matures to support ADM patterns natively. Organisations should expect that specific configuration mechanisms, access control models and integration patterns will change. The principles (governed access, scoped identity, provenance, sandboxing) are durable. The implementation details are not.
+
+**Orchestration maturity varies.** The parts of the model that map cleanly onto every toolchain are the artefacts, the standards files, the sandboxing and the human review gate. The part that does not is orchestration. The Scheduling Agent, which reads the backlog, detects specification overlap and coordinates a fleet, is supported very unevenly. Some tools provide it natively, some give a loop to build on and some have no equivalent. Adopters should check whether their stack supports backlog-aware orchestration or plan to build it. The companion notes in the [Tooling folder](Tooling/README.md) assess this per ecosystem.
 
 Detailed guidance on agent capability, role definitions, access controls, sandboxes, model selection, knowledge management ([C.7](#c7-knowledge-management)), resilience and agent security threats is provided in [Appendix C](#appendix-c-tooling-and-agent-governance-considerations). Separate companion notes on enterprise tooling scenarios are provided in the [Tooling folder](Tooling/README.md).
 
@@ -450,6 +458,8 @@ The ADM's governance model applies to all environments. In regulated environment
 
 Every agent-generated artefact carries metadata: which agent produced it, which model version was used, which Intent Specification it was working against, which version of the codebase it started from and who approved it for integration. This creates a complete audit trail from business requirement to deployed code. This applies in all environments, not just regulated ones.
 
+Provenance records what an agent did. It does not make the output reproducible. The same specification run again may produce different code, because agent output is not deterministic. The control is the provenance trail and a named person's approval of the specific artefact that shipped, not the ability to regenerate it identically. Regulated reviewers should expect this distinction and assess the artefact that was approved rather than a hypothetical re-run.
+
 ### 13.2 Separation of Execution and Approval
 
 Agents never approve their own work. The Governance Tier ensures that every piece of agent output receives independent verification from a person before it enters the codebase. This maker-checker separation is a universal governance principle. In regulated environments, it supports the segregation of duties requirements common across financial services, healthcare, government and legal sectors. Organisations should verify that their specific regulatory framework accepts this separation model.
@@ -508,6 +518,9 @@ Traditional Agile measures velocity in story points. This metric becomes less me
 | **Code Health Score** | Ratio of code removed or refactored to code added, weighted by complexity. | Measures whether the codebase is growing proportionately to value delivered, or accumulating bloat. Agent-generated code can be verbose. This metric tracks whether refactoring is keeping pace with generation. |
 | **Security Findings Rate** | Open security findings per release, broken down by severity. | Tracks whether agent-generated code is introducing security risk faster than it is being resolved. |
 | **Performance Regression Rate** | Percentage of releases that trigger a performance regression alert. | Tracks whether delivery speed is degrading system performance. |
+| **Specification Defect Rate** | Percentage of delivered work that met its acceptance criteria but failed to serve the business intent, found at UAT or in production. | Measures validation quality, not just verification. Catches features built correctly to a wrong specification, the failure mode Principle 3 exists to prevent. |
+| **Change Failure Rate** | Percentage of releases that cause an incident, rollback or hotfix. | A measure leadership already trusts. Lets ADM delivery be compared against the pre-ADM baseline and against industry reference points. |
+| **Time to Restore** | Elapsed time from an agent-caused incident being raised to service being restored. | Tests the claim that provenance and fast agent fixes shorten recovery. Pairs with Change Failure Rate. |
 
 ### 14.2 Feedback Loops
 
@@ -543,6 +556,10 @@ The ADM is an operating model transition, not a tooling rollout. It involves rol
 
 The recommended approach is phased: foundations and enablement, a confidence-building pilot, controlled scale-up and then scaled operation. Specific guidance on brownfield adoption, team size adaptation and workforce transition is also provided.
 
+**Make the codebase legible first.** The model treats the codebase as a knowledge store that agents read. Legacy systems are often not legible enough for that to work. Brownfield adoption usually needs an upfront investment to make the system readable by agents: characterisation tests, clear module boundaries and current documentation. This work is itself ADM delivery, specified and governed the same way as feature work, and it is a precondition for agent productivity rather than a side task.
+
+**Run a measured pilot.** Because the model's throughput and headcount claims are not yet backed by published data, the pilot is where an organisation produces its own evidence. A useful pilot fixes a small scope, takes a baseline from the pre-ADM team, then measures the leading indicators from the first day: specification throughput, first-pass acceptance rate, clarification rate, cycle time by complexity and cost per specification. The local ratios that emerge, specifications produced per Intent Architect and pull requests verified per Verification Engineer, are what should size the target operating model, not the figures in this document. Decision gates at the end of the pilot decide whether to scale, adjust or pause.
+
 Full transition guidance is in [ADOPTION.md](ADOPTION.md).
 
 ---
@@ -570,6 +587,8 @@ The ADM changes not just how technology services are delivered but what services
 This model is based on practical experience and informed judgement. It is not based on controlled studies. The following limitations and open questions should be read as an honest assessment of what the ADM assumes but cannot yet prove.
 
 **The specification bottleneck.** The ADM assumes that Intent Architects can generate specifications fast enough to keep an agent fleet productively occupied. If they cannot, the model's throughput advantage disappears (see Section 6.7 for how the model manages this and the leading indicators to monitor). Early indications from teams using agentic development tools suggest that specification writing is indeed the constraint, but there is no published data on the sustainable specification rate per Intent Architect across different domains and complexity levels. This is the single most important empirical question the model raises.
+
+**Talent scarcity.** The model concentrates judgement in a small number of senior, scarce roles: Intent Architects, System Stewards and Verification Engineers. The market for these people is tight, and the model's economics depend on having enough of them. Most organisations will not be able to hire them at the volume the model implies, so growing them internally through the career paths in Section 6.9 is not optional. If the supply of these roles is the real constraint rather than specification throughput, the operating model scales more slowly than the headline figures suggest.
 
 **Verification at scale.** The model relies on human verification as the quality backstop. But verification does not scale linearly with agent output. If a team of two Verification Engineers can review 20 PRs per day, and the agent fleet produces 40, either half the output waits or verification standards drop. The model addresses this through automated pre-checks (Review Agent, Security Agent, Testing Agent) but the question remains: at what ratio of agent output to human review capacity does verification become a rubber stamp rather than a genuine quality gate?
 
@@ -895,6 +914,8 @@ In manual mode, people execute the highest-priority work items directly. This is
 **Multi-provider strategy.** Organisations should avoid single-provider dependency. If the primary model provider experiences an outage, the team should be able to switch to an alternative provider. This requires that agent configuration, prompts and tooling are not locked to a single vendor. The model selection decisions in [Appendix C.6](#c6-model-selection-and-data-residency) should include approved fallback providers.
 
 **Cost circuit breakers.** Agent compute costs can spike unexpectedly, particularly when agents enter loops, encounter ambiguous specifications or generate excessive rework. Platform Engineers should implement cost circuit breakers: alerts that fire when spend per specification exceeds defined thresholds, and hard limits that pause agent execution when daily or weekly budgets are reached.
+
+**A fleet halt control.** Cost is not the only reason to stop the fleet at once. If a compromise is suspected, whether a prompt injection spreading through shared context, a poisoned dependency or a misbehaving agent, the team needs a single, fast way to pause all agent execution immediately. This kill switch should be a named control with a named owner, tested before it is needed, and it should pause execution without losing the provenance of work already in flight. Treat it as a first-class operational control alongside the cost circuit breaker, not an afterthought.
 
 ### C.9 Agent Security Threats
 
