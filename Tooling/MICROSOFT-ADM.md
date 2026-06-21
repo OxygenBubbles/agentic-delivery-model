@@ -63,7 +63,9 @@ Azure DevOps Repos provides an alternative source control and pull request surfa
 
 Copilot Studio provides multi-agent orchestration where a coordinating agent can route work to specialised agents. This can support the ADM's pattern of a Scheduling Agent coordinating multiple execution agents (implementation, testing, security analysis).
 
-Agent 365 (Microsoft 365 Copilot's agent management layer) provides a control plane for:
+On the coding side, GitHub Agent HQ now provides multi-agent mission control. Because GitHub is Microsoft-owned, this is the Microsoft ecosystem's orchestration surface for repo-native coding agents: assigning work to several agents in parallel, watching them across surfaces and governing them through a Control Plane. It did not exist when the ecosystem was first assessed.
+
+Agent 365, now generally available, provides a control plane across the agent estate for:
 
 - agent inventory and ownership
 - policy and access controls
@@ -72,7 +74,7 @@ Agent 365 (Microsoft 365 Copilot's agent management layer) provides a control pl
 
 This is useful for the ADM's governance requirements, particularly in regulated environments where agent inventory and policy compliance must be visible.
 
-**Gaps.** Copilot Studio orchestration is designed primarily for business process agents, not software delivery agents working inside repositories. Coordinating a Requirements Agent in Copilot Studio with a GitHub Copilot coding agent requires integration across two different agent platforms. There is no single orchestration surface today that spans business workflow agents and repo-native coding agents within the Microsoft ecosystem.
+**Gaps.** The ecosystem now has two orchestration surfaces rather than none: Copilot Studio for business agents and Agent HQ for coding agents, with Agent 365 governing both as an inventory and policy control plane. What it still lacks is a single surface that orchestrates across the two planes, so coordinating a requirements agent in Copilot Studio with a coding agent in Agent HQ remains integration work. Neither is the model's backlog-aware Scheduling Agent that reads the Ready backlog, detects specification overlap and routes coding work proactively.
 
 ## 5. Governance and Human Review
 
@@ -118,7 +120,7 @@ Feature flag management can be handled through Azure App Configuration, which su
 |---|---|---|---|
 | Requirements and intent design | Microsoft 365, Copilot Studio, Azure DevOps Boards | Strong | Work item templates need customisation for Intent Specifications |
 | Agent execution (coding) | GitHub Copilot coding agent | Strong | Requires GitHub Enterprise. Not available in Azure DevOps Repos |
-| Agent orchestration | Copilot Studio, Agent 365 | Partial | No single orchestration surface spanning business and coding agents |
+| Agent orchestration | Copilot Studio, Agent HQ, Agent 365 | Partial | Two orchestration planes, governed by Agent 365. No single surface across both, and no backlog-aware Scheduling Agent |
 | Governance and review | GitHub PRs, Azure DevOps PRs, Teams | Strong | No consolidated governance dashboard out of the box |
 | Identity and compliance | Entra ID, Purview, Defender | Strong | Cross-system provenance chain requires configuration |
 | Release and operations | Azure Pipelines, GitHub Actions, Azure infrastructure | Strong | Feature flag capability is basic |
@@ -148,7 +150,7 @@ Organisations assessing the Microsoft ecosystem for ADM adoption should consider
 
 **Backlog tooling.** Azure DevOps Boards can serve as the backlog tool with customisation. GitHub Issues and Projects are an alternative if the organisation consolidates onto GitHub. The choice depends on existing workflows and whether non-engineering stakeholders need access.
 
-**Orchestration strategy.** If the organisation wants a single control surface for all agents (business workflow and coding), that integration does not exist today within Microsoft. Plan for separate orchestration of business-facing agents (Copilot Studio) and coding agents (GitHub), with integration at the governance layer.
+**Orchestration strategy.** Microsoft now has two orchestration surfaces, Copilot Studio for business agents and GitHub Agent HQ for coding agents, governed together by Agent 365. A single surface across both does not yet exist, so plan for integration between the two planes at the governance layer, and for an external orchestration layer if you need the model's backlog-aware Scheduling Agent.
 
 **Provenance and compliance.** The building blocks exist (Entra ID, audit logs, pipeline records), but a joined-up provenance chain from specification to deployment requires deliberate design. Regulated organisations should plan for this integration work early.
 
@@ -160,6 +162,7 @@ This assessment is based on public product documentation from:
 
 - [Microsoft Copilot Studio](https://www.microsoft.com/en-us/microsoft-365-copilot/microsoft-copilot-studio)
 - [GitHub Copilot coding agent](https://docs.github.com/en/enterprise-cloud@latest/copilot/concepts/agents/coding-agent/about-coding-agent)
+- [GitHub Agent HQ](https://github.blog/news-insights/company-news/welcome-home-agents/)
 - [Azure DevOps documentation](https://learn.microsoft.com/en-us/azure/devops/)
 - [Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/identity/)
 - [Azure Pipelines](https://learn.microsoft.com/en-us/azure/devops/pipelines/)

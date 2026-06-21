@@ -12,6 +12,7 @@ All notable changes to the Agentic Delivery Model will be documented in this fil
 
 - Updated AWS readiness for Kiro replacing Amazon Q Developer as an autonomous, spec-first agent. Moved Agent Execution from Partial to Strong.
 - Updated GitHub readiness for Agent HQ multi-agent mission control and the Control Plane.
+- Refreshed Microsoft readiness for GitHub Agent HQ and Agent 365 general availability.
 - Refreshed Claude Code readiness for Dynamic Workflows (Claude Opus 4.8) and GitLab for Duo Agent Platform general availability.
 - Positioned the model relative to spec-driven development (Section 1).
 - Added AGENTS.md as the emergent cross-tool standard (Appendix C.4) and EARS as an acceptance-criteria alternative (Appendix B.2).

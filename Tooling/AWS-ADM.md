@@ -97,7 +97,7 @@ AWS AppConfig provides feature flag management with targeting rules, rollout sch
 | Requirements and intent design | None | Not available | Requires external platform (Jira, Confluence, GitHub Issues) |
 | Agent execution (coding) | Kiro (successor to Amazon Q Developer) | Strong | Depends on an external repository platform for pull request governance |
 | Agent orchestration | Bedrock Agents (building blocks only) | Limited | No pre-built delivery orchestration. Must build from primitives |
-| Governance and human review | External repository platform (GitHub, GitLab, Bitbucket) | Partial | Repository platform sits outside AWS. Amazon Q code reviews are separate from governance controls |
+| Governance and human review | External repository platform (GitHub, GitLab, Bitbucket) | Partial | Repository platform sits outside AWS. Kiro's pull requests are reviewed and governed on the external repository platform |
 | Identity and compliance | IAM, CloudTrail, Config, Security Hub | Strong | Cross-system provenance chain requires configuration and integration |
 | Release and operations | CodePipeline, CodeBuild, CloudWatch, AppConfig | Strong | No consolidated governance view across repository and pipeline |
 
@@ -117,7 +117,7 @@ A practical AWS-centred ADM pattern:
 10. CloudWatch and X-Ray provide operational feedback and monitoring.
 11. AWS IAM and CloudTrail provide audit trails and compliance evidence.
 
-This pattern accepts that requirements, source control and pull request governance live outside AWS, while Amazon Q provides agent execution and AWS provides infrastructure and operational capabilities.
+This pattern accepts that requirements, source control and pull request governance live outside AWS, while Kiro provides agent execution and AWS provides infrastructure and operational capabilities.
 
 ## 10. Key Decision Points for Adopters
 
