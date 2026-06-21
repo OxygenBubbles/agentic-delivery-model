@@ -1,6 +1,6 @@
 # The Agentic Delivery Model
 
-**Version 1.0, April 2026**
+**Version 1.1, June 2026**
 
 An open methodology for software delivery in the age of autonomous AI agents.
 

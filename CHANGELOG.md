@@ -2,20 +2,7 @@
 
 All notable changes to the Agentic Delivery Model will be documented in this file.
 
-## [1.0.4] - 2026-06-21
-
-### Model refinements (strategic review)
-
-- Added risk-tiered verification to the Verification Engineer role (Section 6.2).
-- Added guidance on raising specification throughput: pattern libraries, specification debt and agent assistance for the Intent Architect (Section 6.7.2).
-- Added three metrics: Specification Defect Rate, Change Failure Rate and Time to Restore (Section 14.1).
-- Noted that agent output is non-deterministic and that provenance, not reproducibility, is the control (Section 13.1).
-- Added a fleet halt control alongside the cost circuit breaker (Appendix C.8).
-- Noted that orchestration is the least uniformly supported part of the model (Section 9).
-- Added brownfield legibility and a measured-pilot protocol to the transition guidance (Section 16).
-- Added talent scarcity as a limitation (Section 19).
-
-## [1.0.3] - 2026-06-21
+## [1.1.0] - 2026-06-21
 
 ### Implementation guides
 
@@ -29,6 +16,17 @@ All notable changes to the Agentic Delivery Model will be documented in this fil
 - Positioned the model relative to spec-driven development (Section 1).
 - Added AGENTS.md as the emergent cross-tool standard (Appendix C.4) and EARS as an acceptance-criteria alternative (Appendix B.2).
 - Strengthened agent security guidance with the OWASP Top 10 for Agentic Applications and recent MCP supply-chain incidents (Appendix C.9).
+
+### Model refinements
+
+- Added risk-tiered verification to the Verification Engineer role (Section 6.2).
+- Added guidance on raising specification throughput: pattern libraries, specification debt and agent assistance for the Intent Architect (Section 6.7.2).
+- Added three metrics: Specification Defect Rate, Change Failure Rate and Time to Restore (Section 14.1).
+- Noted that agent output is non-deterministic and that provenance, not reproducibility, is the control (Section 13.1).
+- Added a fleet halt control alongside the cost circuit breaker (Appendix C.8).
+- Noted that orchestration is the least uniformly supported part of the model (Section 9).
+- Added brownfield legibility and a measured-pilot protocol to the transition guidance (Section 16).
+- Added talent scarcity as a limitation (Section 19).
 
 ## [1.0.1] - 2026-04-13
 

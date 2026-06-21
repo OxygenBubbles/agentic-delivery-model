@@ -1,6 +1,6 @@
 # Adopting the Agentic Delivery Model
 
-**Companion to [The Agentic Delivery Model v1.0](MODEL.md)**
+**Companion to [The Agentic Delivery Model v1.1](MODEL.md)**
 
 This document covers how to adopt, implement and operate the ADM. The core model is defined in [MODEL.md](MODEL.md). This companion provides practical guidance on adoption strategy, team structure, working patterns, transition planning and workforce change.
 

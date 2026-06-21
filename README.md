@@ -19,7 +19,7 @@ The Agentic Delivery Model is a practical, implementable operating model for org
 
 ## Read the model
 
-📄 **[The Agentic Delivery Model v1.0](MODEL.md)** The core methodology: principles, roles, artefacts, governance, cadence and metrics.
+📄 **[The Agentic Delivery Model v1.1](MODEL.md)** The core methodology: principles, roles, artefacts, governance, cadence and metrics.
 
 📘 **[Adopting the ADM](ADOPTION.md)** Practical guidance on adoption strategy, team structure, working patterns, transition planning, workforce change and what the model means in practice.
 
@@ -60,7 +60,7 @@ Supporting documents:
 
 ## Status
 
-Version 1.0. The model will evolve as tooling matures and organisations accumulate experience.
+Version 1.1 (June 2026). The model will evolve as tooling matures and organisations accumulate experience.
 
 ## Contributing
 
