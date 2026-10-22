@@ -39,7 +39,8 @@ Agentic delivery can generate a large volume of technically plausible output. Th
 - Assess test evidence for depth, relevance and realism.
 - Perform exploratory or scenario-based checking where automation is not enough.
 - Identify hidden debt, brittle implementation choices and unexamined edge cases.
-- Approve the merge, reject or request rework with clear reasoning, and never for a change this person produced.
+- Approve and merge only as a code owner for the affected path, on a change they did not produce and whose intent they did not form.
+- Reject the change or request rework with clear reasoning.
 - Escalate structural concerns to the System Steward and business ambiguity to the Product Owner or Intent Architect.
 
 ## Decisions this role owns
@@ -92,7 +93,7 @@ Agentic delivery can generate a large volume of technically plausible output. Th
 
 ## How this post is likely to change
 
-This is a forecast rather than a requirement of the model, and it is paced by the autonomy an organisation raises on evidence under section 5.4, not by dates. As agents implement more of each change, review at step 6, Review, is likely to become the constraint on throughput, supported by review agents that comment at L1, Advise, without approving. The post is likely to concentrate senior judgement as demand for review skill grows. Approval of someone else's work stays with a person at every level of autonomy. A review queue that lengthens while human effort per intent falls is an early signal that the forecast is arriving.
+This is a forecast rather than a requirement of the model, and it is paced by the autonomy an organisation raises on evidence under section 5.4, not by dates. Review is likely to constrain throughput where agent output grows faster than review capacity. The constraint may instead sit in intent formation, validation, clarification or environments, and it can differ between classes of change. The post is likely to concentrate senior judgement as demand for review skill grows. Review agents support the post by commenting at L1, Advise, without approving, and approval of someone else's work stays with a person at every level of autonomy. A growing validation or review queue signals a capacity constraint. It supports the forecast only where comparable work needs less human effort without a worse change failure rate or time to restore. The stop-condition rate is read against changes in scope and the reasons runs stop.
 
 ## Strong background fit
 

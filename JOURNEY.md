@@ -32,7 +32,7 @@ The acceptance examples run as automated tests, the contract-derived integration
 
 ### Step 6, Review
 
-A reviewing agent runs first on each pull request under a profile that uses a different model from the one that implemented the change, commenting at L1 and never approving. On the web pull request it notes that the four state labels are written into the component rather than drawn from the design system's text resources. The engineer corrects this and the pipeline runs the required checks again on the revised commit. A code owner for each context who did not produce the change then reviews on a pull request carrying the intent reference, the impact note, the tests and the recovery position. The standard tier and the gate decisions set the required reviewers: a code owner for each unit, the reviewer the data gate named and, on the web pull request, the reviewer the customer outcome gate named. Each gate reviewer confirms that the change conforms to the recorded decision, the labels matching the approved wording among them. Branch protection enforces those approvals. Each code owner approves on the pull request, recording that the change conforms to the published intent, then merges the unit branch, producing the commit the next step identifies. The decision is the code owner's and the evidence is the review record and the merge.
+A reviewing agent runs first on each pull request under a profile that uses a different model from the one that implemented the change, commenting at L1 and never approving. On the web pull request it notes that the four state labels are written into the component rather than drawn from the design system's text resources. The engineer corrects this and the pipeline runs the required checks again on the revised commit. A code owner for each context who neither formed the intent nor produced the change then reviews on a pull request carrying the intent reference, the impact note, the tests and the recovery position. The standard tier and the gate decisions set the required reviewers: a code owner for each unit, the reviewer the data gate named and, on the web pull request, the reviewer the customer outcome gate named. Each gate reviewer confirms that the change conforms to the recorded decision, the labels matching the approved wording among them. Branch protection enforces those approvals. Each code owner approves on the pull request, recording that the change conforms to the published intent, then merges the unit branch, producing the commit the next step identifies. The decision is the code owner's and the evidence is the review record and the merge.
 
 ### Step 7, Identify
 
@@ -69,7 +69,7 @@ Provenance
 - Run identity: run-7f3a21
 - Base commit: 9c41e7d on main
 - Reviewing agent: review-web 1.2, permitted model list entry 5
-- Reviewer: web application code owner, did not produce the change
+- Reviewer: web application code owner, neither formed the intent nor produced the change
 - Release candidate: portal-web 4.12.0, attested at step 7
 
 Change summary

@@ -24,7 +24,7 @@ The platform notes (GitHub, Microsoft, GitLab, Atlassian, AWS and Google) cover 
 
 ## Reading the readiness tables
 
-Section 2 of each note judges, from the vendor's documented capabilities, the highest autonomy level an agent can hold at each step with the nine controls of 5.3 of [the model](../MODEL.md) in place. The judgement describes what the toolchain can support. The level an adopter actually grants is set under 5.4 of the model, on an evaluation and a recorded period at the level below, and starts at the levels in 3.1.
+Section 2 of each note judges, from the vendor's documented capabilities, the highest autonomy level an agent can hold at each step with the nine controls of 5.3 of [the model](../MODEL.md) in place. The judgement describes what the toolchain can support once the note's configuration closes each gap it records against those controls. A surface with a gap that remains open stays at L1 or below at that step until the gap is closed, as 5.3 requires. The level an adopter actually grants is set under 5.4 of the model, on an evaluation and a recorded period at the level below, and starts at the levels in 3.1.
 
 ## Keeping the notes current
 

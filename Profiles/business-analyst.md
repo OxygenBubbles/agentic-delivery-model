@@ -63,14 +63,14 @@ Verification confirms that the output matches the intent, so a change can pass e
 
 - With requesters and business owners: draws out the need in their own terms.
 - With the product owner: records the decisions on the outcome and its measure.
-- With the test engineer: forms the worked examples together, leaving their validation to the test engineer.
+- With the test engineer: forms the worked examples together, with validation assigned under section 2.3 of the model.
 - With the intent architect: provides the need and the behaviour the shape builds on.
 - With the drafting agent at L2, Draft: corrects drafts that infer the need rather than state it.
 
 ## What this role is not
 
 - It is not the owner of the request decision, the outcome or business priority.
-- It does not validate the acceptance examples. The test engineer does.
+- It does not normally validate the acceptance examples. The test engineer does, subject to the proportionate validation rules in section 2.3 of the model.
 - It is not a writer of requirements documents separate from the intent.
 - It is not a gate owner or the acceptor of the delivered work.
 
@@ -90,7 +90,7 @@ Verification confirms that the output matches the intent, so a change can pass e
 
 ## How this post is likely to change
 
-This is a forecast rather than a requirement of the model, and it is paced by the autonomy an organisation raises on evidence under section 5.4, not by dates. As agents draft more of each intent, the business analyst is likely to spend less time writing requirements and more on validating intents, running the formation passes and testing the need with the business. Senior business analysts are also one likely source of intent architects as demand for that post rises. Validation stays with a person at every level of autonomy, and a lengthening validation queue is one signal that the forecast is arriving.
+This is a forecast rather than a requirement of the model, and it is paced by the autonomy an organisation raises on evidence under section 5.4, not by dates. As agents draft more of each intent, the business analyst is likely to spend less time writing requirements and more on validating intents, running the formation passes and testing the need with the business. Senior business analysts are also one likely source of intent architects as demand for that post rises. Validation stays with a person at every level of autonomy. A growing validation or review queue signals a capacity constraint. It supports the forecast only where comparable work needs less human effort without a worse change failure rate or time to restore. The stop-condition rate is read against changes in scope and the reasons runs stop.
 
 ## Strong background fit
 

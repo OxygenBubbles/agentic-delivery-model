@@ -13,7 +13,7 @@ The toolchain covers the agent's part well: drafting the intent, building, triag
 | The request (2.2) | The work management system. An agent supplies evidence at L1 through a read-only Model Context Protocol (MCP) server |
 | The intent (2.1 and appendix A) and its published version | The working copy on the work item. The published version is a Markdown file merged into the leading context's repository by pull request |
 | The work item | The work management system, read through an MCP server. The pipeline posts the run's drafts and questions |
-| Repository instructions | `CLAUDE.md`, or `AGENTS.md` where no `CLAUDE.md` exists, with an organisation-wide `CLAUDE.md` at the managed policy path |
+| Repository instructions | `CLAUDE.md`, or by default `AGENTS.md` only where no `CLAUDE.md` or `CLAUDE.local.md` exists in the working directory or above it, with a managed `CLAUDE.md` loading alongside either |
 | Path-specific instructions | `.claude/rules/*.md` files with a `paths` frontmatter list, and nested `CLAUDE.md` files |
 | Standards as retrievable context | Skills (`.claude/skills/<name>/SKILL.md`) in a plugin from the organisation's marketplace, or a read-only MCP server |
 | The agent profile (appendix C) | A subagent file in `.claude/agents/` or an Agent SDK definition, beside a versioned record of level, evaluation and approval |
@@ -26,7 +26,7 @@ The toolchain covers the agent's part well: drafting the intent, building, triag
 | Environments and promotion (step 8) | The deployment engine |
 | The authorisation record (step 9) | The service management system and the platform's environment approvals |
 | The release manifest | The pipeline that generates it |
-| The decision trail (8.1) | Pull requests, commits, OpenTelemetry events, each run's session identifier and transcripts kept through the Agent SDK or the Compliance API |
+| The decision trail (8.1) | Pull requests, commits, OpenTelemetry events, each run's session identifier and the transcript the pipeline exports |
 | Telemetry for step 11 | The observability platform, read through a read-only MCP server |
 
 ## 2. Readiness against the eleven steps
@@ -40,26 +40,26 @@ The "Supports up to" column is a judgement, from Anthropic's documented capabili
 | 3 Workspace | Anthropic adds nothing here. The pipeline allocates a runner, container or worktree from a versioned definition | L0 by design | Environment definitions sit on the platform |
 | 4 Build | Claude Code in a pipeline job implements on the unit branch under permission rules, the sandbox and hooks | L2 | Branch protection sits on the platform |
 | 5 Verify | Hooks run fast checks inside a run, and a run triages failing checks | L3 | L3 needs a job token that cannot re-run, cancel or approve workflow runs |
-| 6 Review | Code Review (in research preview) and review workflows comment inline without approving | L1 | A code owner approves. Code Review documents no model choice |
+| 6 Review | A review job on the evaluated reviewing model returns findings that the pipeline posts as inline comments, without approving | L1 | A code owner who neither formed the intent nor produced the change approves |
 | 7 Identify | Anthropic adds nothing here. The CI/CD platform builds and attests the candidate | L0 by design | The attestation binds the run's session identifier |
-| 8 Promote | A run invokes an approved non-production job exposed as one allow-listed tool | L3 | Environment protection sits on the platform |
-| 9 Authorise | A run assembles readiness evidence through read-only tools | L3 | The decision sits with the release authority |
+| 8 Promote | A run requests an approved non-production job through one tool that calls the dispatch service in 4.2 | L3 | Environment protection sits on the platform |
+| 9 Authorise | A run assembles readiness evidence through read-only tools | L3 | The release authority records the go or no-go |
 | 10 Deploy | Anthropic adds nothing here, and no agent job holds a production credential | L0 by design | The deployment engine deploys |
 | 11 Confirm and learn | A run correlates the change with telemetry and drafts the post-incident review | L2 | Acceptance stays at L0 with the product owner |
 
-The toolchain is strongest in central control over the agent: managed settings that no project or user can override, deny-first permission rules, an operating system sandbox and an enforced permitted model list. It is weakest after the merge, where the platform does most of the work. Cloud sessions, routines and pull request auto-fix also act through the user's GitHub connection rather than a run identity.
+The toolchain is strongest in central control over the agent: managed settings that no project or user can override, deny-first permission rules, an operating system sandbox and an enforced permitted model list. It is weakest after the merge, where the platform does most of the work. Cloud sessions, pull request auto-fix and scheduled tasks, formerly routines, also act through a person's connected accounts rather than a run identity.
 
 ## 3. Controls and trust boundaries
 
 | Control | How Anthropic supports it | Gap |
 |---|---|---|
-| 1. Never the sole authoriser | Claude Code holds no approval authority, and Code Review's check run never blocks a merge | Approval rules live on the version control platform |
+| 1. Never authorises | Claude Code holds no approval authority, and the review job has no write tool, so the pipeline posts its findings as comments | Approval rules live on the version control platform |
 | 2. Cannot attest to its own work | Deny rules block edits to pipeline definitions, writes to `.claude` and `.git` are not auto-approved and `allowManagedHooksOnly` ignores hooks a run writes | The Claude GitHub App can re-run workflows, so agent jobs use a token without Actions write |
 | 3. Only the published promotion path | Claude Code has no deployment function, and agent jobs hold no deployment credential | Environment protection on the platform enforces the path |
-| 4. Logged under a run identity | OpenTelemetry events per session record tool decisions, and the Agent SDK `SessionStore` or the Compliance API keeps transcripts | Pipeline runs fall outside the Compliance API |
-| 5. Manual route remains | People run the same `claude` command, and administrators can switch agent features off centrally | The manual deployment route is the platform's |
+| 4. Logged under a run identity | OpenTelemetry events per session record tool decisions, and the pipeline exports each run's transcript to the organisation's store | Pipeline runs fall outside the Compliance API, so the pipeline verifies each export |
+| 5. Manual route remains | People perform each step without an agent through the platform's manual route, keeping its checks, independent approvals and attested-candidate rule | The manual deployment route is the platform's |
 | 6. Hosting meets the data position | Commercial terms exclude training and set 30-day retention, with zero data retention (ZDR) for qualified Enterprise accounts | The Claude API offers US or global inference only. Fable models are unavailable under ZDR unless Anthropic authorises it |
-| 7. Implementing model does not review | The model is pinned per subagent with `model` and per pipeline job with `--model` | Every model is a Claude model, and `fallbackModel` can switch models within a turn |
+| 7. Implementing model does not review | The model is pinned per subagent with `model` and per pipeline job with `--model`, and each run's result names the models it used in `modelUsage` | Content-based fallback re-runs a flagged request on another model unless `availableModels` blocks it |
 | 8. Approved instruction sources only | `--bare` runs load only what the pipeline passes, and `strictPluginOnlyCustomization` blocks user and project sources | Without `--bare`, a `-p` run loads a project's hooks and MCP servers with no trust prompt |
 | 9. No data or secrets out | Managed sandbox domain allow-lists, with `Read` deny rules and credential rules for secret files | The sandbox covers shell commands only and does not inspect encrypted traffic by default. Secret scanning is the pipeline's |
 
@@ -90,21 +90,27 @@ Headless runs start with `--bare`, as Anthropic recommends for scripted and SDK 
 | Gate screener (step 2, every class) | L1 | `--tools` limited to read-only built-in tools, with findings posted by the pipeline |
 | Implementer (step 4, standard-tier application change) | L2 | Pipeline job on the unit branch in `dontAsk` mode with an allow-list, the required sandbox and `Edit` deny rules on pipeline definitions |
 | Check triager (step 5, every class) | L2 | Read access to check output and one comment tool |
-| First reviewer (step 6, every class) | L1 | Separate job on a different pinned model, with read tools and the inline comment tool `mcp__github_inline_comment__create_inline_comment` |
+| First reviewer (step 6, every class) | L1 | Separate job on the evaluated reviewing model with read tools only, returning findings that the pipeline posts as inline comments |
 | Readiness assembler (step 9, every release) | L3 | Pipeline job with read-only servers for the records, writing the manifest draft |
 | Telemetry correlator (step 11, every class) | L2 | Read-only observability server, with the draft review posted by the pipeline |
 
-Retrieval, commenting and execution are authorised separately. Retrieval is the built-in read tools plus named read tools on each MCP server, and `dontAsk` denies every tool left unlisted. Commenting is a single named comment tool. Execution is Edit, Write and Bash, for L2 and L3 profiles only and inside the sandbox. Auto mode uses a classifier rather than a deterministic check, so a profile adopting it covers the classifier in its evaluation. Dynamic workflows run subagents from a script under the same rules, and `disableWorkflows` turns them off. Interactive sessions are a person's tool, and their output enters the flow as that person's pull request.
+Retrieval, commenting and execution are authorised separately. Retrieval is the built-in read tools that `--tools` leaves available plus named read tools on each MCP server. In `dontAsk` mode Claude Code denies only calls that would prompt, so file reads in the working directory, read-only Bash commands, calls matching allow rules and calls a `PreToolUse` hook approves still run. Managed hooks therefore keep to the profile's restrictions. Commenting is a single named comment tool, granted to the check triager, and the reviewer holds none because the pipeline posts its findings. Execution grants Edit and Write under permission rules and Bash under the required sandbox, for L2 and L3 profiles only. Managed settings set `sandbox.autoAllowBashIfSandboxed` to false wherever a shell command needs an explicit allow rule. Because file tools, MCP servers and hooks run outside the sandbox, a container or virtual machine isolates the complete run. Auto mode uses a classifier rather than a deterministic check, so a profile adopting it covers the classifier in its evaluation. Dynamic workflows run subagents from a script under the same rules, and `disableWorkflows` turns them off. Interactive sessions are a person's tool, and their output enters the flow as that person's pull request.
 
-The organisation-level ceiling is a managed settings file in the runner image and a mobile device management (MDM) profile on developer machines. It sets `allowManagedPermissionRulesOnly`, `allowManagedHooksOnly`, `permissions.disableBypassPermissionsMode`, `availableModels` with `enforceAvailableModels` and the sandbox keys. Anthropic describes server-managed settings as a client-side control rather than a security boundary.
+The organisation-level ceiling is a managed settings file in the runner image and a mobile device management (MDM) profile on developer machines. It sets `allowManagedPermissionRulesOnly`, `allowManagedHooksOnly`, `permissions.disableBypassPermissionsMode`, `availableModels` with `enforceAvailableModels` and the sandbox keys. Claude Code skips `enforceAvailableModels`, with a warning only under `--debug`, when no `availableModels` entry resolves to an available model. The pipeline therefore stops a run unless the pinned model is available and the enforcement is active. Anthropic describes server-managed settings as a client-side control rather than a security boundary.
 
-Each pipeline job authenticates through workload identity federation, exchanging its OIDC token for a short-lived token bound to a Claude Console service account. A federation rule per agent profile attributes each run to its profile, and revoking the rule enacts a reduction under 5.4. GitHub operations use a repository-scoped token from a custom GitHub App without Actions write.
+Each pipeline job authenticates through workload identity federation, exchanging its OIDC token for a short-lived token bound to a Claude Console service account. A federation rule per agent profile attributes each run to its profile, and each rule sets a short `token_lifetime_seconds`. GitHub operations use a repository-scoped token from a custom GitHub App without Actions write. An agent-initiated pipeline job starts only through a separate dispatch service that validates the workflow, revision, candidate and non-production target and alone holds the dispatch credential.
+
+A reduction under 5.4 blocks new runs, cancels active jobs, terminates their processes and revokes their execution credentials, with the logs preserved. For Claude tokens, archiving a profile's federation rule stops new exchanges and the short lifetime bounds a token already issued, since Anthropic's federation documentation describes no early revocation. Managed settings and the organisation settings for cloud sessions and scheduled tasks support the halt but do not replace it, and the platform owner tests the route on every enabled surface.
+
+Each run writes its transcript on the runner, and an Agent SDK `SessionStore` mirror is best-effort, dropping a batch that fails its retries while the run continues. The pipeline watches for `mirror_error` and exports each transcript, with barred content removed, to the organisation's store and security monitoring. It verifies the export before deleting the runner or accepting the output, and missing session evidence stops the unit.
 
 ### 4.3 From verification to deployment
 
 Steps 5 to 10 run on the adopter's CI/CD platform and deployment engine, where the pipeline runs the acceptance examples, contract tests and security checks. Hooks can run fast checks inside a run, but a timed-out `PreToolUse` hook does not block a call, so they do not replace the pipeline.
 
-At step 6 a review job on a different pinned model comments inline, or Code Review posts findings with a neutral check run. Review runs take their configuration from the base branch, as the action's security guidance recommends for `pull_request_target` events. A code owner who did not produce the change approves and merges. At step 7 the pipeline attests the release candidate with the run's session identifier, agent profile version and federated identity. The deployment engine owns steps 8 and 10, and the release authority decides at step 9.
+At step 6 a review job on the evaluated reviewing model returns its findings without a comment tool. Before the review starts, the pipeline reads from `modelUsage` every model the implementation run used, fallbacks included, and the review runner's `availableModels` admits only evaluated reviewing models that differ from all of them, blocking other fallback targets. The pipeline checks the review run's own `modelUsage` against the evaluated pairing before it posts the findings as inline comments. A model the evaluation does not cover suspends execution at that step and class. Code Review, generally available on Team and Enterprise since 15 October 2026, chooses its own models, so it stays disabled in this configuration. Review runs take their configuration from the base branch, as the action's security guidance recommends for `pull_request_target` events. A code owner who neither formed the intent nor produced the change approves and merges.
+
+At step 7 the pipeline attests the release candidate with the run's session identifier, agent profile version and federated identity. The deployment engine owns steps 8 and 10. At step 9 the pipeline verifies that the change authorisation is current before it assembles the manifest. A release authority who did not request, build or implement the change then records the separate go or no-go against the exact candidates and recovery positions.
 
 For the deployment approaches of section 4, the implementer drafts code and tests, declared configuration or ordered migrations at L2. The pipeline validates the plan or runs the dry run, and it exercises the intent's recovery position below production.
 
@@ -117,10 +123,10 @@ The example is a standard-tier change adding a filter to an existing search scre
 3. **Workspace.** The publication merge triggers the pipeline to create the unit branch and an ephemeral runner.
 4. **Build.** A job runs `anthropics/claude-code-action@v1` with the implementer's settings and pinned model, and the pipeline opens the pull request with the work item key.
 5. **Verify.** The push triggers the pipeline, and a failing check starts a triage run that comments with a likely cause.
-6. **Review.** A review job on a different Claude model comments, and a code owner who did not produce the change approves and merges.
+6. **Review.** A review job on the evaluated reviewing model returns findings that the pipeline posts as comments, and a code owner who neither formed the intent nor produced the change approves and merges.
 7. **Identify.** The pipeline builds and attests the candidate with the session identifier and profile version.
 8. **Promote.** The deployment engine promotes the candidate through test and pre-production.
-9. **Authorise.** A readiness run assembles the manifest draft, and the release authority authorises the release.
+9. **Authorise.** The pipeline confirms the change authorisation is current, a readiness run assembles the manifest draft and a release authority who did not request, build or implement the change records the go or no-go.
 10. **Deploy.** The deployment engine deploys the authorised candidate with no agent involved.
 11. **Confirm and learn.** Health checks pass, a correlation run reads the telemetry and the product owner accepts the change.
 
@@ -129,23 +135,23 @@ The example is a standard-tier change adding a filter to an existing search scre
 | Gap | Complement |
 |---|---|
 | No work item system, pipeline, attestation, environments or deployment engine | The engineering platform, as the [GitHub](GITHUB-ADM.md), [GitLab](GITLAB-ADM.md) and [Microsoft](MICROSOFT-ADM.md) notes describe. GitLab calls a pull request a merge request, and its Claude Code integration is in beta |
-| Cloud sessions, routines (in research preview) and auto-fix act as the user who started them | Pipeline jobs with federated identities, or self-hosted environments (in public beta) whose signed session tokens internal services verify |
-| The Compliance API covers only Claude Enterprise sign-ins | OpenTelemetry export and an Agent SDK `SessionStore` into the organisation's own store |
+| Cloud sessions and auto-fix use the initiating user's GitHub connection, and scheduled tasks (in research preview) use their owner's connected accounts | Pipeline jobs with federated identities, or self-hosted environments (in public beta) whose signed session tokens internal services verify |
+| The Compliance API covers only Claude Enterprise sign-ins | OpenTelemetry export and the pipeline's verified export of each transcript |
 | Every model is a Claude model | A reviewing model from another provider, such as those in the [OpenAI](OPENAI-ADM.md) and [Google](GOOGLE-ADM.md) notes, where the evaluation shows a Claude pairing sharing errors |
-| The Claude API offers US or global inference only | Bedrock inference profiles, Agent Platform regional endpoints or Foundry hosted on Azure, without cloud sessions, Code Review or server-managed settings |
+| The Claude API offers US or global inference only | Bedrock inference profiles, Agent Platform regional endpoints or Foundry hosted on Azure, without cloud sessions or server-managed settings |
 | The sandbox covers shell commands only and does not run on native Windows | A container or virtual machine around the whole run, with a credential-injecting proxy as its only egress |
 
 ## 6. Decisions for adopters
 
 1. The provider and plan, weighing the data position against the features each offers.
 2. The permitted model list, enforced by `availableModels` and `enforceAvailableModels`, and whether Fable models are permitted given their retention requirement.
-3. The reviewing model paired with each implementing model, and whether evaluated profiles may set `fallbackModel`.
+3. The reviewing model paired with each implementing model, the fallback targets `availableModels` admits and whether evaluated profiles may set `fallbackModel`.
 4. Where published intents live and how a build run receives the published version.
 5. How managed settings reach runners and developer machines, and the locking keys that set the ceiling.
 6. The permission mode per profile: `dontAsk` with an allow-list, or auto mode with its classifier covered by the evaluation.
-7. Whether agent jobs use the Claude GitHub App or a custom app without Actions write, and whether agents may start pipeline jobs.
+7. Whether agents may start pipeline jobs through the dispatch service.
 8. Where headless runs execute: pipeline runners, self-hosted environments or Claude Managed Agents (in beta and not eligible for ZDR).
-9. Whether cloud sessions, routines, auto-fix, Code Review, dynamic workflows and agent teams (experimental) are enabled.
+9. Whether cloud sessions, scheduled tasks, auto-fix, dynamic workflows and agent teams (experimental) are enabled.
 10. Where session records go, for how long and whether telemetry captures prompts and tool details.
 11. The sandbox policy, including `failIfUnavailable`, the managed domain list and the credential rules.
 12. The cost circuit breakers under 5.4, such as `--max-budget-usd` and `--max-turns` on each run.
@@ -173,11 +179,13 @@ The example is a standard-tier change adding a filter to an existing search scre
 - [Claude Code Action security](https://github.com/anthropics/claude-code-action/blob/main/docs/security.md)
 - [Claude Code GitLab CI/CD](https://code.claude.com/docs/en/gitlab-ci-cd.md)
 - [Code Review](https://code.claude.com/docs/en/code-review.md)
+- [Code Review is now generally available](https://claude.com/resources/articles/code-review-is-now-generally-available)
 - [Use Claude Code in the cloud](https://code.claude.com/docs/en/claude-code-on-the-web.md)
 - [Self-hosted environments](https://code.claude.com/docs/en/self-hosted-environments.md)
 - [Verify session identity in self-hosted environments](https://code.claude.com/docs/en/self-hosted-environments-identity.md)
-- [Automate work with routines](https://code.claude.com/docs/en/routines.md)
+- [Automate work with scheduled tasks](https://code.claude.com/docs/en/routines.md)
 - [Workload identity federation](https://platform.claude.com/docs/en/manage-claude/workload-identity-federation)
+- [WIF reference](https://platform.claude.com/docs/en/manage-claude/wif-reference)
 - [Agent SDK overview](https://code.claude.com/docs/en/agent-sdk/overview.md)
 - [Persist sessions to external storage](https://code.claude.com/docs/en/agent-sdk/session-storage.md)
 - [Securely deploying AI agents](https://code.claude.com/docs/en/agent-sdk/secure-deployment.md)

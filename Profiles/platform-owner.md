@@ -38,7 +38,7 @@ The flow runs on the platform at most of its steps: the pipeline allocates works
 - Change shared pipelines and checks under the platform's rules: versioned, tested before rollout, rolled out in stages and pinnable.
 - Own the tool allow-list and hold boundary 3 in section 5.5 of the model, with the security lead approving each addition.
 - Approve every increase in autonomy, including the first delegation above L1, Advise, with the system steward, the security lead or the data owner for a matter in their remit.
-- Revoke the affected identities when a reduction is ordered and correct the agent profile afterwards.
+- When a reduction is ordered, block the new runs it affects, cancel their active jobs, terminate the processes and revoke the execution credentials with the logs preserved, then correct the agent profile.
 - Set the cost circuit breakers: alerts on spend per intent and hard limits that pause execution.
 
 ## Decisions this role owns
@@ -88,7 +88,7 @@ The flow runs on the platform at most of its steps: the pipeline allocates works
 
 ## How this post is likely to change
 
-This is a forecast rather than a requirement of the model, and it is paced by the autonomy an organisation raises on evidence under section 5.4, not by dates. The platform owner and the platform engineers are likely to see the largest new demand of any post, because running agents becomes part of running the platform. Run identities, allow-lists, evaluations, cost and the manual fallback all sit here. As narrow, well-evidenced scopes reach L4, Execute in production within a scope, the evaluations and identities those levels depend on are likely to take more of the work. The approvals stay where the model places them.
+This is a forecast rather than a requirement of the model, and it is paced by the autonomy an organisation raises on evidence under section 5.4, not by dates. Platform work is likely to grow as more steps and classes are delegated, particularly where evaluations, identity controls and recovery arrangements need building or maintaining. Its scale depends on existing platform capability and the number of contexts supported. Run identities, allow-lists, evaluations, cost and the manual fallback sit with the post and the platform engineers, because running agents becomes part of running the platform. The approvals stay where the model places them.
 
 ## Strong background fit
 

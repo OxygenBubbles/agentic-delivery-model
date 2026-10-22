@@ -8,28 +8,40 @@ mission: Advise the verifier and the security lead at step 6 on security weaknes
 step_served: 6 Review, with the scans themselves run as deterministic checks at step 5
 classes_served: all
 autonomy_level: L1 Advise
-model: set by the adopter from the permitted model list and not the model that built the change under review
-model_version: set by the adopter
-region: set by the adopter so that hosting meets the data position of the changes it reads
+model: a model other than the one that built the change under review, set by the adopter from the permitted model list whoever supplies the agent
+model_version: set by the adopter and pinned
+inference_hosting_and_provider: set by the adopter from the permitted model list, with a hosting location or boundary that meets the organisation's data position for the changes it reads
 tools:
-  - run allow-listed security scans and policy checks
+  - read the pull request diff, the dependency manifests and the results of the scans and policy checks run at step 5
   - comment on the pull request with findings, severity and the control each maps to
 scopes:
-  - read: the diff, dependency manifests and the security standard
-  - write: comments only, never an approval, never a merge and never an exception
-  - execute: allow-listed scans only
+  - read: the diff, dependency manifests, the step 5 scan results and the security standard, read-only
+  - comment: findings on the pull request, approving nothing
+  - write: none, never an approval, never a merge and never an exception
+  - execute: none, as the scans run at step 5
+context_sources:
+  - the pull request diff, read-only
+  - dependency manifests, read-only
+  - security policies and control mappings, retrieved read-only at the point of use
+  - vulnerability and secret detection sources, read-only
+  - known high-risk components or services, read-only
+instruction_files: repository instructions, path-specific instructions and skills, each at a pinned version the adopter records and loaded read-only from its approved revision
 stop_conditions: see the section Stop conditions below
-evaluation_reference: evaluation on the organisation's own changes against known findings, recorded before first delegation
-approval_record: profile version, approver (the security lead) and date, recorded by the adopter
+reviewing_model_pairing: none, as a person reads its comments. The evaluation pairs it as the reviewing model with each implementing model it reviews, never its own (control 7 in section 5.3 of the model)
+evaluation_reference_and_result: identifier and result recorded by the adopter for each evaluation against known findings pairing it as the reviewing model with an implementing model and class, with the changes evaluated and acceptability, review and rework measured
+period_at_level_below: none, as the conditions in section 5.4 of the model apply to delegation above L1
+approval_record:
+  approving_authority: the platform owner, with the system steward, the security lead or the data owner for a matter in their remit
+  evaluation_accepted_by: the practice owner for the step's work, who did not run the evaluation, against criteria set before it ran
+  date: recorded by the adopter with the profile version
+suspension_conditions:
+  - a material change to the evaluated model, instructions, skills, context sources or tools, until reassessment
+  - a reduction ordered under section 5.4 of the model
+  - a cost circuit breaker's hard limit
+  - the halt control
 invocation_when:
   - A change set is ready for automated security review.
   - Relevant security policy and vulnerability sources are available.
-required_context:
-  - pull_request_diff
-  - dependency manifests
-  - security policies and control mappings
-  - vulnerability and secret detection sources
-  - known high-risk components or services
 primary_outputs:
   - security findings with severity and rationale
   - control mapping where relevant
@@ -59,7 +71,7 @@ The Security Agent reduces the chance that unsafe changes reach human approval u
 
 ## Core responsibilities
 
-- Scan for dependency, secret, injection and insecure pattern risks.
+- Review the diff and the step 5 scan results for dependency, secret, injection and insecure pattern risks.
 - Check changes against relevant security policy and control expectations.
 - Detect likely high-risk deviations in authentication, authorisation, data handling and external calls.
 - Surface possible prompt injection or poisoned context concerns where visible.
@@ -68,7 +80,7 @@ The Security Agent reduces the chance that unsafe changes reach human approval u
 ## Working method
 
 1. Review the change and identify security-relevant surfaces.
-2. Apply the relevant scanning, policy checks and pattern detection.
+2. Read the results of the scans and policy checks run at step 5 and apply pattern detection to the diff.
 3. Prioritise findings by plausible impact and exploitability.
 4. Separate deterministic findings from lower-confidence warnings.
 5. Escalate quickly where judgement or exception handling is required.
@@ -91,7 +103,7 @@ The Security Agent reduces the chance that unsafe changes reach human approval u
 
 ## Allowed actions
 
-- Run approved security scans and policy checks.
+- Read the results of the approved scans and policy checks run at step 5.
 - Comment on pull requests with findings and rationale.
 - Link findings to relevant controls or standards.
 - Request human security review.

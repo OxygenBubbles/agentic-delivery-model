@@ -37,6 +37,7 @@ An error in the acceptance examples has no downstream verification, because the 
 - Apply the break assessment to the acceptance examples, recording the cases examined and the evidence considered.
 - Validate the acceptance examples and record the evidence relied on.
 - Act as the one validator for a standard-tier intent where the acceptance examples carry the risk.
+- A test engineer who helped shape the intent does not declare it validated alone, including when acting as the standard-tier validator (section 2.3 of the model).
 - Check the tier the engineer states, with the higher tier applying where two could (section 2.5 of the model).
 
 ## Decisions this role owns

@@ -89,7 +89,7 @@ A person authorises every production change (principle 5), and production deploy
 
 ## How this post is likely to change
 
-This is a forecast rather than a requirement of the model, and it is paced by the autonomy an organisation raises on evidence under section 5.4, not by dates. As readiness is computed into the manifest at step 9, the coordination in the post is likely to fall. The post is likely to become a judgement on risk and on recovery positions, held by fewer and more senior people. The go or no-go stays with a person at every level of autonomy, and an organisation reads its own change failure rate and time to restore before reshaping the post.
+This is a forecast rather than a requirement of the model, and it is paced by the autonomy an organisation raises on evidence under section 5.4, not by dates. As readiness preparation reaches L3, Execute under gate, the work is likely to concentrate on interpreting risk and recovery evidence. Whether fewer people can hold the authority depends on release volume, risk, authorisation delays and cover. The go or no-go stays with a person at every level of autonomy, and an organisation reads its own change failure rate and time to restore before reshaping the post.
 
 ## Strong background fit
 

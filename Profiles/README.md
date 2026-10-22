@@ -1,6 +1,6 @@
 # ADM Profiles
 
-This folder contains example profiles for the posts that hold the accountabilities named in section 7 of the Agentic Delivery Model and a starter set of agent profiles in the form set out in Appendix C of the model.
+This folder contains example profiles for the posts that hold the accountabilities in section 7 of the Agentic Delivery Model and a starter set of agent profiles. The profiles for posts cover every accountability except the accountable executive. Each agent profile carries every field of the agent profile template in appendix C of the model and follows the permissions in section 5.2 and the approvals in section 5.4.
 
 These profiles are examples, not a mandated standard. They are written to be adapted. Organisations should tailor them to their domain, control model, regulatory context, tooling estate and cost constraints.
 
@@ -8,7 +8,7 @@ These profiles are examples, not a mandated standard. They are written to be ada
 
 The profiles for people are operating definitions of a post that holds an accountability, not HR job descriptions. They describe why the accountability exists, what outcomes it covers, what decisions it owns, at what steps of the flow it acts, how it works with adjacent accountabilities and how it fails when the operating model is weak.
 
-The agent profiles are structured Markdown files with YAML front matter followed by operating instructions. They are written to be readable by people and adaptable into agent configuration (section 5.2 of the model). The front matter records the step and class of change served, the model and version, the region, the autonomy level, the tools and scopes, the stop conditions, the evaluation reference and the approval record. The body gives the agent's purpose, required context, decision rules and handoff rules.
+The agent profiles are structured Markdown files with YAML front matter followed by operating instructions. They are written to be readable by people and adaptable into agent configuration (section 5.2 of the model). The front matter carries each field of appendix C under a key named after the field, from the step and class of change served to the suspension conditions. The platform owner completes each value marked as set or recorded by the adopter, and a completed profile grants nothing until it is approved and released under section 5.4 of the model. The body gives the agent's purpose, required context, decision rules and handoff rules.
 
 ## Design principles
 
@@ -37,13 +37,21 @@ The model keeps the version 1.1 titles as available names for the posts that hol
 
 ## Agent profiles
 
-This is a starter set. The model has no fixed roster of agents. An adopter writes one profile for each step and class of change it delegates, and the examples here cover the steps most often delegated first. The names are kept from version 1.1 for continuity.
+This is a starter set, as the model has no fixed roster of agents. An adopter writes one profile for each step and class of change it delegates, and the examples here cover the steps most often delegated first. The names are kept from version 1.1 for continuity.
 
 - [Requirements Agent](requirements-agent.md), drafting the intent at step 1, Intent, at L2
-- [Implementation Agent](implementation-agent.md), building in a workspace at step 4, Build, at L2, with pipeline jobs at L3 under a gate
+- [Implementation Agent](implementation-agent.md), building in a workspace at step 4, Build, at L2
 - [Review Agent](review-agent.md), advising the verifier at step 6, Review, at L1
 - [Design Agent](design-agent.md), advising on user-facing changes at step 6 at L1
 - [Security Agent](security-agent.md), advising on security findings at step 6 at L1, with the scans themselves run as deterministic checks at step 5
 - [Documentation Agent](documentation-agent.md), updating documentation within the change at step 4 at L2
 
-No profile yet serves the readiness run at step 9, Authorise (L3, with the decision a person's) or the telemetry correlation at step 11, Confirm and learn (L2, with acceptance at L0).
+No starter profile yet serves the steps below, where section 3.1 of the model gives an agent a starting level above L0.
+
+| Step | Starting level under section 3.1 of the model |
+|---|---|
+| 2, Gate | L1, identifying the triggers met and assembling the material |
+| 5, Verify | L2 to triage a failing check and L3 to run the pipeline and assemble the evidence |
+| 8, Promote | L3, preparing and invoking the approved job in non-production |
+| 9, Authorise | L3, computing readiness and assembling the manifest, with the decision a person's |
+| 11, Confirm and learn | L2, correlating change with telemetry and drafting the post-incident review, with acceptance at L0 |

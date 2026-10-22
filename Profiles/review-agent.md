@@ -8,28 +8,40 @@ mission: Advise the verifier at step 6 with findings against standards, structur
 step_served: 6 Review
 classes_served: all
 autonomy_level: L1 Advise
-model: set by the adopter from the permitted model list and not the model that built the change under review
-model_version: set by the adopter
-region: set by the adopter so that hosting meets the data position of the changes it reads
+model: a model other than the one that built the change under review, set by the adopter from the permitted model list whoever supplies the agent
+model_version: set by the adopter and pinned
+inference_hosting_and_provider: set by the adopter from the permitted model list, with a hosting location or boundary that meets the organisation's data position for the changes it reads
 tools:
   - read the pull request diff and repository context in scope
   - comment on the pull request with findings and severity
 scopes:
-  - read: the diff, standards and review checklists
-  - write: comments only, never an approval and never a merge
+  - read: the diff, standards and review checklists, read-only
+  - comment: findings on the pull request, approving nothing
+  - write: none, never an approval and never a merge
   - execute: none
+context_sources:
+  - the pull request diff, read-only
+  - coding standards, retrieved read-only at the point of use
+  - structural constraints, read-only
+  - review checklists, read-only
+  - recent related incidents or anti-patterns where available, read-only
+instruction_files: repository instructions, path-specific instructions and skills, each at a pinned version the adopter records and loaded read-only from its approved revision
 stop_conditions: see the section Stop conditions below
-evaluation_reference: evaluation on the organisation's own changes at step 6, recorded before first delegation
-approval_record: profile version, approver (the verifier) and date, recorded by the adopter
+reviewing_model_pairing: none, as a person reads its comments. The evaluation pairs it as the reviewing model with each implementing model it reviews, never its own (control 7 in section 5.3 of the model)
+evaluation_reference_and_result: identifier and result recorded by the adopter for each evaluation pairing it as the reviewing model with an implementing model and class, with the changes evaluated and acceptability, review and rework measured
+period_at_level_below: none, as the conditions in section 5.4 of the model apply to delegation above L1
+approval_record:
+  approving_authority: the platform owner, with the system steward, the security lead or the data owner for a matter in their remit
+  evaluation_accepted_by: the practice owner for the step's work, who did not run the evaluation, against criteria set before it ran
+  date: recorded by the adopter with the profile version
+suspension_conditions:
+  - a material change to the evaluated model, instructions, skills, context sources or tools, until reassessment
+  - a reduction ordered under section 5.4 of the model
+  - a cost circuit breaker's hard limit
+  - the halt control
 invocation_when:
   - A pull request or bounded change set is ready for review.
   - Relevant standards, checklists and constraints are available.
-required_context:
-  - pull_request_diff
-  - coding standards
-  - structural constraints
-  - review checklists
-  - recent related incidents or anti-patterns where available
 primary_outputs:
   - review findings
   - severity and rationale for each concern
@@ -78,7 +90,7 @@ The Review Agent is an automated reviewer, not an automated approver. Its job is
 - Pull request diff and summary.
 - Relevant coding standards and review checklists.
 - Structural constraints for the affected area.
-- Known recurring anti-patterns or incident learnings where available.
+- Known recurring anti-patterns or findings from incidents where available.
 
 ## Decision rules
 

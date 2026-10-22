@@ -4,7 +4,7 @@
 
 This note covers the Atlassian Cloud products that can carry the flow in [MODEL.md](../MODEL.md): Jira, Confluence, Rovo, Bitbucket Cloud, Jira Service Management and Atlassian Guard. Jira holds the request and the intent's working copy and assigns work items to coding agents, including its own Jira Coding Agent, formerly Rovo Dev in Jira. Bitbucket Cloud holds the repository, Bitbucket Pipelines and the deployment environments, and Jira Service Management holds the change record. Rovo Studio builds the Rovo agents that draft and advise, and the Atlassian Rovo MCP Server, a hosted Model Context Protocol (MCP) server generally available since February 2026, opens Jira, Confluence and Bitbucket to other agents. Rovo Dev is reaching end of life as a standalone product, and Code Reviewer, its pull request review agent, is moving into Jira subscriptions.
 
-The toolchain covers steps 1, 2, 6 and 9 well, because the work item, the pull request and the change record are linked by the work item key. An adopter adds attestation at step 7, Identify. Observability at step 11, Confirm and learn, comes from another product. Agent work outside Bitbucket Pipelines also needs a per-run identity. Many Atlassian adopters keep code in GitHub or GitLab. The Jira Coding Agent and Code Reviewer support Bitbucket Cloud and GitHub, so a GitHub adopter runs steps 3 to 10 as [GitHub](GITHUB-ADM.md) describes. Neither currently supports GitLab, where a pull request is called a merge request, and [GitLab](GITLAB-ADM.md) covers it. The third-party agents Jira assigns are covered in [Anthropic](ANTHROPIC-ADM.md), [OpenAI](OPENAI-ADM.md) and [GitHub](GITHUB-ADM.md).
+The toolchain covers steps 1, 2, 6 and 9 well, because the work item, the pull request and the change record are linked by the work item key. An adopter adds attestation at step 7, Identify. Observability at step 11, Confirm and learn, comes from another product. Agent work outside Bitbucket Pipelines also needs a per-run identity. Many Atlassian adopters keep code in GitHub or GitLab. The Jira Coding Agent and Code Reviewer support Bitbucket Cloud and GitHub, so a GitHub adopter runs steps 3 to 10 as [GitHub](GITHUB-ADM.md) describes. Neither currently supports GitLab, and [GitLab](GITLAB-ADM.md) covers it. The third-party agents Jira assigns are covered in [Anthropic](ANTHROPIC-ADM.md), [OpenAI](OPENAI-ADM.md) and [GitHub](GITHUB-ADM.md).
 
 ## 1. Where the model's elements live
 
@@ -19,7 +19,7 @@ The toolchain covers steps 1, 2, 6 and 9 well, because the work item, the pull r
 | The agent profile (appendix C) | A versioned record in the platform repository. No Atlassian product holds its evaluation and approval |
 | The context profile (appendix B) | A versioned record in the platform repository, implemented by `bitbucket-pipelines.yml` and the deployment environments |
 | The tool allow-list | Rovo MCP Server permission groups and Bitbucket workspace switches at organisation level, with Rovo Dev `toolPermissions` and step scopes at run level |
-| The run identity | The short-lived OAuth token issued to each Agentic Pipelines step. Other surfaces act as a person or under an admin-issued API key, and the Jira Coding Agent's identity is not documented |
+| The run identity | The short-lived OAuth token issued to each Agentic Pipelines step. Other surfaces act as a person or under an admin-issued API key, and the Jira Coding Agent establishes no separately scoped per-run identity |
 | The workspace (step 3) | A branch per unit, worked in an Agentic Pipelines step, a Jira Coding Agent cloud sandbox or a Rovo Dev CLI worktree |
 | The pipeline and deterministic checks (step 5) | Bitbucket Pipelines, with merge checks enforced on Premium and required custom merge checks built on Forge |
 | The release candidate and its attestation (step 7) | An image in Bitbucket Packages, a package in an external registry or a release commit, attested by a signing tool in the pipeline |
@@ -38,12 +38,12 @@ The toolchain covers steps 1, 2, 6 and 9 well, because the work item, the pull r
 | 1 Intent | Work item fields, forms and workflows, a Rovo Studio agent run by automation and Jira Planner in early access | L2 | Publishing to the repository needs a platform pipeline |
 | 2 Gate (where triggered) | A workflow status per gate and a Rovo agent assembling the material | L1 | The decision index sits in the standards repository |
 | 3 Workspace | Branches, Agentic Pipelines steps, the Jira Coding Agent's cloud sandbox and Rovo Dev CLI worktrees | L0 by design | Environment definitions and masked refresh are adopter pipeline jobs |
-| 4 Build | The Jira Coding Agent, Agentic Pipelines in beta running Rovo Dev, Claude or Codex, the Rovo Dev CLI and Claude Code, Cursor or GitHub Copilot assigned from Jira | L2 | Only Agentic Pipelines issues a per-run identity |
+| 4 Build | The Jira Coding Agent, Agentic Pipelines in beta running Rovo Dev, Claude or Codex, the Rovo Dev CLI and Claude Code, Cursor or GitHub Copilot assigned from Jira | L2 | Only Agentic Pipelines issues a per-run identity, so the L2 pattern uses it |
 | 5 Verify | Pipelines, enforced merge checks, required custom merge checks and Rovo Dev's failed-step analysis in beta | L3 | A branch can edit its pipeline file, so mandatory checks sit in required custom merge checks |
-| 6 Review | Pull requests, default reviewers, approval counts and Code Reviewer comments against the linked work item | L1 | No path-based code owners were found, and Code Reviewer's model is undisclosed |
+| 6 Review | Pull requests, default reviewers, code owners in `.bitbucket/CODEOWNERS`, approval counts and Code Reviewer comments against the linked work item | L1 | Code owner approval needs a required custom merge check, and Code Reviewer's model is undisclosed |
 | 7 Identify | Pipelines builds the merged commit, and Bitbucket Packages stores images | L0 by design | No native attestation or software bill of materials (SBOM) was found, and artefacts expire after 14 days |
 | 8 Promote | Deployment environments and variables, Premium deployment permissions and OpenID Connect (OIDC) | L3 | Deployment permissions name users and groups, so the agent needs a nameable identity |
-| 9 Authorise | Change requests, deployment gating on Premium and Enterprise and advisory artificial intelligence (AI) risk assessment | L3 | Gating for Bitbucket Pipelines needs confirming, and the adopter generates the manifest |
+| 9 Authorise | Change requests, deployment gating on Premium and Enterprise and advisory artificial intelligence (AI) risk assessment | L3 | The platform owner tests gating on the production step, and the adopter generates the manifest |
 | 10 Deploy | A production step that runs once gating allows it, under deployment permissions | L0 by design | The attested candidate deploys without a rebuild |
 | 11 Confirm and learn | Jira Service Management incidents, Rovo agents drafting reviews and acceptance on the work item | L2 | Telemetry correlation needs an observability product |
 
@@ -53,13 +53,13 @@ Atlassian is strongest at the linked records people work in: the work item, the 
 
 | Control | How Atlassian supports it | Gap |
 |---|---|---|
-| 1. Never the sole authoriser | Enforced merge checks require approvals, and Code Reviewer only comments | Approval counts cannot tell an agent acting as a person from that person, so agents hold no approve or merge tool |
+| 1. Never authorises | Enforced merge checks require approvals, and Code Reviewer only comments | Approval counts cannot tell an agent acting as a person from that person, so agents hold no approve or merge tool |
 | 2. Cannot attest to its own work | Pipelines records build results, and enforced merge checks block a merge on failed builds | The pipeline file sits in the branch, so required custom merge checks carry the checks |
 | 3. Published promotion path only | Deployment permissions and gating define the route, with OIDC credentials per step | Production variables reach any step naming the environment, so no agent step names production |
 | 4. Logged under a run identity | Agentic step logs show tool calls, the Rovo Dev CLI logs locally and Guard exports audit logs | The Bitbucket audit log omits approvals, merges and pipeline runs, so records go to the adopter's store |
 | 5. Manual route | Agent surfaces are optional, with workspace switches and an organisation switch to deactivate AI | The context profile records each manual route |
 | 6. Hosting meets the data position | Rovo routes to OpenAI, Anthropic, Google and open models under zero data retention terms, and eligible Enterprise customers can request Atlassian-hosted models | Atlassian's guidance states that the Jira Coding Agent does not yet meet data residency |
-| 7. Implementer does not review | `modelId` and the Agentic Pipelines provider pin the implementing model | Code Reviewer and the Jira Coding Agent do not disclose their model, so a pinned reviewer on another provider evidences the pairing |
+| 7. Implementer does not review | `modelId` and the Agentic Pipelines provider pin the implementing and reviewing models | Code Reviewer and the Jira Coding Agent do not disclose their model, so neither enters the recorded pairing |
 | 8. Approved sources only | Instruction files and agent definitions sit in the repository, and Agentic Pipelines denies new tools until they are allow-listed | The Jira Coding Agent starts from the work item, so it is pointed at the published intent |
 | 9. No data or secrets out | Secured variables, a third-party secrets provider and step tokens that expire with the step | The Rovo Dev provider needs an Atlassian application programming interface (API) token, and the adopter scans output for secrets |
 
@@ -78,7 +78,7 @@ Atlassian is strongest at the linked records people work in: the work item, the 
 
 **Request and intent.** An intake space's form collects the request record, and the product owner records the decision as a transition. The intent's work item type carries a field per element of 2.1 and the statuses of appendix A. An automation rule runs the drafting agent for each formation pass and writes the draft to the work item, so the agent only reads. Jira Planner, in early access, drafts a specification in Confluence that feeds the shape pass and is not a second intent.
 
-**Publication.** When the intent architect moves the work item to published, a custom pipeline writes the intent file to the leading context's repository and opens a pull request for the code owners. No agent takes part, and the published status closes the working copy to edits.
+**Publication.** After the intent architect authorises publication, a custom pipeline writes the intent file to the leading context's repository and opens a pull request for the code owners. The work item becomes published only after code owner approval and merge. No agent takes part, and the published status closes the working copy to edits.
 
 **Standards and context.** Each standard has one source in version control under principle 7, read there by the pipeline and retrieved by agents. Confluence pages explain each standard and link to it. Agents read Jira and Confluence through the Rovo MCP Server's read and search groups.
 
@@ -90,24 +90,26 @@ Each row is one agent profile, at the model's starting level for its step and cl
 |---|---|---|---|
 | 1, every class | Rovo Studio agent run by automation | L2 | The rule writes the draft, and the agent only reads |
 | 2, gate triggers | Rovo Studio agent | L1 | The rule posts its findings as a comment |
-| 4, approved classes | Agentic step on a pinned provider, or the Jira Coding Agent | L2 | Repository and pull request write scopes, branch restrictions and draft pull requests |
+| 4, approved classes | Agentic step on a pinned provider and model | L2 | Repository and pull request write scopes, read-only work item access, branch restrictions and draft pull requests |
 | 5, failed checks | Rovo Dev failed-step analysis | L2 | It proposes fixes, and only the pipeline runs checks |
-| 6, every class | Code Reviewer, or an agentic step on another provider | L1 | Read scope, with no approve or merge tool |
+| 6, every class | Agentic step on a pinned model other than the implementer's | L1 | Read scope, with no approve or merge tool |
 | 8, non-production promotion | Agentic step invoking the approved job | L3 | Deployment permissions admit it below production only |
 | 9, readiness | Agentic step assembling the manifest | L3 | Gating holds production until the change request allows it |
 | 11, telemetry and reviews | Rovo agent | L2 | It drafts the post-incident review, and a person publishes it |
 
+The Jira Coding Agent stays outside the L2 pattern until it has a per-run identity, read-only work item access and an identified model. The platform owner keeps Code Reviewer off while its model cannot be identified.
+
 The three permissions of 5.2 are separate grants. Retrieval is a step's implicit read access and the read and search groups of the Rovo MCP Server. Execution is the repository and pull request write scopes at L2, Draft, with a pipeline write scope added at L3, Execute under gate. Bitbucket documents the pull request read scope as sufficient to comment, so tool permissions keep a retrieval-only step from commenting.
 
-Organisation-level settings hold the ceiling under principle 8: the Rovo MCP Server settings in Atlassian Administration and the Bitbucket workspace switches for Rovo Dev, Agentic Pipelines and each provider. No agent identity receives the `write_bitbucket` group, because it includes tools that approve and merge pull requests as the connected person. Agent configuration changes only by pull request. Rovo credit spending limits act as the cost circuit breakers of 5.4, and the halt control combines the organisation's AI switch with the workspace switches.
+Organisation-level settings hold the ceiling under principle 8: the Rovo MCP Server settings in Atlassian Administration and the Bitbucket workspace switches for Rovo Dev, Agentic Pipelines and each provider. A branch can change its own step scopes and agent configuration before review. A workspace-level Dynamic Pipelines provider, a Forge app the platform owner controls, therefore applies the approved scopes, models, tools and production exclusions to each pipeline at runtime. No agent identity receives the `write_bitbucket` group, because it includes tools that approve and merge pull requests as the connected person. Rovo credit spending limits act as the cost circuit breakers of 5.4. A reduction stops the affected agentic steps, whose tokens expire with the step, revokes any API token they use and removes those steps from new runs through the Dynamic Pipelines provider, with step logs preserved. The halt control does this for every agent and turns off the organisation's AI switch and the workspace switches.
 
 ### 4.3 From verification to deployment
 
-**Verify and identify.** Every push runs the Pipelines definition, and enforced merge checks block the merge until builds pass, approvals are present and tasks are resolved. An agent at L2 analyses failed steps, and Atlassian advises against using an agent's result as a release gate. After the merge the pipeline builds the candidate once, generates its SBOM, signs it and stores it in a registry, because Pipelines artefacts expire after 14 days.
+**Verify and identify.** Every push runs the Pipelines definition, and enforced merge checks block the merge until builds pass, approvals are present and tasks are resolved. The Premium setting that resets approvals when the source branch is modified is on, and the required approval comes from a code owner who neither formed the intent nor produced the change. An agent at L2 analyses failed steps, and Atlassian advises against using an agent's result as a release gate. After the merge a trusted pipeline checks the exact merged revision, builds the candidate once and signs an attestation binding its digest to the check results, approvals, standards versions, published intent version, agent profile version and run identity. The candidate, its attestation and its SBOM go to a registry, because Pipelines artefacts expire after 14 days.
 
 **Promote.** Each deployment step names its environment with the `deployment` key and receives that environment's variables at deployment. OIDC replaces stored cloud keys, and Bitbucket runs one deployment at a time per environment.
 
-**Authorise and deploy.** Deployment tracking in Jira Service Management raises a change request when a deployment starts, and gating holds the deployment until the request allows it. The change authority and the release authority record separate approvals against the attached manifest. Production deployment permissions name only the release authority's group. Atlassian's gating guides name GitHub, GitLab and Jenkins, so a Bitbucket Pipelines adopter confirms the integration first.
+**Authorise and deploy.** Deployment tracking in Jira Service Management raises a change request when a deployment starts, and gating holds the deployment until the request allows it. The readiness step assembles and attaches the manifest only once the change authorisation is current. The release authority, who did not request, build or implement the change, then records the separate go or no-go on the exact candidates and recovery positions. Production deployment permissions name only the release authority's group. The production step deploys only after verifying the attestation against the trusted signer and the manifest's candidate. The platform owner tests that gating holds this step before production relies on it.
 
 **Deployment approaches.** An artefact-based context redeploys the previous registry image, tested below production, as its proven rollback. A state-based context keeps its plan as an artefact and applies it through one adapter. A migration-based context records its dry run and reconciliation in the manifest.
 
@@ -120,10 +122,10 @@ A standard-tier change adds a filter to an existing report on Bitbucket Cloud.
 3. **Workspace.** The pipeline allocates the unit's branch and workspace.
 4. **Build.** An agentic step on a pinned provider implements the published intent and opens a draft pull request with the work item key.
 5. **Verify.** Pipelines runs the checks, and the required merge checks report on the pull request.
-6. **Review.** A review agent on another provider comments, and a code owner who did not produce the change approves and merges.
+6. **Review.** A review agent on a different pinned model comments, and a code owner who neither formed the intent nor produced the change approves and merges.
 7. **Identify.** The pipeline builds, signs and stores the candidate with its SBOM.
 8. **Promote.** The promotion agent invokes the approved job for Test and Staging, Bitbucket's default non-production environments.
-9. **Authorise.** The readiness step attaches the manifest, and the change authority and the release authority approve.
+9. **Authorise.** With the change authorisation current, the readiness step attaches the manifest and an independent release authority approves the release.
 10. **Deploy.** Gating allows the production step, and the authorised candidate deploys.
 11. **Confirm and learn.** Health checks pass, and the product owner accepts the work on the work item.
 
@@ -133,8 +135,8 @@ A standard-tier change adds a filter to an existing report on Bitbucket Cloud.
 |---|---|
 | Attestation and SBOM | A signing and SBOM tool in the pipeline and a registry for the signed candidate |
 | Per-run identity outside Agentic Pipelines | Agentic Pipelines for headless runs, or the Rovo Dev CLI's non-interactive mode under a short-lived identity elsewhere |
-| Path-based code owners | A required custom merge check built on Forge |
-| Evidence of model separation | Pinned models, with the reviewer on a different provider |
+| Enforced code owner approval | `.bitbucket/CODEOWNERS` with a required custom merge check built on Forge |
+| Evidence of model separation | Different pinned models in each profile, excluding undisclosed models |
 | The release manifest | A pipeline step that assembles it and attaches it to the change request |
 | Telemetry at step 11 | An observability product, and DX for delivery measures where used |
 | Retention | Export of audit logs, step logs and session records to the adopter's store |
@@ -169,6 +171,8 @@ A standard-tier change adds a filter to an existing report on Bitbucket Cloud.
 - [Authentication and security for Agentic Pipelines](https://support.atlassian.com/bitbucket-cloud/docs/authentication-and-security-for-agentic-pipelines/)
 - [Work with Rovo Dev in Bitbucket Pipelines](https://support.atlassian.com/rovo/docs/work-with-rovo-dev-in-bitbucket-pipelines/)
 - [Suggest or require checks before a merge](https://support.atlassian.com/bitbucket-cloud/docs/suggest-or-require-checks-before-a-merge/)
+- [Set up and use code owners](https://support.atlassian.com/bitbucket-cloud/docs/set-up-and-use-code-owners/)
+- [Bitbucket dynamic pipelines provider](https://developer.atlassian.com/platform/forge/manifest-reference/modules/bitbucket-dynamic-pipelines-provider/)
 - [Expanding Custom Merge Checks to the Workspace and Project level](https://www.atlassian.com/blog/bitbucket/expanding-custom-merge-checks-to-the-workspace-and-project-level)
 - [Set up and monitor deployments](https://support.atlassian.com/bitbucket-cloud/docs/view-your-deployments-dashboard/)
 - [Set custom deployment permissions for your environments](https://support.atlassian.com/bitbucket-cloud/docs/set-custom-deployment-permissions-for-your-environments/)

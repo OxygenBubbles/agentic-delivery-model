@@ -42,6 +42,7 @@ Without stewardship, agentic delivery can create fast local optimisation and slo
 - Commission refactoring work where the long-term shape of the system is being damaged.
 - Review recurring implementation and verification findings for wider patterns.
 - Partner with security leadership on the agent threat model and control design.
+- Approve, with the platform owner, every increase in autonomy on a matter in its remit, including the first delegation above L1, Advise (section 5.4 of the model).
 - Hold design coherence unless a Design Steward is appointed.
 
 ## Decisions this role owns

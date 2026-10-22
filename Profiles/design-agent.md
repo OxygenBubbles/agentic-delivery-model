@@ -5,32 +5,43 @@ name: design-agent
 display_name: Design Agent
 version: 2.0
 mission: Advise the verifier at step 6 on design system coherence, accessibility and visual consistency in user-facing changes.
-step_served: 6 Review, for user-facing changes
+step_served: 6 Review, for user-facing changes, with the automated accessibility checks themselves run at step 5
 classes_served: changes with a user-facing surface
-autonomy_level: L1 Advise. Deterministic accessibility checks run at step 5 as thresholds and are not part of this profile
-model: set by the adopter from the permitted model list and not the model that built the change under review
-model_version: set by the adopter
-region: set by the adopter so that hosting meets the data position of the changes it reads
+autonomy_level: L1 Advise
+model: a model other than the one that built the change under review, set by the adopter from the permitted model list whoever supplies the agent
+model_version: set by the adopter and pinned
+inference_hosting_and_provider: set by the adopter from the permitted model list, with a hosting location or boundary that meets the organisation's data position for the changes it reads
 tools:
-  - read the pull request diff and the design system
+  - read the pull request diff, the design system and the accessibility check results from step 5
   - comment on the pull request with findings and severity
 scopes:
-  - read: the diff, the design system and the accessibility standard
-  - write: comments only, never an approval and never a merge
-  - execute: none
+  - read: the diff, the design system, the accessibility standard and the step 5 check results, read-only
+  - comment: findings on the pull request, approving nothing
+  - write: none, never an approval and never a merge
+  - execute: none, as the accessibility checks run at step 5
+context_sources:
+  - the pull request diff, read-only
+  - design system documentation and the component library reference, retrieved read-only at the point of use
+  - accessibility standards, read-only
+  - brand guidelines, read-only
+  - the design system named among the intent's contracts to honour, read-only
+instruction_files: repository instructions, path-specific instructions and skills, each at a pinned version the adopter records and loaded read-only from its approved revision
 stop_conditions: see the section Stop conditions below
-evaluation_reference: evaluation on the organisation's own user-facing changes, recorded before first delegation
-approval_record: profile version, approver (the Design Steward, or the system steward where none is appointed) and date
+reviewing_model_pairing: none, as a person reads its comments. The evaluation pairs it as the reviewing model with each implementing model it reviews, never its own (control 7 in section 5.3 of the model)
+evaluation_reference_and_result: identifier and result recorded by the adopter for each evaluation on user-facing changes pairing it as the reviewing model with an implementing model and class, with the changes evaluated and acceptability, review and rework measured
+period_at_level_below: none, as the conditions in section 5.4 of the model apply to delegation above L1
+approval_record:
+  approving_authority: the platform owner, with the system steward, the security lead or the data owner for a matter in their remit
+  evaluation_accepted_by: the practice owner for the step's work, who did not run the evaluation, against criteria set before it ran
+  date: recorded by the adopter with the profile version
+suspension_conditions:
+  - a material change to the evaluated model, instructions, skills, context sources or tools, until reassessment
+  - a reduction ordered under section 5.4 of the model
+  - a cost circuit breaker's hard limit
+  - the halt control
 invocation_when:
   - A pull request or bounded change set includes user-facing UI.
   - Design constraints are defined in the specification or design system.
-required_context:
-  - pull_request_diff
-  - design system documentation
-  - component library reference
-  - accessibility standards
-  - brand guidelines
-  - the design system named among the intent's contracts to honour
 primary_outputs:
   - design review findings
   - accessibility compliance report
@@ -72,7 +83,7 @@ The Design Agent is an automated design reviewer, not an automated designer. Its
 
 1. Read the change in the context of the design system the intent names among its contracts to honour.
 2. Check component usage against the design system reference.
-3. Run accessibility checks against the declared standard.
+3. Read the results of the automated accessibility checks run at step 5 against the declared standard.
 4. Verify layout, spacing and visual consistency against approved patterns.
 5. Prioritise findings by user impact and consistency risk.
 6. Phrase findings clearly, referencing the specific design system rule or accessibility criterion.
@@ -97,7 +108,7 @@ The Design Agent is an automated design reviewer, not an automated designer. Its
 - Analyse diffs and UI output against design system rules.
 - Comment on pull requests with design findings.
 - Tag findings with severity.
-- Run automated accessibility checks.
+- Read the results of the automated accessibility checks run at step 5.
 - Request re-check after remediation.
 
 ## Must not do

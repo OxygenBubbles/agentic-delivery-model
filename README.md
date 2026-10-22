@@ -23,8 +23,8 @@ The Agentic Delivery Model is a practical, implementable operating model for org
 
 Supporting documents:
 
-- [ADM Profiles](Profiles/README.md). Example profiles for the posts that hold each of the model's accountabilities, each with a forecast of how the post is likely to change, and a starter set of agent profiles.
-- [Tooling notes](Tooling/README.md). How the model runs on GitHub, Microsoft, GitLab, AWS, Atlassian, Anthropic, OpenAI, Google and Factory, with one note per toolchain checked against the vendor's documentation in October 2026.
+- [ADM Profiles](Profiles/README.md). The folder contains example profiles for posts that hold selected accountabilities in the model, each with a forecast of how the post is likely to change, and a starter set of agent profiles.
+- [Tooling notes](Tooling/README.md). The notes describe how the model runs on GitHub, Microsoft, GitLab, AWS, Atlassian, Anthropic, OpenAI, Google and Factory, with one note per toolchain checked against the vendor's documentation in October 2026.
 
 ## Core concepts
 
@@ -32,7 +32,7 @@ Supporting documents:
 
 **The intent is the unit of work.** A specification complete enough to be executed without further explanation from its author, validated before implementation and built only from its published version. Acceptance examples are owned by the business and drafted separately from the implementation.
 
-**An autonomy ladder.** Five levels set what an agent may do at each step for each class of change. They run from L0 (not used) through L1 (advise), L2 (draft) and L3 (execute under gate) to L4 (execute in production within a scope). Levels are set centrally, rise only on an evaluation and a recorded period at the level below, and fall without a meeting. Production deployment stays at L0.
+**An autonomy ladder.** Five levels set what an agent may do at each step for each class of change. They run from L0 (not used) through L1 (advise), L2 (draft) and L3 (execute under gate) to L4 (execute in production within a scope). Levels are set centrally, rise only on an evaluation and a recorded period at the level below, and fall without a meeting. Production deployment and production data change stay at L0.
 
 **Deploy what passed the checks.** Each execution unit becomes a release candidate that is attested once and promoted unchanged, with the release commit checked and authorised where a platform promotes source, and with a recovery position established before authorisation. Three deployment approaches, artefact-based, state-based and migration-based, give every kind of change a release candidate and a recovery position.
 
@@ -45,8 +45,8 @@ Supporting documents:
 1. **Intent over instruction.** People define what needs to exist and why, with enough precision that an agent can execute against it.
 2. **One flow for every change.** Platform differences live in the context profile and the deployment approach, not in a separate process.
 3. **Verification and validation serve different purposes.** Verification confirms the output matches the intent and the standards. Validation confirms the intent serves the business need.
-4. **No one approves their own work.** No person, agent or model approves a change it produced or attests to the checks on it.
-5. **A person authorises every production change.** Deployment to production stays at L0 and a named person holds the authority.
+4. **No one approves their own work.** No person, agent or model approves a change it produced or attests to the checks on it, and an agent holds no approval authority at all.
+5. **A person authorises every production change.** Deployment to production and data change in production stay at L0, and no one is the sole authoriser of a change they requested, built or will implement.
 6. **Deploy what passed the checks.** The release candidate is attested once and promoted unchanged, with the release commit checked where source is promoted.
 7. **Each standard has one source and coherence has an owner.** Pipelines and agents read the same published standard, and the system steward owns coherence.
 8. **Autonomy is set centrally and earned by evidence.** A level rises on an evaluation and falls without a meeting.

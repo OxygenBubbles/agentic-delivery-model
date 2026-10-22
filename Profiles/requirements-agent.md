@@ -6,31 +6,44 @@ display_name: Requirements Agent
 version: 2.0
 mission: Conduct structured discovery, surface ambiguity and draft an intent, with every element answered or marked as an open question, that a person validates.
 step_served: 1 Intent
-classes_served: set by the adopter
+classes_served: set by the adopter, with a profile for each class delegated
 autonomy_level: L2 Draft
 model: set by the adopter from the permitted model list
-model_version: set by the adopter
-region: set by the adopter so that hosting meets the data position of the requests it reads
+model_version: set by the adopter and pinned
+inference_hosting_and_provider: set by the adopter from the permitted model list, with a hosting location or boundary that meets the organisation's data position for the requests it reads
 tools:
   - read work items, prior intents and the request history
   - read standards and the domain glossary as retrievable context
-  - write a draft intent to the work item, marked as a draft
+  - return a draft intent for the pipeline job to write to the bound work item
 scopes:
-  - read: the work item system and approved reference material
-  - write: draft intents and discovery notes only
+  - read: the bound work item and approved reference material, read-only
+  - comment: none, as the pipeline posts any halt question to the work item
+  - write: draft intents and discovery notes only, returned to the pipeline job that writes them to the bound work item while it is in refinement
   - execute: none
+context_sources:
+  - the business objective in the approved request on the bound work item, read-only
+  - the stakeholder list or a stakeholder proxy, read-only
+  - existing work items and related intents, read-only
+  - the domain glossary and policy references where available, retrieved read-only at the point of use
+instruction_files: repository instructions, path-specific instructions and skills, each at a pinned version the adopter records and loaded read-only from its approved revision
 stop_conditions: see the section Stop conditions below
-evaluation_reference: evaluation on the organisation's own requests at step 1, recorded before first delegation
-approval_record: profile version, approver (the product owner) and date, recorded by the adopter
+reviewing_model_pairing: none, as the validators assess each draft under section 2.3 of the model
+evaluation_reference_and_result: identifier and result recorded by the adopter, from an evaluation on the organisation's own requests at step 1 for the class served, with the requests evaluated and the output acceptability, review and rework measured
+period_at_level_below: the number of the organisation's own requests at L1 Advise for the class served and the date the period completed, with every output reviewed and the failure modes named, recorded by the adopter
+approval_record:
+  approving_authority: the platform owner, with the system steward, the security lead or the data owner for a matter in their remit
+  evaluation_accepted_by: the practice owner for the step's work, who did not run the evaluation, against criteria set before it ran
+  date: recorded by the adopter with the profile version
+suspension_conditions:
+  - a material change to the evaluated model, instructions, skills, context sources or tools, until reassessment
+  - a reduction ordered under section 5.4 of the model
+  - the product spending its error budget, with the level dropping to L1
+  - a cost circuit breaker's hard limit
+  - the halt control
 invocation_when:
   - A business objective exists but is not yet precise enough for delivery.
   - Stakeholder discovery is needed across one or more sessions.
   - A draft intent is required for a person to refine and validate.
-required_context:
-  - business objective
-  - stakeholder list or stakeholder proxy
-  - existing backlog and related specifications
-  - domain glossary and policy references where available
 primary_outputs:
   - draft_intent
   - discovery_notes

@@ -19,7 +19,7 @@ Microsoft recommends GitHub repositories with Azure Boards and Azure Pipelines f
 | The agent profile (appendix C) | A versioned file in the platform repository, partly implemented by a Foundry hosted agent version or a GitHub custom agent file |
 | The context profile (appendix B) | A document in the platform repository, implemented by required YAML templates and environment checks |
 | The tool allow-list | `allowed_tools` on Foundry MCP tools, Remote MCP Server toolsets, VS Code enterprise policies and the GitHub Copilot MCP allow-list for Visual Studio |
-| The run identity | A job access token that lasts one job, and an Entra agent identity for each agent |
+| The run identity | A job access token or an ephemeral Entra agent identity that lasts one run, with each agent's persistent Entra agent identity recorded beside it |
 | The workspace (step 3) | A branch and a fresh virtual machine (VM) per job, with environments created from Bicep or Terraform definitions |
 | The pipeline and deterministic checks (step 5) | YAML pipelines extending required templates, with build validation and status check branch policies |
 | The release candidate and its attestation (step 7) | A package version in Azure Artifacts or an image digest in Azure Container Registry signed with Notation, with a provenance record the pipeline writes and signs |
@@ -40,12 +40,12 @@ The Supports up to column is a judgement from the documented capabilities: the h
 | 3 Workspace | Pipeline jobs create branches and environments from versioned definitions on fresh VMs | L0 by design | Masked data refresh is an adopter job. Azure Deployment Environments retires on 22 February 2027 |
 | 4 Build | Azure Boards starts the Copilot cloud agent with a chosen custom agent and model, for GitHub repositories only | L2 | The Boards integration sends the work item's text and comments rather than the published intent |
 | 5 Verify | Build validation, CodeQL, dependency and secret scanning and the Advanced Security status checks | L3 | Copilot Autofix is in limited public preview |
-| 6 Review | Copilot code review for Azure Repos, in public preview, leaves a Comment review, not an approval | L1 | Its model is undocumented, so a named pairing needs a separate reviewing agent |
+| 6 Review | Copilot code review for Azure Repos, in public preview, leaves a Comment review, not an approval | L1 | Its model is undocumented, so it stays off and a reviewing agent on the evaluated model comments |
 | 7 Identify | The pipeline builds once, publishes, signs with Notation and attaches a software bill of materials | L0 by design | With no native attestation, the pipeline signs its own provenance record |
 | 8 Promote | Environments with approvals and checks, required templates, exclusive locks and feed view promotion | L3 | The Evaluate artifact check covers container images only |
-| 9 Authorise | The production approval and a change record check, with an agent computing readiness | L3 | The manifest is the adopter's own job |
-| 10 Deploy | The authorised run deploys through a guarded production service connection | L0 by design | A resource administrator can bypass approvals, and the bypass is recorded |
-| 11 Confirm and learn | Azure Monitor, Application Insights and Azure SRE Agent investigation | L2 | New SRE Agent response plans default to Autonomous |
+| 9 Authorise | The production approval and a change record check, with an agent computing readiness | L3 | The manifest is the adopter's own job, and so is the check that the approver did not request, build or implement the change |
+| 10 Deploy | The authorised run verifies the signed provenance record, then deploys through a guarded production service connection | L0 by design | A resource administrator can bypass approvals, and the bypass is recorded |
+| 11 Confirm and learn | Azure Monitor, Application Insights and Azure SRE Agent investigation | L2 | New SRE Agent response plans and scheduled tasks default to Autonomous |
 
 The toolchain is strongest at steps 5, 8, 9 and 10, where resource owners hold the checks and a job token lasts one job. It is weakest at step 4 on Azure Repos and at step 7, where the adopter supplies the coding agent and the provenance record.
 
@@ -53,13 +53,13 @@ The toolchain is strongest at steps 5, 8, 9 and 10, where resource owners hold t
 
 | Control | How Microsoft supports it | Gap |
 |---|---|---|
-| 1. Never the sole authoriser | Branch policies can bar requestors and the most recent pusher from approving, and environment approvals can bar self-approval | A group approval needs one member, so approver groups contain no agent identity |
+| 1. Never authorises | Branch policies can bar requestors and the most recent pusher from approving, and environment approvals can bar self-approval | A group approval needs one member, so approver groups contain no agent identity and no agent identity can vote |
 | 2. No self-attestation | Resource owners hold the checks, outside the YAML file | Bypass permissions and resource administration stay off agent identities |
 | 3. Published promotion path only | Required template and branch control checks on production service connections and environments | Resource administrators can bypass approvals and some checks |
 | 4. Logged under a run identity | Entra sign-in and audit logs for agents, Azure DevOps auditing and Purview audit of agent interactions | Azure DevOps auditing is in preview, off by default and kept 90 days unless streamed |
 | 5. Manual route | Manually queued runs through the same environments, checks and approvals | The fallback credential is the adopter's design |
 | 6. Hosting meets the data position | Foundry deployment types, the approved-models Azure Policy definitions and Copilot Studio external model controls | Copilot code review processing does not follow the Azure DevOps organisation's geography |
-| 7. Implementer does not review | Azure Boards and Foundry let the adopter name the implementing model | Copilot code review names no model and SRE Agent routes models itself, so a pinned model needs a Foundry deployment |
+| 7. Implementer does not review | Azure Boards and Foundry let the adopter name the implementing model | Copilot code review names no model, so it is not used as a reviewer. SRE Agent routes models itself, so a pinned model needs a Foundry deployment |
 | 8. Approved sources only | Code review reads instruction files from the target branch only, and Foundry guidance treats tool output as untrusted | The Boards integration passes work item comments to the agent |
 | 9. No data or secrets out | Secret push protection and Purview data loss prevention for agent interactions | Masking checks on production-derived data are the adopter's jobs |
 
@@ -88,46 +88,48 @@ Standards live in a repository with its own code owners, and instruction files p
 |---|---|---|---|
 | Intent drafter | 1, every class | L2 | A Foundry hosted agent holding its own Entra agent identity and read-only retrieval, with a pipeline job writing the draft |
 | Gate screener | 2, every class | L1 | The drafter's read-only identity, with the pipeline posting the screening |
-| Builder | 4, evaluated low and standard tier classes | L2 | On GitHub repositories, Azure Boards starts the Copilot cloud agent. On Azure Repos, a pipeline job builds, its identity holding Contribute and Create branch on one repository |
+| Builder | 4, evaluated low and standard tier classes | L2 | On GitHub repositories, Azure Boards starts the Copilot cloud agent. On Azure Repos, the pipeline allocates a branch and the run identity holds Contribute on that branch alone, without policy rights. A separate pipeline identity raises the pull request |
 | Check triage | 5, every class | L2, and L3 to queue the pipeline | Queue builds permission only, without rights to edit or bypass policies |
-| Reviewer | 6, every class | L1 | Copilot code review, or a Foundry agent on a different model whose comments the pipeline posts |
+| Reviewer | 6, every class | L1 | A Foundry agent on the reviewing model the evaluated pairing names, whose comments the pipeline posts, with Copilot code review off while its model is undocumented |
 | Promoter | 8, classes with an approved job | L3 | An identity that queues the approved non-production job, with environment checks deciding |
 | Readiness assembler | 9, every class | L3 | Read access to runs and the change record |
-| Operations investigator | 11, every class | L2 | Azure SRE Agent with a Reader role on production and Review mode on every response plan |
+| Operations investigator | 11, every class | L2 | Azure SRE Agent at the Reader permission level, with Review mode on every response plan and scheduled task, write tools denied, no hook that overrides the denials and read-only connectors only |
 
 Retrieval, commenting and execution are separate grants. Retrieval is repository Read and the Azure Reader role. Commenting is the Contribute to pull requests permission alone. With Strict Vote Mode on, voting needs Contribute, so an advising identity can comment but cannot vote. Execution goes only to the run identity that needs it.
 
-Job authorisation scope limits each pipeline identity to one project, and service connections can use Entra workload identities instead of stored secrets. Entra Agent ID gives each Foundry hosted agent and Copilot Studio agent its own identity, and it documents an ephemeral identity that lasts one task. On a reduction under 5.4, the platform owner disables the affected identities and agent pipelines at once.
+Azure SRE Agent's Review mode gates only Azure infrastructure operations, and at the Reader level the agent can temporarily use an SRE Agent Administrator's permissions through the on-behalf-of flow. The platform owner therefore denies write tools in the agent's global tool access policy, so that delegated elevation opens no write route into production. A user-defined hook that returns allow overrides a global deny, and only SRE Agent Administrators can create hooks, so the platform owner removes any hook that overrides those denials and limits the administrator role to authorised platform administrators. Delegated production permissions stay read-only.
+
+Job authorisation scope limits each pipeline identity to one project, and service connections can use Entra workload identities instead of stored secrets. Entra Agent ID gives each Foundry hosted agent and Copilot Studio agent its own persistent identity, and it documents an ephemeral identity that lasts one task. Each run receives scoped, short-lived execution credentials linked to its run identifier and released profile, such as the job access token or an ephemeral identity. A persistent agent identity serves as a run identity only where per-run scope, attribution and immediate revocation are enforced. On a reduction under 5.4, the platform owner disables the affected agent pipelines and identities, cancels their running jobs and revokes the credentials they hold, keeping the run logs.
 
 ### 4.3 From verification to deployment
 
-At step 5, Verify, a build validation policy runs the shared pipeline on every pull request. The pipeline extends a required template holding the tests, the scans and the thresholds of the tiering standard. At step 6, Review, Copilot code review comments first. An Automatically included reviewers policy then requires a code owner group containing no agent identity.
+At step 5, Verify, a build validation policy runs the shared pipeline on every pull request. The pipeline extends a required template holding the tests, the scans and the thresholds of the tiering standard. At step 6, Review, the reviewing agent comments first. An Automatically included reviewers policy then requires a code owner group containing no agent identity, and a member who neither formed the intent nor produced the change approves and completes the pull request.
 
-At step 7, Identify, the pipeline checks the exact merged revision and builds once. A package goes to the @local view of an Azure Artifacts feed. An image goes to Azure Container Registry by digest, signed by the Notation task with an Azure Key Vault key. The job writes a signed provenance record binding the commit, the check results, the approvals and any agent profile version and run identity.
+At step 7, Identify, the pipeline checks the exact merged revision and builds once. A package goes to the @local view of an Azure Artifacts feed. An image goes to Azure Container Registry by digest, signed by the Notation task with an Azure Key Vault key. The job writes a signed provenance record binding the commit, the check results, the approvals, the standards versions and any agent profile version and run identity.
 
-At step 8, Promote, the same candidate moves through the non-production environments, with packages promoted to the @prerelease and @release views. At step 9, Authorise, a readiness job assembles the release manifest and the change record check confirms the change authorisation. The release authority then approves the production environment, under a check barring self-approval. At step 10, Deploy, the approved stage runs with no further approval.
+At step 8, Promote, the same candidate moves through the non-production environments, with packages promoted to the @prerelease and @release views. At step 9, Authorise, a readiness job confirms that the change authorisation is current before it assembles the release manifest, and the change record check confirms it again on the production environment. The release authority then gives a pre-check approval on the production environment, barred from approving their own run, for the exact candidates and recovery positions the manifest names. An Invoke REST API check runs after pre-check approvals, confirming that the approver did not request, build or implement the change and recording the decision against the manifest and candidate identifiers. At step 10, Deploy, the approved stage verifies the signed provenance record against the trusted signer and the candidate the manifest names, and missing, invalid or mismatched evidence blocks deployment. The stage then deploys with no further approval.
 
-An artefact-based context promotes a package version or image digest unchanged. A state-based context keeps Bicep or Terraform definitions in version control, and its pipeline previews the change before applying it through one service connection. A migration-based context runs an ordered migration set with a dry run in pre-production, where the recovery position is exercised before authorisation.
+An artefact-based context promotes a package version or image digest unchanged. A state-based context keeps Bicep or Terraform definitions in version control. Its pipeline validates each environment's plan and applies the attested revision through that environment's service connection, with production using its separately guarded connection. A migration-based context runs an ordered migration set with a dry run in pre-production, where the recovery position is exercised before authorisation.
 
 ### 4.4 One change through the flow
 
 1. **Intent.** The product owner approves a request to add a delivery date to the order service's response. The intent drafter drafts the intent and the engineer states the standard tier. The business analyst validates, and the intent architect publishes through a pull request the code owners approve.
 2. **Gate.** The gate screener finds no trigger, so the merged intent passes to step 3.
 3. **Workspace.** The pipeline creates a branch and a disposable test environment from versioned definitions.
-4. **Build.** A pipeline job runs the builder, pushes the branch and raises a pull request carrying the work item key.
+4. **Build.** The builder pushes to the branch the pipeline allocated, and a separate pipeline identity raises a pull request carrying the work item key.
 5. **Verify.** Build validation runs the shared template, and the Advanced Security status check blocks new high or critical alerts.
-6. **Review.** Copilot code review comments, then a code owner who did not produce the change approves and completes the pull request.
+6. **Review.** The reviewing agent comments, then a code owner who neither formed the intent nor produced the change approves and completes the pull request.
 7. **Identify.** The pipeline builds the merged revision once, publishes the package and signs the provenance record.
 8. **Promote.** The release candidate moves through test and pre-production, with checks deciding each stage.
-9. **Authorise.** The readiness job assembles the manifest, the change record check passes and the release authority approves.
-10. **Deploy.** The approved stage deploys the same package version.
+9. **Authorise.** The readiness job confirms the change authorisation and assembles the manifest, the release authority approves and a check confirms they did not request, build or implement the change.
+10. **Deploy.** The approved stage verifies the provenance record and deploys the same package version.
 11. **Confirm and learn.** Health checks run, Azure SRE Agent watches in Review mode and the product owner accepts against the acceptance examples.
 
 ## 5. Gaps and complementary tooling
 
 **A coding agent for Azure Repos.** The cloud agent works only with GitHub repositories, and an Azure DevOps product manager stated in October 2026 that there are no plans to bring it to Azure Repos. An adopter on Azure Repos runs a coding agent as a Foundry hosted agent or as a pipeline job, a pattern Microsoft documents for the Modernize CLI.
 
-**Attestation and the release manifest.** Azure Pipelines records runs, approvals and deployments but produces neither a signed attestation nor a release manifest. Shared templates generate both, and an Invoke REST API check can verify the attestation before production.
+**Attestation and the release manifest.** Azure Pipelines records runs, approvals and deployments but produces neither a signed attestation nor a release manifest. Shared templates generate both, and the production job verifies the signed record against the trusted signer and the exact candidate the authorised manifest names. Missing, invalid or mismatched evidence blocks deployment.
 
 ## 6. Decisions for adopters
 
@@ -135,11 +137,11 @@ An artefact-based context promotes a package version or image digest unchanged. 
 2. The permitted model list, enforced by the approved-models Azure Policy definitions, and each model's Foundry deployment type.
 3. The hosting option for Claude models in Foundry, and the providers allowed in Copilot Studio and Azure SRE Agent.
 4. The Intent work item fields and the published file path in each leading context.
-5. One Entra agent identity per agent profile, or an ephemeral identity per run.
+5. How each run receives scoped, short-lived execution credentials: a job access token, an ephemeral agent identity or a persistent Entra agent identity with per-run scope, attribution and revocation enforced.
 6. Whether agent-initiated pipeline jobs are allowed, and at what steps.
-7. Whether Copilot code review is enabled, given its processing location.
+7. Whether Copilot code review is enabled once its model is documented, given its processing location.
 8. The stream target and retention period for audit events.
-9. The run mode for each Azure SRE Agent response plan.
+9. The write tools the global tool access policy of Azure SRE Agent denies, and who holds the SRE Agent Administrator role that authorises delegated elevation.
 
 ## Sources
 
@@ -175,6 +177,8 @@ An artefact-based context promotes a package version or image digest unchanged. 
 - [Use Microsoft Purview to manage data security and compliance for Microsoft Agent 365](https://learn.microsoft.com/en-us/purview/ai-agent-365)
 - [What's new in Defender for Cloud features](https://learn.microsoft.com/azure/defender-for-cloud/release-notes)
 - [Run modes in Azure SRE Agent](https://learn.microsoft.com/azure/sre-agent/run-modes)
+- [Agent Permissions in Azure SRE Agent](https://learn.microsoft.com/en-us/azure/sre-agent/permissions)
+- [Tool access policies in Azure SRE Agent](https://learn.microsoft.com/en-us/azure/sre-agent/tool-access-policies)
 - [Manage approvals and permissions in VS Code](https://code.visualstudio.com/docs/agents/run/approvals)
 - [Use custom instructions in VS Code](https://code.visualstudio.com/docs/agent-customization/custom-instructions)
 - [Admin controls for GitHub Copilot in Visual Studio](https://learn.microsoft.com/visualstudio/ide/visual-studio-github-copilot-admin?view=visualstudio)

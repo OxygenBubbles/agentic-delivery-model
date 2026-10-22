@@ -93,9 +93,9 @@ Each pull request that reaches step 6 has passed the deterministic checks at ste
 
 ### 2.2 Forecasting without estimation
 
-The model has no sprints or fixed periods, because agents execute continuously against published intents. The question for a new request is whether approving it keeps the team within its validation and review capacity, and validation under 2.3 of the model takes the place of estimation.
+The model has no sprints or fixed periods, because agents execute continuously against published intents. The team checks validation and review capacity before approving a request and uses observed lead time to forecast delivery. Validation under 2.3 of the model establishes whether the intent serves the business need rather than how long it will take.
 
-The business still needs expected delivery windows for training, user acceptance testing, release coordination and planning, and the team forecasts them by measuring lead time from approved request to live by risk tier and context profile. The observed distribution shows a constraint as it forms: a rising first-time validation failure rate points to the forming of intents, and rising lead time with steady validation points to build, verification or review.
+The business still needs expected delivery windows for training, user acceptance testing, release coordination and planning, so the team reports lead time from approved request to live by risk tier and context profile. It reads lead time alongside validation failures and waiting time at each step, and a rise prompts investigation of the affected queue before any change to capacity or staffing.
 
 ### 2.3 Where bottlenecks form
 
@@ -103,15 +103,17 @@ The model moves the bottlenecks of delivery from implementation to forming and v
 
 | Bottleneck | How it forms | What relieves it |
 |---|---|---|
-| Intents | Agents build faster than people form and validate intents, so runs wait for work. It is likely to be the binding constraint at maturity | Drafting by the agent at L2 from the request and the history it can retrieve, a pattern library for recurring shapes of change and a person beside the agent in a complex or ambiguous domain (2.3 of the model) |
+| Intents | Agents build faster than people form and validate intents, so runs wait for work | Drafting by the agent at L2 from the request and the history it can retrieve, a pattern library for recurring shapes of change and a person beside the agent in a complex or ambiguous domain (2.3 of the model) |
 | Review | Agent output arrives faster than people review it and the queue grows | The cap on approved work (2.2 of the model), checks and thresholds at step 5 and agents commenting at L1 first, so the reviewer concentrates on conformance and structure |
 | Clarification | Runs halt at stop conditions while Intent Architects are busy, and poorly formed intents raise more halts | Validation with every element answered, including the delegation boundary and the stop conditions |
 | Standards | Agents decide without enough constraint when the System Steward falls behind, and code that passes its tests drifts structurally | Standards in enforceable form that agents retrieve (6.2 of the model) and the coherence register (appendix D of the model) |
 | Design | Uncodified design constraints produce inconsistent interfaces on a user-facing product, or interface review falls behind | The design system standard (6.2 of the model) and a Design Steward where the surface warrants one |
 
+Review is likely to constrain throughput where agent output grows faster than review capacity. The constraint may instead sit in intent formation, validation, clarification or environments, and it can differ between classes of change.
+
 ### 2.4 Leading indicators
 
-The measures in 8.2 of the model state what each should prompt, and the team adds two queue indicators beside them. The number of validated intents waiting for a workspace shows whether forming intents is the constraint, and the age of the oldest pull request in the review queue shows whether review capacity needs attention. With the stop-condition rate and human effort per intent, they give four early indicators of the bottlenecks above.
+The measures in 8.2 of the model state what each should prompt, and the team adds two queue indicators beside them. It compares the rate of published intents clearing any triggered gates with workspace demand and records why work waits, so that a shortage of ready intents is distinguished from a shortage of workspaces. The age of the oldest pull request in the review queue indicates whether review capacity needs attention. Read with the stop-condition rate and human effort per intent, the two queue indicators give early warning of the bottlenecks above.
 
 ## 3. How roles are likely to change
 
@@ -126,10 +128,12 @@ The forecast is paced by autonomy rather than by the calendar, because the model
 | Horizon | What it looks like |
 |---|---|
 | 1. Drafting | Agents draft at L2 at most delegated steps and run approved pipeline jobs at L3 under a gate. Most adopters reach this horizon first, once the pilot has produced the evidence for the first delegation above L1 |
-| 2. Executing under gates | L3 is common for standard-tier and low-tier changes, with L4 in narrow, well-evidenced scopes such as dependency updates, documentation and configuration within set limits |
+| 2. Executing under gates | L3 is common for standard-tier and low-tier changes, with L4 in narrow, evaluated scopes. The first candidate for L4 is production verification at step 11, Confirm and learn: the approved health checks, or a scoped catalogue action after a failed check (5.1 of the model) |
 | 3. Executing within wider scopes | L4 covers a wider set of scopes where the evidence supports it, and people spend most of their time on intent, judgement and the platform |
 
 An L4 scope at any horizon is a catalogue action within a named scope under 5.1 of the model, and production deployment and production data change stay at L0 throughout (principle 5).
+
+The horizons describe permissions rather than staffing stages. At each horizon the organisation measures the work transferred from people, the review and rework retained and the platform effort added before it changes posts.
 
 ### 3.3 The direction for each post
 
@@ -141,26 +145,28 @@ The table gives the likely direction for each post where an organisation has it,
 | Intent Architect, drawn from solution architects, lead engineers and senior business analysts | Demand for the post rises. The intent becomes the main engineering artefact, and skill in decomposition, contracts and the delegation boundary becomes scarce |
 | Business analyst, as a validator | Less time writing requirements and more time validating intents, running the formation passes and testing the need with the business |
 | Test engineer, as a validator | Less time executing tests and more time designing acceptance examples and building the evaluations that raise an agent's level under 5.4 of the model |
-| Verification Engineer, holding the verifier accountability | Review becomes the constraint on throughput, supported by agents at L1. The post concentrates senior judgement, and demand for review skill grows |
+| Verification Engineer, holding the verifier accountability | Review is likely to constrain throughput where agent output grows faster than review capacity, although the constraint may sit elsewhere (2.3 of this guide). Agents at L1 support the review, the post concentrates senior judgement and demand for review skill grows |
 | System Steward, with the Design Steward where one is appointed | Standards in enforceable form become the context agents retrieve, so the work moves from guidance to maintaining that context and the coherence register as the volume of change rises |
-| Release manager, holding the release authority | Coordination falls as readiness is computed at step 9, Authorise. The post becomes a judgement on risk and on recovery positions, held by fewer and more senior people |
-| Platform owner and platform engineers | The largest new demand is likely to fall here, because running agents as part of the platform sits with these posts: run identities, allow-lists, evaluations, cost and the manual fallback |
+| Release manager, holding the release authority | As readiness preparation reaches L3, the work is likely to concentrate on interpreting risk and recovery evidence. Whether fewer people can hold the authority depends on release volume, risk, authorisation delays and cover |
+| Platform owner and platform engineers | Platform work is likely to grow as more steps and classes are delegated, particularly where evaluations, identity controls and recovery arrangements need building or maintaining. Its scale depends on existing platform capability and the number of contexts supported |
 | Security lead | More policy expressed as code, approval of allow-list additions and threat models that cover agents and the six trust boundaries in 5.5 of the model |
 | Data owner | The data position for models, masking for agent context and the categories of data that never leave production become recurring decisions rather than occasional ones |
-| Engineers | Less time writing code by hand and more on decomposition, acceptance examples, review, stop conditions and platform work. The routine work that trained new engineers moves to agents, so the entry route has to be designed deliberately (5.1 of this guide) |
+| Engineers | Less time writing code by hand and more on decomposition, acceptance examples, review, stop conditions and platform work. The routine work that trained new engineers moves to agents, so the entry route is likely to need deliberate design (5.1 of this guide) |
 | Accountable executive | The post is unchanged in substance. The assurance view and risk acceptance remain, with richer evidence from the decision trail |
 
 ### 3.4 What stays with people at every horizon
 
-At every horizon the accountabilities stay with people and the agent holds none (section 7 of the model). The request decision, validation, approval of someone else's work, authorisation of every production change, acceptance, exceptions and risk acceptance remain decisions for a person, under principles 4 and 5 and control 1 in 5.3 of the model. Rising autonomy changes who drafts and executes the work and leaves unchanged who decides and who authorises it.
+At every horizon the accountabilities stay with people and the agent holds none (section 7 of the model). The request decision, validation, approval at step 6, the two decisions at step 9, acceptance, exceptions and risk acceptance remain decisions for a person, under principles 4 and 5 and control 1 in 5.3 of the model. The approver at step 6 is a code owner who neither formed the intent nor produced the change. At step 9 a release authority who did not request, build or implement the change gives the go or no-go, recorded separately from the change authorisation. Rising autonomy changes who drafts and executes the work and leaves unchanged who decides and who authorises it.
 
 ### 3.5 Signals that the forecast is arriving
 
-Four signals show a horizon arriving. Human effort per intent and the stop-condition rate fall (8.2 of the model), the validation and review queues become the binding constraint and more steps are raised a level under 5.4 of the model. The periodic review under 3.3 of the model reads them together, beside the autonomy levels in force, because one signal alone can mislead.
+Four signals point to a horizon arriving. Human effort per intent and the stop-condition rate fall (8.2 of the model), the validation and review queues grow and more steps are raised a level under 5.4 of the model. A growing validation or review queue signals a capacity constraint. It supports the forecast only where comparable work needs less human effort without a worse change failure rate or time to restore. The stop-condition rate is read against changes in scope and the reasons runs stop. The periodic review under 3.3 of the model reads the signals together, beside the autonomy levels in force, because one signal alone can mislead.
 
 ### 3.6 What an organisation does about it
 
 An organisation prepares before the signals arrive in full, because the people who hold the scarcest accountabilities are mostly grown internally rather than hired (section 11 of the model). It redesigns career paths around the accountabilities and the directions in 3.3 above, as section 5 of this guide sets out, and designs the entry route for new engineers deliberately (5.1 of this guide). It reskills people whose work moves to agents through the workforce transition in section 9 of this guide.
+
+As people do less routine implementation, keeping implementation and diagnosis skills current is likely to need deliberate practice. The organisation tests each workforce change against the capacity it would need in the degraded and manual states under 5.4 of the model, when agent capacity is reduced or withdrawn.
 
 ## 4. Team structure
 
@@ -202,13 +208,13 @@ The levels are the starting levels in 3.1 of the model and apply only once the e
 
 ### 4.3 The platform team
 
-Section 6 of the model defines the engineering platform and the rules for operating it, and platform changes follow the flow like any other change. One platform owner with a named backup may be enough for the minimum organisation at the first horizon, because provisioning, refresh and masking run as pipeline jobs from versioned definitions. Platform work is likely to be the largest new demand as autonomy rises (3.3 of this guide), and a larger estate is likely to need a dedicated platform team. The number of runs in flight follows the supply of validated intents, review capacity and cost appetite, and review capacity is usually the binding constraint.
+Section 6 of the model defines the engineering platform and the rules for operating it, and platform changes follow the flow like any other change. One platform owner with a named backup may be enough for the minimum organisation at the first horizon, because provisioning, refresh and masking run as pipeline jobs from versioned definitions. Platform work is likely to grow as more steps and classes are delegated (3.3 of this guide), and its scale depends on existing platform capability and the number of contexts supported. A larger estate is likely to need a dedicated platform team. The number of runs in flight follows the supply of validated intents, review capacity and cost appetite, and 2.3 of this guide sets out where the constraint is likely to sit.
 
 ## 5. Onboarding and career paths
 
 ### 5.1 The entry route for new engineers
 
-The organisation designs the entry route around paired review and rotation, as the engineer direction in 3.3 of this guide requires. Each rotation follows section 7 of the model ([MODEL.md](MODEL.md)), where junior engineers assist with evidence gathering while senior judgement takes the harder calls.
+Paired review and rotation provide an entry route for new engineers as routine implementation moves to agents. Each rotation follows section 7 of the model ([MODEL.md](MODEL.md)), where junior engineers assist with evidence gathering while senior judgement takes the harder calls.
 
 | Rotation | What the new engineer does |
 |---|---|
@@ -244,9 +250,9 @@ Each product's release rhythm is set under 3.3 of the model ([MODEL.md](MODEL.md
 
 | Stage | Autonomy | Release practice |
 |---|---|---|
-| The pilot, phase 2 | Agents advise at L1, drafting and building move to L2 on the first-delegation evidence under 5.4 of the model and every other step runs at L0 | The release authority authorises each release and the pipeline promotes the attested release candidate with a person watching each promotion |
+| The pilot, phase 2 | Agents advise at L1 while drafting and building move to L2 on the first-delegation evidence under 5.4 of the model. Workspace, Identify, production deployment and acceptance remain at L0 | The release authority authorises each release and the pipeline promotes the attested release candidate with a person watching each promotion |
 | Scale-up, phases 3 and 4 | Steps reach the starting levels in 3.1 of the model for the classes the evaluations support: steps 1 and 4 at L2 and steps 5, 8 and 9 at L3. This is the first horizon in 3.2 of this guide | Deployment runs on the shared pipeline once authorised, and a change authorised in the morning can be live the same afternoon where the product's rhythm allows |
-| The later horizons | L3 widens across classes and L4 is assigned only where 5.4 of the model is satisfied, never to deployment | Authorisation at step 9 stays with a person for every production change |
+| The later horizons | L3 widens across classes and L4 is assigned only where 5.4 of the model is satisfied, never to deployment or production data change | Authorisation at step 9 stays with a person for every production change |
 
 The pace of each stage depends on the evidence the organisation produces rather than a calendar, and the constraint is rarely agent speed: it is confidence in the controls and the maturity of the pipeline.
 
@@ -258,7 +264,7 @@ The pace of each stage depends on the evidence the organisation produces rather 
 
 **Test data.** Production-derived data reaches a non-production environment only under the test data and masking standard (6.2 of the model). The masked, anonymised or synthetic data used reflects production volumes and edge cases without exposing personal or commercially sensitive information. An agent at L2 can draft synthetic data sets from schema definitions, business rules and the acceptance examples, and they reach an environment through a pull request like any other definition. The platform team regenerates test data as fields, validation rules and business logic change, and the data owner reviews the data position at the periodic review.
 
-**Deployment strategies and feature flags.** The model is compatible with any deployment strategy, such as blue-green, canary or progressive rollout, and keeps the strategy distinct from the deployment approach (section 4 of the model). Section 4 of the model also sets how a feature flag decouples deployment from release, with activation requested by the product owner and authorised at step 9 as a production change. The periodic review checks the active flags and those due for retirement, and each flag that remains after release stays in the coherence register until it is retired.
+**Deployment strategies and feature flags.** Deployment strategies and feature flag activation follow section 4 of the model. The periodic review checks the active flags and those due for retirement, and each flag that remains after release stays in the coherence register until it is retired.
 
 ### 6.3 User acceptance testing
 
@@ -268,7 +274,7 @@ User acceptance testing remains a business validation activity. Where it runs, i
 
 People keep the rhythm under 3.3 of the model, and the daily sweep and the periodic review are its fixed points while everything else can flex. Verification Engineers may review throughout the day with a short daily exchange on escalations, and Intent Architects may work in concentrated sessions.
 
-**Follow-the-sun.** A global organisation can run the flow across time zones, each zone holding its own daily sweep at the start of its working day. Intent Architects form intents in their working hours, runs continue and the reviewers in the next zone clear the overnight pull requests before forming intents of their own. Each zone hands on validated intents and a cleared review queue. The pattern needs at least two zones with review capability and works best with two or three. No zone needs every accountability, but each has at least one person who can act as verifier and one who can act as release authority.
+**Follow-the-sun.** A global organisation can run the flow across time zones, each zone holding its own daily sweep at the start of its working day. Intent Architects form intents in their working hours, runs continue and the reviewers in the next zone work the overnight pull requests before forming intents of their own. Each zone hands over its work in progress, the age of its queues, blocked decisions and the named cover for unresolved questions. The cap on approved work follows the validation and review capacity available across the zones. The pattern needs at least two zones with review capability and works best with two or three. No zone needs every accountability, but each has at least one person who can act as verifier and one who can act as release authority.
 
 ## 7. Business readiness for accelerated change
 
@@ -296,7 +302,7 @@ An incident caused by agent-produced code follows the emergency route in 3.2 and
 
 | Finding | What it points to |
 |---|---|
-| The intent was right and faithfully built, but the outcome was wrong | Validation |
+| The implementation matched the intent, but the intent failed to express the business need | Validation |
 | The agent departed from the intent | Verification and review |
 | The intent was incomplete | The acceptance examples and edge cases for that class of change, strengthened by the validators |
 
@@ -314,9 +320,9 @@ The model governs how agents deliver software, and an organisation also needs a 
 
 ## 9. Workforce transition
 
-Most adoptions are likely to involve workforce change, and the pilot and the signals in 3.5 of this guide establish how much. Section 11 of the model ([MODEL.md](MODEL.md)) makes no headcount claim and neither does this guide. Organisations that plan openly, invest in retraining and treat people with respect tend to manage the transition better than those that deny the implications until abrupt cuts follow.
+Most adoptions are likely to involve workforce change, and the organisation judges how much from the pilot and from the evidence described in 3.2 and 3.5 of this guide. Section 11 of the model ([MODEL.md](MODEL.md)) makes no headcount claim and neither does this guide. Organisations that plan openly, invest in retraining and treat people with respect tend to manage the transition better than those that deny the implications until abrupt cuts follow.
 
-**Phasing.** Workforce change follows the evidence rather than the adoption calendar. No post changes in phase 1, the first people move into Intent Architect and Verification Engineer posts in phase 2 and from phase 3 posts change as each horizon arrives in a product area.
+**Phasing.** Workforce change follows the evidence rather than the adoption calendar, and people move into changed posts when training, segregation and measured capacity support the move.
 
 **Reskilling.** Not everyone can or wants to move into the posts that grow. The Intent Architect post needs deep domain knowledge and system-level thinking and the Verification Engineer post needs the judgement to assess agent output critically, so some people will thrive in them and others will not. The organisation runs structured reskilling towards the directions in 3.3 of this guide, gives each person a fair chance and is direct when it is not working.
 
@@ -401,7 +407,7 @@ The illustration totals 33 people working with agents under the agent profiles i
 
 Before the shape is used as an operating design, the adopter maps the validators, the release authority and a backup for each accountability to its posts. The illustration shows no business analyst, test engineer or release manager post, so those accountabilities go to posts it does show. No one who shaped an intent declares it validated alone, as 2.3 of the model ([MODEL.md](MODEL.md)) requires.
 
-The chart shows no Design Steward. Design coherence sits with the system steward unless a design steward is appointed (section 7 of the model), so a product with a user-facing surface either appoints one or has a System Steward with both skill sets hold both. The illustration also holds the platform at one platform owner, while the forecast in 3.3 of this guide expects platform work to be the largest new demand. An organisation sizes its own platform team from the forecast and its own measures.
+The chart shows no Design Steward. Design coherence sits with the system steward unless a design steward is appointed (section 7 of the model), so a product with a user-facing surface either appoints one or has a System Steward with both skill sets hold both. The illustration also holds the platform at one platform owner, while the forecast in 3.3 of this guide expects platform work to grow as more steps and classes are delegated. An organisation sizes its own platform team from its existing platform capability, the number of contexts it supports and its own measures.
 
 ### A.3 Indicative role transitions
 

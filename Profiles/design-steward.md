@@ -22,7 +22,7 @@ The Design Steward protects the quality and consistency of the user experience a
 
 ## Why this role matters in the ADM
 
-Agents are local optimisers. Given an intent, they will produce a working interface that satisfies the acceptance examples. But they have no inherent sense of visual consistency, interaction coherence or brand alignment across screens. Without explicit design governance, a product built by multiple agents working on separate specifications will drift towards inconsistency in the same way the codebase drifts without codified technical standards.
+Agents are local optimisers, and given an intent they will produce a working interface that satisfies the acceptance examples. But they have no inherent sense of visual consistency, interaction coherence or brand alignment across screens. Without explicit design governance, a product built by multiple agents working on separate specifications will drift towards inconsistency in the same way the codebase drifts without codified technical standards.
 
 ## Primary outcomes
 
@@ -35,7 +35,7 @@ Agents are local optimisers. Given an intent, they will produce a working interf
 ## Core accountabilities
 
 - Own the design system: component library, interaction patterns, layout conventions, accessibility standards and brand rules.
-- Codify design constraints in agent configuration files and specification templates.
+- Publish design constraints in the design system standard and reference that source from agent configuration and intent templates.
 - Maintain the design entries in the coherence register as the live record of design decisions, component usage patterns and known deviations.
 - Review agent-generated UI for visual consistency, interaction correctness and accessibility compliance.
 - Define the design system as a standard with one source (section 6.2 of the model), so that an intent with a user-facing surface names it among the contracts to honour.
@@ -109,4 +109,4 @@ A strong Design Steward can explain the current state of the design system, wher
 
 ## When this role applies
 
-This appointment is optional. Design coherence sits with the system steward unless a Design Steward is appointed (section 7 of the model), and it applies only when the product has a user-facing surface. In smaller teams, a single person may hold both if they have both skill sets. In larger teams or design-intensive products, this is a dedicated post.
+This appointment is optional: design coherence sits with the system steward unless a Design Steward is appointed (section 7 of the model), and the appointment applies only when the product has a user-facing surface. In smaller teams, a single person may hold both if they have both skill sets. In larger teams or design-intensive products, this is a dedicated post.

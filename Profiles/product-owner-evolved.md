@@ -2,7 +2,7 @@
 profile_type: human_role
 role_id: ADM-H-PRODUCT-OWNER-EVOLVED
 role_name: Product Owner (Evolved)
-mission: Own the request decision, the business outcome, delivery priority and acceptance of the delivered outcome in an agentic delivery system.
+mission: Own the request decision, the business outcome, delivery priority and acceptance of the delivered behaviour in an agentic delivery system.
 accountability: product owner
 steps:
   - 1 Intent, the request decision and the acceptance examples
@@ -23,7 +23,7 @@ The Product Owner remains the business owner of the work, but the role becomes m
 
 ## Why this role matters in the ADM
 
-The ADM does not reduce the need for business judgement. It increases it. The Product Owner is the role that decides what matters, what the intended outcome is and whether the specification reflects the real business need rather than a shallow request.
+The ADM does not reduce the need for business judgement but increases it. The Product Owner is the role that decides what matters, what the intended outcome is and whether the specification reflects the real business need rather than a shallow request.
 
 ## Primary outcomes
 
@@ -39,7 +39,8 @@ The ADM does not reduce the need for business judgement. It increases it. The Pr
 - Review and refine draft intents for business accuracy, policy fit and edge-case completeness, and own the acceptance examples.
 - Decide the outcome and measure the intent carries, with the business analyst validating the expression of the need and the behaviour before implementation (section 2.3 of the model).
 - Answer business stop conditions during delivery quickly and precisely.
-- Accept delivered outcomes at step 11, Confirm and learn.
+- Accept or reject the delivered behaviour against the acceptance examples at step 11, Confirm and learn.
+- Record the outcome reading separately when the measure can be read, naming its owner and date before the work item closes.
 - Keep the ordering of approved requests, their timing and business rationale current, within the cap on approved work.
 
 ## Decisions this role owns
@@ -47,7 +48,7 @@ The ADM does not reduce the need for business judgement. It increases it. The Pr
 - What should be worked on now, next and later.
 - Whether the specification reflects the real business need.
 - Which trade-offs are acceptable from a business perspective.
-- Whether delivery should proceed when there is unresolved business ambiguity.
+- How business ambiguity is resolved, with the affected unit waiting until then and any scope change following section 3.2 of the model.
 - Whether the delivered outcome solves the intended problem.
 
 ## Key artefacts

@@ -39,6 +39,7 @@ Agents add threats of their own, from actions under a run identity to retrieved 
 - Decide the security and privacy gate where an intent triggers it, naming the reviewer who confirms conformance at step 6, Review.
 - Hold the threat model for the agent platform, reviewing it when a model, a surface or a context source is added.
 - Approve each addition to the tool allow-list (section 5.2 of the model).
+- Approve, with the platform owner, every increase in autonomy on a matter in its remit, including the first delegation above L1, Advise (section 5.4 of the model).
 - Hold boundary 4 in section 5.5 of the model and boundary 2 with the data owner.
 - Complete the threat model and a privacy assessment of the agent platform before the pilot, and commission penetration testing.
 
