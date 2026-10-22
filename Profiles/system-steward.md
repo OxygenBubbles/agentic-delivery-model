@@ -3,14 +3,16 @@ profile_type: human_role
 role_id: ADM-H-SYSTEM-STEWARD
 role_name: System Steward
 mission: Preserve structural consistency, coherence and long-term operability as agents optimise locally for speed and task completion.
-primary_tiers:
-  - strategic
-  - governance
-accountable_to: Delivery Lead
+accountability: system steward, plus design coherence unless a Design Steward is appointed
+steps:
+  - 2 Gate where triggered, the architecture gate
+  - 6 Review, for cross-cutting changes
+  - 11 Confirm and learn
+accountable_to: set by the adopter
 works_with:
   - Intent Architect
   - Verification Engineer
-  - Platform Engineer
+  - Platform Owner
   - Security Lead
 ---
 
@@ -33,13 +35,14 @@ Without stewardship, agentic delivery can create fast local optimisation and slo
 
 ## Core accountabilities
 
-- Own structural consistency across the codebase and service landscape.
-- Maintain the standards, constraints and preferred patterns that agents should work within.
-- Own the Coherence Register as the live record of drift, debt and remediation needs.
+- Own structural consistency across the codebase and the service estate.
+- Own the architecture decisions and contracts standard, and keep each standard to one source in enforceable form (section 6.2 of the model).
+- Own the coherence register (Appendix D of the model) as the live record of decisions, debt and coherence risk.
 - Decide whether identified debt is accepted, deferred or remediated.
 - Commission refactoring work where the long-term shape of the system is being damaged.
 - Review recurring implementation and verification findings for wider patterns.
 - Partner with security leadership on the agent threat model and control design.
+- Hold design coherence unless a Design Steward is appointed.
 
 ## Decisions this role owns
 
@@ -47,26 +50,27 @@ Without stewardship, agentic delivery can create fast local optimisation and slo
 - Which debt items can be tolerated and which must be remediated.
 - When a local issue signals wider structural drift.
 - When standards need to change because the system or delivery model has changed.
-- When refactoring work should displace feature work.
+- When refactoring is needed to restore coherence, raised as a request under section 2.2 of the model.
 
 ## Key artefacts
 
-- Owns the Coherence Register.
+- Owns the coherence register.
 - Owns system-level standards, guardrails and remediation priorities.
-- Produces refactoring Intent Specifications and structural guidance.
-- Records exceptions and rationale where temporary divergence is accepted.
+- Raises requests for remediation that enter the flow as intents and produces structural guidance.
+- Records exceptions with an owner and an expiry where temporary divergence is accepted (section 3.2 of the model).
 
-## Cadence participation
+## Part in the flow and the rhythm
 
-- Governance Tier: advises on escalated structural concerns and difficult trade-offs.
-- Strategic Tier: leads coherence review, standards updates and debt prioritisation.
-- Between cadences: maintains standards and commissions remediation work.
+- Step 2: decides the architecture gate where an intent triggers it.
+- Step 6: advises on escalated structural concerns and difficult trade-offs.
+- Periodic review: leads the review of the coherence register, standards, autonomy levels and open exceptions.
+- Between reviews: maintains standards and raises remediation requests.
 
 ## Working interfaces
 
 - With the Intent Architect: provides constraints and receives early warnings about system tension.
 - With the Verification Engineer: turns recurring review concerns into structural action.
-- With the Platform Engineer: aligns standards with tooling, environments and control enforcement.
+- With the platform owner: aligns standards with the engineering platform so that each standard is enforced in the pipeline (section 6.3 of the model).
 - With the Security Lead: aligns structural governance with the threat model and control posture.
 
 ## What this role is not
@@ -86,11 +90,15 @@ Without stewardship, agentic delivery can create fast local optimisation and slo
 
 ## Measures of effectiveness
 
-- Technical debt trend.
+- Code health or debt ratio.
+- Exception rate per context profile.
+- Share of changes in the high tier.
 - Structural consistency across services, modules and interfaces.
-- Reuse of approved patterns.
-- Volume and age of open coherence issues.
-- Closure rate of remediation items.
+- Volume and age of open coherence register entries.
+
+## How this post is likely to change
+
+This is a forecast rather than a requirement of the model, and it is paced by the autonomy an organisation raises on evidence under section 5.4, not by dates. Standards in enforceable form are likely to become the context agents retrieve at the point of use, so the steward's work is likely to move from writing guidance to maintaining that context. The coherence register is likely to take more of the post's time as change volume rises. Coherence keeps a named owner at every level of autonomy, because agents optimise locally and hold no accountability.
 
 ## Strong background fit
 

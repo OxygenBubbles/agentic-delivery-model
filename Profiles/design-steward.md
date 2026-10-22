@@ -3,10 +3,10 @@ profile_type: human_role
 role_id: ADM-H-DESIGN-STEWARD
 role_name: Design Steward
 mission: Preserve design coherence, accessibility and user experience quality as agents generate user-facing interfaces at scale.
-primary_tiers:
-  - strategic
-  - governance
-accountable_to: Delivery Lead
+accountability: design coherence, held here instead of by the system steward
+steps:
+  - 6 Review, for user-facing changes
+accountable_to: set by the adopter
 works_with:
   - System Steward
   - Intent Architect
@@ -22,7 +22,7 @@ The Design Steward protects the quality and consistency of the user experience a
 
 ## Why this role matters in the ADM
 
-Agents are local optimisers. Given a specification, they will produce a working interface that satisfies the acceptance criteria. But they have no inherent sense of visual consistency, interaction coherence or brand alignment across screens. Without explicit design governance, a product built by multiple agents working on separate specifications will drift towards inconsistency in the same way the codebase drifts without codified technical standards.
+Agents are local optimisers. Given an intent, they will produce a working interface that satisfies the acceptance examples. But they have no inherent sense of visual consistency, interaction coherence or brand alignment across screens. Without explicit design governance, a product built by multiple agents working on separate specifications will drift towards inconsistency in the same way the codebase drifts without codified technical standards.
 
 ## Primary outcomes
 
@@ -36,9 +36,9 @@ Agents are local optimisers. Given a specification, they will produce a working 
 
 - Own the design system: component library, interaction patterns, layout conventions, accessibility standards and brand rules.
 - Codify design constraints in agent configuration files and specification templates.
-- Maintain the Design Register as the live record of design decisions, component usage patterns and known deviations.
+- Maintain the design entries in the coherence register as the live record of design decisions, component usage patterns and known deviations.
 - Review agent-generated UI for visual consistency, interaction correctness and accessibility compliance.
-- Define and update Design Constraints sections in Intent Specifications for work with a user-facing surface.
+- Define the design system as a standard with one source (section 6.2 of the model), so that an intent with a user-facing surface names it among the contracts to honour.
 - Commission design remediation work when drift accumulates.
 
 ## Decisions this role owns
@@ -47,26 +47,26 @@ Agents are local optimisers. Given a specification, they will produce a working 
 - When a local design deviation signals wider inconsistency.
 - When the design system needs to change because the product or user needs have changed.
 - What level of accessibility compliance is required and where exceptions are tolerated.
-- When design remediation should displace feature work.
+- When design remediation is needed, raised as a request under section 2.2 of the model.
 
 ## Key artefacts
 
-- Owns the Design Register.
+- Owns the design entries in the coherence register.
 - Owns the design system documentation, component library and interaction pattern references.
-- Produces the Design Constraints sections for Intent Specifications.
+- Produces the design system standard that intents with a user-facing surface cite as a contract to honour.
 - Records exceptions and rationale where temporary design divergence is accepted.
 
-## Cadence participation
+## Part in the flow and the rhythm
 
-- Governance Tier: advises on escalated design concerns and reviews agent-generated UI.
-- Strategic Tier: leads design system review, updates constraints and prioritises design debt.
-- Between cadences: maintains the design system and reviews delivered work.
+- Step 6, Review: advises on escalated design concerns and reviews agent-generated user interfaces.
+- Periodic review: leads design system review, updates the standard and prioritises design debt.
+- Between reviews: maintains the design system and reviews delivered work.
 
 ## Working interfaces
 
 - With the System Steward: aligns design governance with architectural governance. Shared interest in consistency, different lenses.
 - With the Intent Architect: provides design constraints during specification and receives early warnings about UX tension.
-- With the Verification Engineer: defines design acceptance criteria and supports UI verification.
+- With the Verification Engineer: defines the accessibility and usability checks for an interface change and supports review of user interfaces.
 - With the Product Owner: translates product intent into design direction. Receives context from UX research and user testing conducted outside the ADM.
 
 ## What this role is not
@@ -88,9 +88,13 @@ Agents are local optimisers. Given a specification, they will produce a working 
 
 - Design consistency across delivered screens and components.
 - Accessibility compliance rate.
-- Design debt trend (tracked in the Design Register).
-- First-pass design acceptance rate of agent-generated UI.
+- Design debt trend (tracked in the coherence register).
+- Human effort per intent, including review and rework, for user-facing changes.
 - Component reuse rate.
+
+## How this post is likely to change
+
+This is a forecast rather than a requirement of the model, and it is paced by the autonomy an organisation raises on evidence under section 5.4, not by dates. The post is likely to follow the system steward's direction: as the design system becomes context agents retrieve, the work is likely to shift from reviewing screens to maintaining that context. The design entries in the coherence register are likely to take more of the post's time as change volume rises. Design coherence keeps a named owner at every level of autonomy, and manual accessibility checks for interaction patterns that automated checks miss remain person-led.
 
 ## Strong background fit
 
@@ -105,4 +109,4 @@ A strong Design Steward can explain the current state of the design system, wher
 
 ## When this role applies
 
-This role is optional. It applies only when the product has a user-facing surface. In smaller teams, a single person may hold both System Steward and Design Steward responsibilities if they have both skill sets. In larger teams or design-intensive products, this is a dedicated role.
+This appointment is optional. Design coherence sits with the system steward unless a Design Steward is appointed (section 7 of the model), and it applies only when the product has a user-facing surface. In smaller teams, a single person may hold both if they have both skill sets. In larger teams or design-intensive products, this is a dedicated post.

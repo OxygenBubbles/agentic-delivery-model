@@ -2,24 +2,24 @@
 profile_type: human_role
 role_id: ADM-H-VERIFICATION-ENGINEER
 role_name: Verification Engineer
-mission: Confirm that delivered change meets the stated intent, satisfies the acceptance criteria and preserves structural consistency before it is accepted.
-primary_tiers:
-  - governance
-  - execution_support
-accountable_to: Delivery Lead
+mission: Confirm, as verifier, that a change produced by someone else conforms to the intent and the standards, satisfies the acceptance examples and preserves structural consistency before it merges.
+accountability: verifier
+steps:
+  - 5 Verify, reading the evidence
+  - 6 Review
+accountable_to: set by the adopter
 works_with:
   - Intent Architect
   - System Steward
   - Product Owner
-  - Review Agent
-  - Security Agent
+  - Review agents at L1 for code, security and design
 ---
 
 # Verification Engineer
 
 ## Role mission
 
-The Verification Engineer is the quality gate in the ADM. This role does not exist to repeat what automated checks have already done. It exists to decide whether the delivered change is the right change, whether the evidence is strong enough and whether the result is safe to accept.
+The Verification Engineer holds the verifier accountability at step 6, Review, of the flow. This role does not exist to repeat what the deterministic checks at step 5 have already done. It exists to decide whether the delivered change conforms to the intent, whether the evidence is strong enough and whether the result is safe to merge. Whether the intent was the right change was decided at validation, before implementation.
 
 ## Why this role matters in the ADM
 
@@ -27,46 +27,46 @@ Agentic delivery can generate a large volume of technically plausible output. Th
 
 ## Primary outcomes
 
-- Only changes that satisfy the intent and acceptance criteria are accepted.
+- Only changes that satisfy the intent and its acceptance examples merge.
 - Weak tests, hidden regressions and misleading evidence are challenged before merge.
 - Structural consistency concerns are surfaced early rather than normalised in the codebase.
 - Human approval remains meaningful rather than ceremonial.
 
 ## Core accountabilities
 
-- Review delivered changes against the Intent Specification rather than against personal preference.
-- Check that acceptance criteria are actually met in behaviour, not only implied in code.
+- Review delivered changes against the intent and the standards rather than against personal preference.
+- Check that acceptance examples are actually met in behaviour, not only implied in code.
 - Assess test evidence for depth, relevance and realism.
 - Perform exploratory or scenario-based checking where automation is not enough.
 - Identify hidden debt, brittle implementation choices and unexamined edge cases.
-- Approve, reject or request rework with clear reasoning.
+- Approve the merge, reject or request rework with clear reasoning, and never for a change this person produced.
 - Escalate structural concerns to the System Steward and business ambiguity to the Product Owner or Intent Architect.
 
 ## Decisions this role owns
 
-- Whether the change should be accepted, reworked or escalated.
+- Whether the change should merge, be reworked or be escalated.
 - Whether the test evidence is sufficient for the stated risk and scope.
 - Whether the change is behaviourally correct even when the code looks plausible.
 - Whether a concern is local rework or a wider coherence issue.
 
 ## Key artefacts
 
-- Owns the verification decision and associated review notes.
+- Owns the review decision at step 6 and the review record in the decision trail (section 8.1 of the model).
 - Produces acceptance evidence, rework requests and defect feedback.
 - Contributes recurring failure patterns to standards, test strategy and specification guidance.
 
-## Cadence participation
+## Part in the flow and the rhythm
 
-- Governance Tier: primary working forum for review, approval and escalation.
-- Execution support: monitors queue health, urgent rework and clarification loops.
-- Strategic Tier: feeds recurring weaknesses in tests, specs and agent behaviour back into the model.
+- Step 6, Review: reviews output as it arrives, with the daily sweep of the review queue as the minimum.
+- Between reviews: monitors queue age, urgent rework and stop conditions.
+- Periodic review: feeds recurring weaknesses in tests, intents and agent behaviour into the measures and the autonomy levels.
 
 ## Working interfaces
 
 - With the Intent Architect: checks whether the delivered behaviour matches the specified intent.
 - With the Product Owner: escalates where business acceptance is unclear or the requested behaviour appears wrong.
 - With the System Steward: escalates structural consistency concerns and recurring drift.
-- With review, testing and security agents: uses their findings as inputs, not as substitutes for judgement.
+- With review agents at L1: uses their findings as inputs, not as substitutes for judgement.
 
 ## What this role is not
 
@@ -85,11 +85,14 @@ Agentic delivery can generate a large volume of technically plausible output. Th
 
 ## Measures of effectiveness
 
-- Escaped defect rate.
-- Rework rate after verification.
-- First-pass approval quality.
-- Review queue health.
-- Accuracy of acceptance decisions over time.
+- Change failure rate and time to restore.
+- Human effort per intent, including review and rework.
+- Age of the review queue.
+- Accuracy of merge decisions over time.
+
+## How this post is likely to change
+
+This is a forecast rather than a requirement of the model, and it is paced by the autonomy an organisation raises on evidence under section 5.4, not by dates. As agents implement more of each change, review at step 6, Review, is likely to become the constraint on throughput, supported by review agents that comment at L1, Advise, without approving. The post is likely to concentrate senior judgement as demand for review skill grows. Approval of someone else's work stays with a person at every level of autonomy. A review queue that lengthens while human effort per intent falls is an early signal that the forecast is arriving.
 
 ## Strong background fit
 

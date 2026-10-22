@@ -1,201 +1,212 @@
-# Factory.ai (Droids): ADM Implementation Guide
+# Factory: running the Agentic Delivery Model
 
-> **Alpha.** This guide reflects the current state of Factory.ai and the Droid CLI. It will be updated as tooling matures and practical experience grows. File paths, flags and command names will change.
+> Checked against vendor documentation on 22 October 2026. Products named here change often, so check availability, names and settings against the vendor's current documentation before relying on them. This note describes one way to run the model on this toolchain and is not an endorsement.
 
-This is a hands-on implementation guide. It shows how to run the Agentic Delivery Model on Factory.ai using Droids: where Intent Specifications are stored, where architectural standards live, how each ADM agent role is configured as a custom droid, which droid does what and how a specification moves from intent to merged code under an orchestrated, governed workflow.
+This note covers Factory's agent, Droid, as it runs through the Droid command-line interface (CLI), its headless mode Droid Exec and the Factory App. It also covers custom droids, Spec Mode, Missions, Automations, delegation from work item and chat tools, the Droid Action for review and Factory's enterprise controls. Factory covers the agent's work well at steps 1, 4, 5 and 6, from drafting to advisory review. No project or user can raise the organisation-level settings that cap its models, commands, tools, network access and autonomy.
 
-Factory maps unusually well to the ADM. It ships a coordinator that decomposes work and dispatches to specialised droids, a two-phase specification mode that mirrors the model's design and build split, tiered autonomy that maps to governed checkpoints and a single standards file the droids read. Where the GitHub and Claude guides have to assemble orchestration from parts, Factory provides much of it natively.
+Factory holds no work item system, pipeline, release candidate, deployment environment or change record. [GitHub](GITHUB-ADM.md) or [GitLab](GITLAB-ADM.md) carries review, environments and deployment beside it, and the [Atlassian](ATLASSIAN-ADM.md) note covers Jira as the work item system. The model's terms are in [MODEL.md](../MODEL.md).
 
-It assumes familiarity with the model. Read [MODEL.md](../MODEL.md) for the roles, artefacts and cadence referenced throughout.
+## 1. Where the model's elements live
 
-## 1. The build at a glance
-
-| ADM concept | Factory mechanism |
+| Model element | Where it lives on Factory |
 |---|---|
-| Intent Brief and Intent Specification | A ticket in Jira, Linear or GitHub, reached through the integration or MCP. Optionally mirrored as a spec file in the repo |
-| Specification planning | Specification mode (`--use-spec`), which plans before implementing |
-| Ready backlog | The Ready state in the connected tracker |
-| Company standards | `AGENTS.md` at the repo root |
-| Project standards | Nested `AGENTS.md` files in subdirectories |
-| Coherence Register | `COHERENCE-REGISTER.md` in the repo, reviewed weekly |
-| Agent roles (skills) | Custom droids in `.factory/droids/*.md`, plus reusable skills |
-| Scheduling Agent and agent coordination | Mission mode, an orchestrator with worker and validator agents |
-| Implementation, Testing, Review, Security, Documentation, Design droids | Custom droids, each with its own prompt, tools and model |
-| Agent sandbox | A git worktree per task, local execution through Factory Bridge or remote execution |
-| Governed checkpoints | Autonomy levels plus lifecycle hooks |
-| Tool access | MCP servers declared per droid, with an enterprise MCP policy |
-| Provenance | Session logs, the connected ticket and the pull request |
-| Governance Tier | Pull request review on GitHub or GitLab |
-| Release | CI/CD triggered by the merge, or `droid exec` at high autonomy |
+| The request (2.2) | The work item system, read through a connector at L1, Advise. |
+| The intent (2.1 and appendix A) and its published version | Drafted on the work item by a headless Spec Mode run, then published as a file in the leading context's repository. |
+| The work item | Jira, Linear or GitHub issues, outside Factory. |
+| Repository instructions | `AGENTS.md` at the root or in `.factory/`, `.agents/` or `.agent/`. Droid also reads `CLAUDE.md`. |
+| Path-specific instructions | Nested `AGENTS.md` files and `.factory/` folders in monorepo subtrees. |
+| Standards as retrievable context | Skills (`SKILL.md`) from a pinned internal plugin marketplace, Model Context Protocol (MCP) servers, connectors and `DESIGN.md`. |
+| The agent profile (appendix C) | A custom droid in `.factory/droids/` or a headless run's flags, with the adopter's evaluation record beside it. |
+| The context profile (appendix B) | No equivalent. It sits in the platform repository. |
+| The tool allow-list | Org-managed `mcpPolicy`, `permissionRules`, `sandbox` network rules and connector availability, narrowed by each droid's `tools` and `mcpServers`. |
+| The run identity | A Factory service account and its application programming interface (API) key, with a per-run credential the pipeline issues. |
+| The workspace (step 3) | A git worktree from `droid exec -w`, a sandbox built from a Factory Environment or an OpenCompute sandbox, in private preview. |
+| The pipeline and deterministic checks (step 5) | The pipeline platform, running Droid Exec and the Droid Action as steps. |
+| The release candidate and its attestation (step 7) | The pipeline platform. Factory produces neither. |
+| Environments and promotion (step 8) | The pipeline platform. A Factory Environment is an agent sandbox definition, not a deployment environment. |
+| The authorisation record (step 9) | The service management system. |
+| The release manifest | Generated by the pipeline. |
+| The decision trail (8.1) | Pull request records, Factory session records, OpenTelemetry data in the adopter's collector and the Enterprise audit log of administrative events. |
+| Telemetry for step 11 | The adopter's observability tools, read through connectors such as Sentry or PagerDuty. |
 
-## 2. Where everything lives
+## 2. Readiness against the eleven steps
 
-### 2.1 Intent Briefs and Intent Specifications
+The "Supports up to" column is a judgement, made from Factory's documented capabilities, of the highest level an agent can hold at each step with the nine controls of 5.3 in place. The model's starting levels are in 3.1 and take effect only after the evaluation under 5.4.
 
-Factory is not the backlog. Intent Briefs and Intent Specifications live in Jira, Linear or GitHub, reached through Factory's native integrations or an MCP server. A droid can read the ticket, the linked design docs and the related logs, then work against them. Status and clarifications go back to the ticket as comments, scoped by the integration's permissions.
-
-Specification mode adds a planning step that suits the model well. Started with `--use-spec`, a droid first produces a plan from the ticket, then implements against it. This is the model's design phase and build phase in one tool: the plan is the executable intent, reviewed before any code is written. You can run planning on a stronger model than implementation with `--spec-model`, which matches the model's guidance that different work justifies different models.
-
-For teams that want the specification to travel with the code, mirror each Ready specification as a file under `specs/` so it is part of the droid's context and serves as the handover document between sessions.
-
-### 2.2 Architectural and standards information
-
-`AGENTS.md` at the repository root is the single source of truth that governs how droids work. It holds the company-level standards: stack, conventions, API rules, testing expectations, security standards and domain rules. Nested `AGENTS.md` files in subdirectories carry project-level standards for a bounded context, and the droid reads the file nearest the code. This expresses the model's split between company-level and project-level standards in one mechanism.
-
-The Coherence Register is held as `COHERENCE-REGISTER.md` in the repository so droids read it as context and the System Steward versions it like code. The weekly Strategic Tier reviews it, and remediation flows back as refactoring specifications.
-
-### 2.3 Droid configuration and skills
-
-Custom droids are the ADM agent roles. Each is a Markdown file with YAML frontmatter, stored in `.factory/droids/<name>.md` for the project and shared with the team, or in `~/.factory/droids/` for personal use. Project droids override personal ones of the same name. The frontmatter sets the name, description, model, reasoning effort, the allowed tools and the MCP servers. The body is the system prompt. Each droid runs with a fresh context window, so its work does not bloat the main session.
-
-The `tools` field takes either a category or an explicit list. The categories are `read-only` for `Read`, `LS`, `Grep` and `Glob`; `edit` for `Create`, `Edit` and `ApplyPatch`; `execute` for `Execute`; and `web` for `WebSearch` and `FetchUrl`. The `mcpServers` field limits a droid to named servers from `.factory/mcp.json`. A built-in `GenerateDroid` tool scaffolds a droid from a short description, and existing Claude Code subagents can be imported, so a team that has defined its fleet in Claude Code can reuse it here.
-
-Skills hold reusable procedures, created with `/create-skill` and managed with `/skills`. Lifecycle hooks are managed with `/hooks`. MCP servers are configured in `.factory/mcp.json` or with `droid mcp add`, drawing on a registry of more than 40 servers including Jira, Linear, Sentry and Notion.
-
-### 2.4 Provenance
-
-Each session produces a log of every action. The connected ticket links the work to its intent. The pull request carries the change and the session summary, and `/share` publishes a session to the organisation. Joined together these give the model's provenance chain. A regulated environment should forward session logs to its audit store.
-
-## 3. Configuring the droid fleet
-
-Each ADM agent role is a custom droid. The table maps the roles, with tool scope and a sensible model and reasoning effort. Scope tools tightly so a reviewer cannot change code.
-
-| ADM agent role | Droid file | Tools | Model and effort |
+| Step | What Factory provides | Supports up to | Gap or complement |
 |---|---|---|---|
-| Requirements Agent | `.factory/droids/requirements.md` | `read-only`, MCP to tracker and docs | Sonnet, medium |
-| Implementation Agent | `.factory/droids/implementation.md` | `["Read", "Edit", "Execute", "Grep", "Glob"]` | Opus, high |
-| Testing Agent | `.factory/droids/testing.md` | `["Read", "Edit", "Execute"]` | Sonnet, medium |
-| Review Agent | `.factory/droids/review.md` | `read-only` | Sonnet, high |
-| Security Agent | `.factory/droids/security.md` | `read-only`, MCP to vulnerability data | Sonnet, high |
-| Documentation Agent | `.factory/droids/documentation.md` | `["Read", "Edit"]` | Sonnet, low |
-| Design Agent | `.factory/droids/design.md` | `read-only`, MCP to the design system | Sonnet, medium |
-| Platform Agent | `.factory/droids/platform.md` | `["Read", "Edit"]`, human approval | Opus, high |
-| Refactoring Agent | `.factory/droids/refactoring.md` | `["Read", "Edit", "Execute"]` | Opus, high |
+| 1 Intent | Spec Mode plans without editing files, headless with `droid exec --use-spec`. | L2 | The pipeline writes the draft to the work item and publishes the validated intent. |
+| 2 Gate | A read-only droid assembles a triggered gate's material from the repository and connectors. | L1 | The gate decision and the decision index sit outside Factory. |
+| 3 Workspace | `droid exec -w` creates a worktree on its own branch. Factory rebuilds and validates Environment images before use. | L0 by design | The adopter versions the Environment definition, and masked data comes from pipeline jobs. |
+| 4 Build | Headless runs at `--auto low` or `medium` under permission rules, the sandbox and Droid Shield. | L2 | The pipeline pushes and opens the pull request, as Factory's guidance for continuous integration (CI) advises. |
+| 5 Verify | A Droid Exec job runs local checks and triages a failing check. Hooks can run formatters and linters. | L3 | The pipeline holds the checks and every retry, and CI Steward stays off. |
+| 6 Review | The Droid Action posts inline code and security findings on a chosen model. | L1 | It approves a clean pull request, so that approval must not count. |
+| 7 Identify | Nothing. | L0 by design | The pipeline builds and attests the candidate. |
+| 8 Promote | Nothing native. A run can invoke an approved job through an allowed command. | L3 | The pipeline's environment rules keep the run below production. |
+| 9 Authorise | A headless pipeline job computes readiness from records read through connectors. | L3 | The pipeline writes the manifest and the release authority decides. |
+| 10 Deploy | Nothing. Org rules can block deployment commands in every agent run. | L0 by design | The deployment engine deploys the authorised candidate. |
+| 11 Confirm and learn | Observability connectors and an incident response automation template. | L2 | Acceptance stays with the product owner, and Factory has no catalogue construct for L4. |
 
-A Review Agent droid, read-only so it cannot modify code:
+Factory is strongest at steps 1, 4 and 5, where org-managed ceilings, tested permission rules, an operating-system sandbox and secret scanning bound a run. It is weakest at step 6, where its review approves clean pull requests, and after the merge, where it holds no component.
 
-```markdown
----
-name: review-agent
-description: Reviews a diff against acceptance criteria and structural consistency. Returns findings only.
-model: inherit
-reasoningEffort: high
-tools: read-only
----
+## 3. Controls and trust boundaries
 
-You are the Review Agent in an Agentic Delivery Model team.
+| Control | How Factory supports it | Gap |
+|---|---|---|
+| 1. Never the sole authoriser | Org rules can block merge and push commands in agent runs. Security review requests changes on critical findings by default. | The Droid Action approves a clean pull request, so branch protection must not count it. |
+| 2. Cannot attest to its own work | Factory writes no attestation, and permission rules can block rerun commands. | CI Steward retries flaky failures and commits fixes, so it stays off. |
+| 3. Only the published promotion path | `maxAutonomyLevel` caps every session, and a `block` rule holds under `--skip-permissions-unsafe`. | `--auto high` permits deployments and migrations, so org rules block them and runs hold no production credential. |
+| 4. Logged under a run identity | Session records, `stream-json` run output and OpenTelemetry metrics with opt-in content spans. | No per-run identity, so the pipeline binds the session ID to its run and the work item key. |
+| 5. A manual route remains | A person can perform every step Factory serves, and deactivating a service account or disabling a connector stops its use at once. | The halt control is the adopter's procedure built on those switches. |
+| 6. Hosting meets the data position | `modelPolicy` allow and block lists, a gateway through `allowedBaseUrls`, a European Union (EU) deployment, Factory Private in private preview and an airgapped pattern. | Factory Router routes per task across providers, and some models require a 30-day provider retention opt-in. |
+| 7. Implementer does not review | A droid pins `model`, Missions take `--worker-model` and `--validator-model` and the Droid Action takes `review_model`. | Factory recommends review aliases that move to newer models, so profiles name exact model IDs. |
+| 8. Approved sources only | Workspace trust gates project rules, text in an `@`-mentioned file cannot change instructions and marketplaces pin by commit. | Delegation reads the issue's comments as context, so builds start from the published intent. |
+| 9. No data or secrets out | Droid Shield scans what a commit or push through Droid publishes. The sandbox denies network by default and can deny credential paths. | Droid Shield does not scan agent output, so pipeline secret scanning and masking still apply. |
 
-Given the diff and the linked Intent Specification, confirm that every acceptance
-criterion is met, that the change follows AGENTS.md and the nearest directory
-AGENTS.md and that it is structurally consistent with the surrounding code. Flag
-duplication, unjustified complexity and naming violations.
+The six trust boundaries of 5.5 hold on Factory as follows.
 
-Respond with:
-Summary: <one line>
-Findings:
-- <issue or no blockers>
+| Boundary | What holds it on Factory |
+|---|---|
+| 1. The organisation and its supplier services | The deployment option and region, `cloudSessionSync`, `sessionRetentionDays` (14 to 365 days) and the SOC 2 Type II, ISO 27001 and ISO 42001 assurance Factory reports. |
+| 2. The agent supplier and the model providers | `modelPolicy`, the provider terms and either bring your own key (BYOK) or a gateway. Factory sends traffic for enterprise endpoints directly to the provider. |
+| 3. The run and the systems it reaches | Permission rules, the sandbox network allow-list, `mcpPolicy`, connector availability, `--only-tools` and a service account per organisation. |
+| 4. Retrieved content and the agent's instructions | The published intent, managed hooks, read-only connector tools and pinned skills, with the sandbox limiting what an injected instruction can reach. |
+| 5. A controlled environment and the repository | Sandbox read and write rules, Droid Shield and fresh sandboxes. Droid Computers keep files and services between sessions, so build runs avoid them. |
+| 6. Non-production and production | Org block rules and the absence of production credentials, with the release authority deciding on the pipeline platform. |
 
-Escalate any question about business intent to a person rather than guessing.
+## 4. Configuration pattern
+
+### 4.1 Intents, standards and context
+
+When a work item enters refinement, a pipeline job runs Droid Exec with `--use-spec` and no `--auto`, so the run plans without editing files. The job writes the plan back as the draft, and the run reads the item only through an MCP server whose write tools are disabled. After validation the pipeline publishes the intent to the leading context's repository by pull request. Delegation from Jira or Linear reads the issue's comments and posts progress back outside the pipeline, so it suits questions during refinement rather than drafts or builds.
+
+Droid finds a nested `AGENTS.md` when it starts in or reads files under that directory, so the root file points to each one. Skills, MCP servers and connectors retrieve the standards at the point of use, and the Droid Action reads review guidance from `.factory/skills/review-guidelines/SKILL.md`.
+
+Organisation-wide rules reach every repository through org-managed settings, delivered from Enterprise Controls, an org `.factory/` bundle or a system-managed `settings.json`. A project or user can add a restriction and cannot remove one, as 5.2 requires. An internal plugin marketplace distributes droids and skills pinned by commit, and `strictKnownMarketplaces` and `strictEnabledPlugins` exclude other sources. A plugin's `version` field pins nothing, so the agent profile records the commit. Factory documents no organisation-wide instruction file, so shared instructions travel as skills in organisation plugins.
+
+### 4.2 Agents, permissions and run identities
+
+A droid definition has no autonomy field, so an agent profile is realised in three layers. Org-managed settings set the ceiling with `maxAutonomyLevel` and `subagentAutonomyLevel`. The pipeline job sets each run's level with `--auto`, its model with `--model`, its tools with `--only-tools` and its instructions with `--append-system-prompt-file`. A custom droid in `.factory/droids/` pins `model`, `tools` and `mcpServers` for work a parent session delegates.
+
+| Agent profile | Step and class | Level | How Factory enforces it |
+|---|---|---|---|
+| Intent drafter | 1, every class | L2 | Headless Spec Mode with no `--auto`. The pipeline writes the draft. |
+| Gate assembler | 2, each triggered gate | L1 | A droid with `tools: read-only`. The pipeline posts its findings. |
+| Builder | 4, standard-tier change in one context | L2 | `--auto medium` in a sandboxed worktree on an ephemeral runner, with org rules blocking push, deployment and migration. |
+| Check triager | 5, a failing check | L2 | A read-only run with no permission to rerun jobs. |
+| Reviewer | 6, every class | L1 | The Droid Action on another provider's model, its approval excluded from required reviews. |
+| Readiness assembler | 9, every release | L3 | A pipeline job with read-only connectors to the records. The pipeline writes the manifest. |
+| Telemetry correlator | 11, every class | L2 | Read-only observability connectors. The pipeline posts the draft post-incident review. |
+
+**Retrieval** uses the `read-only` tool category, `disabledTools` on each MCP server and connectors, whose write tools Factory classifies as high risk. A headless run below High that attempts one stops and exits non-zero.
+
+**Commenting** belongs to the pipeline: it posts each run's output to the work item, and the Droid Action posts review comments through the Factory Droid GitHub App or a token the adopter supplies.
+
+**Execution** is set per run: `--auto low` permits file edits, `medium` adds installs, builds, tests and local commits, and `high` adds pushes, deployments and migrations. A headless run cannot clear an `ask` rule, and a `block` rule holds even when permission prompts are skipped, as in this illustration of the documented syntax:
+
+```json
+{
+  "permissionRules": {
+    "version": 1,
+    "rules": [
+      {
+        "id": "org/block-push",
+        "decision": "block",
+        "match": { "prefix": ["git", "push"] },
+        "tests": {
+          "match": ["git push origin main"],
+          "noMatch": ["git status"]
+        }
+      }
+    ]
+  }
+}
 ```
 
-A Security Agent droid scoped to specific MCP servers:
+Each agent profile runs as its own service account in the organisation that owns the workflow, with its API key held as a pipeline secret and rotated. Model policies can name a service account, so each one is held to its pinned models. The pipeline supplies the per-run credential, such as the short-lived installation token issued for a GitHub workflow run, and records the session ID against it. A Slack direct message runs as its sender, so agent work starts from a channel or the pipeline. On GitLab Self-Hosted a service account gets no repository credentials, so the pipeline job supplies access.
 
-```markdown
----
-name: security-agent
-description: Scans a change for vulnerabilities, secrets, injection risks and licence issues before human review.
-model: inherit
-reasoningEffort: high
-tools: ["Read", "Grep", "Glob"]
-mcpServers: ["sentry"]
----
+Missions run at High autonomy or with prompts skipped, and their validation workers are agents rather than the validators of 2.3. The `missionPolicy` setting restricts who may start a mission until an evaluation supports one.
 
-You are the Security Agent. For the change under review, check new and updated
-dependencies against known vulnerabilities and the approved licence list in
-AGENTS.md, look for secrets and injection risks and confirm security-relevant
-acceptance criteria. Report severity-rated findings and block on anything high or
-critical.
-```
+### 4.3 From verification to deployment
 
-## 4. The dynamic workflow: spec mode and mission mode
+At step 5 the shared pipeline runs the deterministic checks and thresholds and owns every retry, and a Droid Exec job triages a failure and proposes a cause in a comment.
 
-Factory realises the model's dynamic workflow through two features.
+At step 6 the Droid Action reviews the pull request, called a merge request on GitLab, with `review_model` and `security_model` set to models from a provider other than the builder's. The destination branch requires a code owner's approval that the app's approval cannot meet, as the GitHub and GitLab notes set out.
 
-**Specification mode** is the design-then-build split. A run started with `--use-spec` plans the work before touching code. The plan is the point at which the Intent Architect and Product Owner confirm feasibility, scope and acceptance criteria, the model's design phase, before the build phase begins. Implementation then proceeds against the agreed plan.
+Steps 7 to 10 hold no Factory component. The pipeline attests the candidate with the agent profile version and session ID, promotes it and assembles the manifest, and the release authority authorises in the service management system before the deployment engine deploys.
 
-**Mission mode** is the Scheduling Agent and agent-to-agent coordination realised natively. Started with `--mission`, an orchestrator decomposes the work and dispatches it to worker agents, with validator agents checking the output. You set the models for each tier: `--worker-model` for the workers and `--validator-model` for the validators, each with its own reasoning effort. The orchestrator sequences the workers to avoid conflicts and the validators provide the agent-side verification that precedes human review. Mission Control, opened with Ctrl+T in the interactive session, gives the single view of the fleet that the model's Execution Tier needs.
+An artefact-based change ends the agent's part at the pull request. For a state-based change the builder edits the declared state, and the pipeline validates and applies the plan, with org rules blocking the apply command in agent runs. For a migration-based change the builder drafts the ordered migrations, and the dry run, snapshot and reconciliation run as pipeline jobs.
 
-The mapping to the model is close. The orchestrator is the Scheduling Agent. The workers are the Implementation, Testing, Documentation and other execution droids. The validators perform the automated verification that the Review and Security agents own, before the human Governance Tier. Overlap handling, the model's combine, sequence or hold logic, is the orchestrator's job.
+### 4.4 One change through the flow
 
-For continuous execution, `droid exec` runs the loop headless, suited to CI pipelines, scheduled jobs and batch work. A mission can run headless too, with `droid exec --mission -f mission.md`. Parallel work uses git worktrees, one branch per task in its own directory, so concurrent droids do not collide:
+A standard-tier change adds a filter to an existing search screen within its current interface contract.
 
-```bash
-# Two specifications in flight at once, each isolated on its own branch
-droid exec -w spec-101 --auto medium -f specs/101.md &
-droid exec -w spec-102 --auto medium -f specs/102.md &
-wait
-```
+1. The product owner approves the request, and the pipeline writes the intent drafter's draft to the work item.
+2. No gate trigger applies, the business analyst validates the intent and the intent architect publishes it by pull request.
+3. The pipeline allocates a worktree on an ephemeral runner.
+4. The builder runs at `--auto medium`, and the pipeline opens a pull request carrying the work item key and session ID.
+5. One check fails, the triager proposes a cause and the builder's corrected change passes.
+6. The Droid Action comments, and a code owner who did not produce the change approves and merges.
+7. The pipeline builds and attests the release candidate.
+8. The pipeline promotes the candidate through the non-production environments.
+9. The pipeline assembles the manifest with a proven rollback, and the release authority authorises the release.
+10. The deployment engine deploys the authorised candidate.
+11. Health checks pass, the telemetry correlator reads filter use against the measure and the product owner accepts the change.
 
-## 5. Governance, identity and guardrails
+## 5. Gaps and complementary tooling
 
-**Autonomy levels are the governed checkpoints.** `droid exec` runs read-only by default. `--auto low` permits safe edits and formatters. `--auto medium` permits dependency installs, builds, tests and local commits, which is the right level for implementation. `--auto high` permits push and deploy, reserved for trusted CI steps. `--skip-permissions-unsafe` removes all guardrails and belongs only in a disposable container. Mapping each ADM activity to the lowest autonomy that lets it complete is the practical expression of proportionate governance.
+**Evaluation.** Factory Analytics reports consumption and adoption rather than output quality, so the evaluation under 5.4 is the adopter's own harness, for example replaying historical intents through Droid Exec.
 
-**Identity and access.** Each droid is restricted to the tools in its frontmatter and the MCP servers it names. An enterprise MCP policy blocks servers that are not approved, even if a droid lists them, which keeps tool access governed centrally. API keys are held in environment variables, never in source.
+**Cost limits.** Factory's usage alerts are informational, so the circuit breakers of 5.4 need budget checks in the pipeline beside Factory's usage limits.
 
-**Sandboxes.** Each task runs in an isolated git worktree, locally through the Factory Bridge app or in a remote environment. A clean worktree is removed automatically when a headless run finishes, and a dirty one is preserved for review. This gives the model's per-task isolation and limits the blast radius of any single run.
+**Private preview.** Software Factory, Factory Private, OpenCompute, Droid Shield's learned classification and webhook triggers for Automations are in private preview, with access by request.
 
-**Human accountability.** Validators and autonomy levels keep agents from approving their own work. The pull request on GitHub or GitLab is the human gate, and branch protection there makes a named person the approver of every change into a protected branch.
+## 6. Decisions for adopters
 
-## 6. Interactive and headless
+1. The deployment option: Factory Managed in the global or EU region, a hybrid pattern, Factory Private or the airgapped pattern.
+2. The permitted models in `modelPolicy`, whether personal BYOK is allowed, the gateway in `allowedBaseUrls` and any retention opt-in.
+3. Where intents live, the repository path of the published version and the steps that delegation may serve.
+4. The ceilings in `maxAutonomyLevel` and `subagentAutonomyLevel`, and whether `missionPolicy` restricts Missions.
+5. The org permission rules for push, deployment, migration and pipeline reruns.
+6. The sandbox mode, the network allow-list and the credential paths denied to reads.
+7. One service account per agent profile, its key rotation and the per-run credential the pipeline issues.
+8. Whether agent-initiated pipeline jobs such as promotion at step 8 are allowed and whether CI Steward is used.
+9. The review and security models and the branch protection that keeps the app's approval from counting.
+10. The connectors, MCP servers and plugins allowed, the write tools disabled and the commit each plugin is pinned to.
+11. Where runs execute and whether local desktop sessions are permitted.
+12. Cloud session sync, the retention period and the OpenTelemetry collector.
 
-Use the interactive `droid` for the design phase and verification, where a person steers. The Product Owner drafts a specification with a requirements droid working from the ticket and design docs. The Intent Architect uses specification mode to produce and confirm a plan. The Verification Engineer uses `/review` to walk a change against acceptance criteria. Slash commands and the `/skills` library hold the repeatable methods.
+## Sources
 
-Use `droid exec` for the Execution Tier, where the fleet runs autonomously against Ready specifications at a controlled autonomy level, in CI or on a schedule. The same `AGENTS.md`, droids and skills drive both, so behaviour is consistent across interactive and headless runs.
-
-## 7. Integrations
-
-Factory connects to the tools the team already uses, so droids see what people see. Native integrations cover GitHub and GitLab for code and pull requests, Jira and Linear for the backlog, Slack and Teams for collaboration and Sentry and PagerDuty for incidents. This matters for the model's feedback loop: an incident in PagerDuty or an error in Sentry can become an Intent Brief through the same backlog, and a droid can triage it.
-
-Factory Bridge connects a droid to a local development environment, so it can run builds and tests against the local toolchain while the session is coordinated centrally. Work can also run against a remote repository directly. This flexibility lets a regulated team keep execution inside its own environment while still using the platform's orchestration.
-
-## 8. Cadence mapping
-
-**Execution Tier, continuous.** `droid exec` and missions run against Ready specifications. Mission Control gives the single view of the fleet.
-
-**Governance Tier, daily.** Pull requests created by the droids queue on GitHub or GitLab. The Verification Engineer reviews against acceptance criteria, the Product Owner answers escalated clarifications and the backlog is reprioritised. Branch protection holds the gate.
-
-**Strategic Tier, weekly.** The System Steward reviews `COHERENCE-REGISTER.md` and commissions refactoring. The team reviews metrics, autonomy policy, model selection per droid and cost. The readiness report (`/readiness-report`) gives a useful input to this session.
-
-## 9. Gaps and what to add
-
-**Requirements discovery.** Factory drafts and plans well from a ticket, but it does not facilitate stakeholder discovery. Run discovery through a requirements droid working from notes and existing context, or outside the tool, then record the result in the tracker.
-
-**Governance dashboard.** Mission Control shows the fleet, but a consolidated view of specifications in flight, the review queue and escalations across trackers needs building from the tracker plus session output.
-
-**Feature flags and cost per specification.** Factory has no native feature flag management, so integrate a flag service. Tag sessions to the specification so cost can be measured in currency, which is the model's metric.
-
-**Regulated controls.** Autonomy levels, the enterprise MCP policy and Bridge-based local execution give strong building blocks, but data residency, model governance and the audit trail still need deliberate configuration. Keep inference inside the trust boundary with BYOK or local execution where the sector demands it.
-
-## 10. Reference operating pattern
-
-1. Standards are codified in `AGENTS.md` at the repo root and per directory. Droid roles are defined in `.factory/droids`, with reusable methods as skills and governance gates as hooks.
-2. The Product Owner drafts an Intent Specification with the requirements droid, recorded in Jira or Linear through the integration.
-3. The Intent Architect runs specification mode to produce and confirm a plan, then marks the specification Ready.
-4. A mission runs against the Ready specification. The orchestrator decomposes the work, dispatches worker droids in isolated worktrees and runs validators.
-5. The Implementation droid works at `--auto medium`. Testing, Review, Security and Documentation droids run and return findings. Technical clarifications resolve agent-to-agent. Intent clarifications escalate to a person.
-6. A pull request is opened on GitHub or GitLab with the session trail. The Verification Engineer reviews it at the daily Governance Tier, and the specification author does not approve.
-7. On merge, CI/CD promotes the change behind a feature flag. The Product Owner activates the flag when the Strategic Intent is complete.
-8. The System Steward maintains the Coherence Register and commissions refactoring at the weekly Strategic Tier. Cost per specification is tracked from tagged sessions.
-
-## 11. Source notes
-
-This guide is based on public documentation:
-
-- [Factory: Custom Droids (Subagents)](https://docs.factory.ai/cli/configuration/custom-droids)
-- [Factory: Droid CLI Reference](https://docs.factory.ai/reference/cli-reference)
-- [Factory: Droid Exec overview](https://docs.factory.ai/cli/droid-exec/overview)
-- [Factory: MCP configuration](https://docs.factory.ai/cli/configuration/mcp)
-- [Factory: product and integrations](https://factory.ai/)
-- [Factory is GA: Droids for the entire SDLC](https://factory.ai/news/factory-is-ga)
-
-Factory.ai is evolving rapidly. Revisit this guide as capabilities mature.
+- [Custom droids (subagents)](https://docs.factory.com/harness/subagents)
+- [Autonomy Level](https://docs.factory.com/autonomy-and-safety/auto-run)
+- [Permission rules](https://docs.factory.com/autonomy-and-safety/permission-rules)
+- [Sandbox](https://docs.factory.com/autonomy-and-safety/sandbox)
+- [Interaction Modes](https://docs.factory.com/autonomy-and-safety/specification-mode)
+- [Droid Shield](https://docs.factory.com/autonomy-and-safety/droid-shield)
+- [Hooks](https://docs.factory.com/harness/hooks)
+- [Model Context Protocol (MCP)](https://docs.factory.com/harness/mcp)
+- [AGENTS.md](https://docs.factory.com/harness/agents-md)
+- [Connectors](https://docs.factory.com/harness/connectors)
+- [Droid Exec (Headless)](https://docs.factory.com/droid-exec/overview)
+- [Custom Models (BYOK)](https://docs.factory.com/model-independence/byok)
+- [Factory Router](https://docs.factory.com/model-independence/factory-router)
+- [Available Models](https://docs.factory.com/models)
+- [Enterprise Controls & Managed Settings](https://docs.factory.com/enterprise/hierarchical-settings-and-org-control)
+- [Internal Plugin Marketplaces](https://docs.factory.com/enterprise/internal-plugin-marketplaces)
+- [Identity & Access](https://docs.factory.com/enterprise/identity-and-access)
+- [Self-Managed Source Control](https://docs.factory.com/enterprise/self-managed-scm)
+- [Deployment Patterns](https://docs.factory.com/enterprise/network-and-deployment)
+- [Data Flows & Privacy](https://docs.factory.com/enterprise/privacy-and-data-flows)
+- [Compliance & Audit](https://docs.factory.com/enterprise/compliance-audit-and-monitoring)
+- [Automated Code Review](https://docs.factory.com/software-factory/code-review-ci)
+- [Factory-AI/droid-action](https://github.com/Factory-AI/droid-action)
+- [Software Factory](https://docs.factory.com/software-factory/overview)
+- [Custom Automations](https://docs.factory.com/software-factory/automations)
+- [Factory Missions](https://docs.factory.com/missions/overview)
+- [Droid Computers](https://docs.factory.com/droid-computers/overview)
+- [OpenCompute](https://docs.factory.com/opencompute/overview)
+- [Linear](https://docs.factory.com/delegations/linear), [Jira](https://docs.factory.com/delegations/jira) and [Slack](https://docs.factory.com/delegations/slack) delegation guides
+- [Full Changelog](https://docs.factory.com/changelog/release-notes)
+- [Introducing Flexible Deployment Options at Factory](https://factory.com/news/factory-private)
+- [Droids now have a fleet of sandboxes](https://factory.com/news/droids-now-have-a-fleet-of-sandboxes)

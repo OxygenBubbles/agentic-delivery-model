@@ -1,620 +1,567 @@
 # The Agentic Delivery Model
 
-**Version 1.1, June 2026**
+**Version 2.0 pre-release, October 2026**
 
-An open methodology for software delivery in the age of autonomous AI agents.
+An open, vendor-neutral model for software delivery where agents built on language models do much of the implementation under controls that people set and hold.
 
-The model will evolve as tooling matures and organisations contribute experience. If you see gaps, contradictions or opportunities, the author welcomes the conversation.
-
----
-
-## 1. Introduction
-
-The Agentic Delivery Model (ADM) is an open methodology for software delivery in the age of autonomous AI agents. It is freely available, designed to be adapted and intended to evolve as the technology matures.
-
-Agile transformed software delivery. It replaced heavyweight, document-driven processes with collaboration, iteration and responsiveness to change. Over two decades, Agile and its variants became the dominant operating model for technology teams worldwide. That success was well earned.
-
-But Agile was designed for a world where people do the work. Its ceremonies, roles and artefacts all assume that people write the code, people test it and people coordinate the effort. Autonomous AI agents have changed that assumption. The operating model needs to evolve. Not because Agile failed, but because the world it was designed for has moved on.
-
-The ADM preserves what Agile got right: iteration, collaboration and working software as the measure of progress. It restructures what no longer fits: ceremonies built around human coordination, roles defined by manual execution and estimation practices tied to human throughput.
-
-One important distinction. Most organisations today experience AI agents as developer tools. An engineer spins up an agent to help write code, generate tests or refactor a module. Useful, but small-scale. The developer remains the unit of delivery. The team structure, governance and coordination model stay the same.
-
-The ADM is different. It defines an operating model where a fleet of autonomous agents works collectively against a governed backlog, coordinated by architecture and governance rather than by individual developers. Agents are the delivery workforce. People define intent, maintain coherence, verify output and govern the process. The organisational structure, roles, cadence and governance all change to reflect this.
-
-The wider industry has converged on a related idea known as spec-driven development. The principle is that a written specification, not the code, is the primary artefact, and code becomes a regenerable output produced from the specification by agents. The Agentic Delivery Model shares that principle and goes further. Spec-driven development describes how one codebase works around a specification. This model describes how an organisation does: the roles, governance, cadence and accountability needed to run intent-driven delivery at scale. The two are complementary. Spec-driven tools are a natural execution layer beneath the operating model defined here.
-
-The model is sector-agnostic. It works for greenfield and brownfield environments. It scales from small teams to large technology functions.
-
-What follows is the complete methodology.
+The model will evolve as tooling matures and organisations contribute experience.
 
 ---
 
-## 2. The Case for Change
+## Introduction
 
-Every mainstream framework for enterprise software delivery was designed around a single assumption: that people execute the work and other people coordinate that execution. Agile, Scrum, SAFe, Kanban and their variants all encode human constraints into their structure. Two-week sprints reflect the limits of collective human working memory. Daily standups compensate for the fact that people forget, miscommunicate and lose alignment. Retrospectives exist because people learn through structured reflection.
+The Agentic Delivery Model (ADM) is an open methodology for software delivery where agents built on language models carry out much of the implementation under controls that people set and hold. It is freely available under an open licence, designed to be adapted and intended to evolve as the technology matures. An agent here is a configured run of a language model that works in an allocated workspace under its own identity and produces output that pipelines and people check. People define intent, maintain coherence, verify output and govern the process.
 
-AI agents have none of these constraints. They work continuously. They do not context-switch in the way people do. They do not require ceremonies to maintain alignment if they are reading from a shared, well-structured backlog.
+The model is written for the people who run software delivery in an organisation, from the technology leader who answers for it to the engineers, analysts and testers who do the work. It also serves the assurance functions that need to see how a change was controlled. It is sector-agnostic, applies to greenfield and brownfield environments and suits a small team or a large technology function.
 
-But they introduce entirely different constraints. They hallucinate. They struggle with ambiguity. They accumulate technical debt at unprecedented rates. They cannot validate output against business intent without human guidance. They produce code that appears functional but may be structurally incoherent or misaligned with business rules and existing system behaviour.
+It covers the process from a request to a confirmed outcome and the engineering platform available to every team, the shared environments, pipelines and tooling of section 6. It also covers the controls that create evidence while the work is done and the use of agents at each step. One flow carries every change, agents work within limits set centrally and a person authorises every production change.
 
-The result is a mismatch. Organisations are bolting autonomous agents onto operating models designed for manual execution. The agents deliver at machine speed, but the governance, review and coordination structures either throttle that speed back to the pace of the people around them or let agent output flow unchecked into production.
+Spec-driven development holds that a written specification, not the code, is the primary artefact and that code is a regenerable output produced from it by agents. This model shares that principle and describes how an organisation runs it: the accountabilities, controls and flow needed to deliver from intent at scale. From Agile the model keeps iteration, collaboration and working software as the measure of progress. In place of ceremonies built around human coordination it has one flow, in place of posts defined by manual execution it has accountabilities and in place of estimation it reads observed lead time.
 
-Neither outcome is acceptable. This document defines an operating model native to a world where agents execute the majority of implementation work and people focus on intent, governance and validation.
+The model is read in order: the principles, then the unit of work, the flow, the deployment approaches, the agents, the platform, the accountabilities, the evidence and the measures, then adoption. Sections 9 and 11 place the model beside existing frameworks and state what it is not, and the appendices carry the templates and the defined terms. Four companions sit beside it: the adoption guide, the journey of a change (a worked example that follows one change through the flow), the profiles and the tooling notes. If you are reading in order to adopt, section 10 and the adoption guide give the order of work.
 
----
-
-## 3. Principles
-
-The Agentic Delivery Model is built on eight principles.
-
-1. **Intent over instruction.** The highest-value human activity is defining what needs to exist and why, with enough precision that an autonomous agent can execute against it. People specify intent. Agents determine implementation.
-
-2. **Continuous execution, governed checkpoints.** Agents work in continuous flow. People intervene at defined governance intervals, not on every action. The cadence of review is decoupled from the cadence of execution, but must be proportionate to the volume and risk of agent output.
-
-3. **Verification and validation serve different purposes.** Verification confirms that agent output matches the specification. Validation confirms that the specification serves the business intent. Agents and automated tests handle verification. People own validation. Both are required. Neither replaces the other.
-
-4. **Architectural coherence is a first-class concern.** Agents optimise locally. People must maintain system-level coherence. Without deliberate architectural stewardship, agent-generated codebases will fragment rapidly.
-
-5. **Technical debt is measured, not assumed.** Agents can produce enormous volumes of code. Volume is not value. Every governance checkpoint must include an explicit assessment of whether agent output is creating or reducing structural debt.
-
-6. **Precision of intent determines quality of output.** The quality of what an agent delivers is directly proportional to the precision of the specification it works against. Definition of Ready is the most critical quality gate in the entire process. Precision is iterative, not absolute. Specifications improve through feedback loops, not upfront perfection.
-
-7. **Human accountability is non-negotiable.** Agents execute. People are accountable for what agents produce. Every agent-generated artefact has a named person who approved it into production. Accountability frameworks, senior management regimes and organisational governance all require a person in the chain of responsibility. This is a regulatory and operational requirement, not a suggestion.
-
-8. **Transparency of provenance.** All agent-generated work must be traceable: which agent, which model, which specification, which version of the codebase. Audit trails are not optional in regulated environments.
+Version 2.0 restates the model around one flow and an autonomy ladder, five levels that set what an agent may do at each step (5.1). The changelog records the detail of what changed.
 
 ---
 
-## 4. The Design & Delivery Cycle
+## 1. Principles
 
-In traditional Agile, the space between what the business needs and what gets built is filled by people talking to each other. A product owner defines priorities. A business analyst runs workshops, interviews stakeholders and translates business need into user stories. Developers ask questions in refinement sessions. It works because people share context, make reasonable inferences and catch misunderstandings in conversation.
+The model rests on ten principles. They decide any question the rest of the model does not answer. An adopter whose design cannot meet one records the departure and its reason in the coherence register, the single record of architecture decisions, technical debt and coherence risks (appendix D).
 
-Agents cannot do this. They take specifications literally. They fill gaps with assumptions that may be plausible but wrong. They do not know what they do not know.
-
-The requirements process must therefore become more rigorous. But agents also make this possible: they can conduct structured requirements interviews with stakeholders, generating detailed Intent Specifications that other agents then implement.
-
-### 4.1 The Delivery Cycle
-
-The ADM delivery cycle has two distinct phases.
-
-**Design phase (iterative).** A product owner writes an Intent Brief: a short statement of what they want to achieve and why, with enough context to scope a discovery session. A requirements agent takes the Brief and conducts structured discovery with stakeholders, producing one or more draft Intent Specifications. The product owner refines them for business accuracy. An Intent Architect reviews for feasibility and scope, adds constraints and tightens acceptance criteria. The specification iterates between these roles until it passes the Definition of Ready ([Appendix B.4](#b4-definition-of-ready-for-agents)). This phase is deliberately iterative. Precision is built through cycles of drafting, review and refinement.
-
-**Build phase (sequential, with feedback).** Once a specification passes the Definition of Ready, it enters the Execution Tier. An implementation agent picks it up, creates a feature branch, implements the change, runs automated tests and creates a pull request (PR). The Review Agent, Testing Agent and Security Agent perform automated checks. The PR reaches the Governance Tier for human verification. If approved, it is merged and flows through continuous integration and continuous deployment (CI/CD) towards release. If the agent encounters ambiguity during implementation, the clarification mechanism (Section 4.3) applies: technical questions are resolved agent-to-agent, intent questions return to a person. A rejected PR at the Governance Tier returns to the agent for rework. The build phase is not a single pass. It is a controlled sequence with defined feedback loops.
-
-The design phase is where the thinking happens. The build phase is where the agent fleet executes. If the design phase did its job, the build phase should be fast and predictable, with minimal clarification cycles. Rework in the build phase almost always traces back to insufficient precision in the design phase.
-
-**Specification sources.** Intent Specifications can originate from several sources: human discovery (the primary path described above), agent-led problem detection (AIOps agents, observability platforms, automated monitoring), or ITIL incident and problem management processes (see [Appendix D](#appendix-d-itil-and-operational-frameworks)). Defects detected by operational agents or surfaced through incident investigation enter the same delivery cycle. The finding becomes an Intent Brief, discovery produces an Intent Specification, agents implement the fix and people verify. The Product Owner prioritises all sources through the same process. The delivery cycle is identical regardless of origin.
-
-### 4.2 Intent Briefs and Requirements Discovery
-
-#### 4.2.1 Problem Discovery
-
-Most work items proceed directly to an Intent Brief (described in 4.2.2 below). This section covers the exception: what to do when the problem itself is not yet well enough understood to write one.
-
-Not every request arrives with a clear business problem. A stakeholder who says "I need a report showing claims by region" may actually need "I need to understand why claims costs are rising in the North West." Before writing an Intent Brief, the Product Owner may need to establish what the problem actually is.
-
-Problem discovery is a distinct cycle that sits before the Intent Brief. The Product Owner works with a requirements agent to explore the problem space with stakeholders: what is happening, what should be happening, what is the impact, what has been tried. The output is not a specification. It is a problem statement with enough clarity for the Product Owner to decide whether to commission an Intent Brief.
-
-Problem discovery may conclude that no technology change is needed, or that the real problem is different from the one initially described. This is valuable. It prevents Intent Briefs being written for the wrong problem. When the problem is confirmed, the Product Owner writes an Intent Brief and the standard discovery cycle begins.
-
-Not every piece of work needs problem discovery. Well-understood changes ("add a field", "change a validation rule", "fix this defect") can proceed directly to an Intent Brief. Problem discovery applies when the underlying need is unclear, when the stakeholder is describing a symptom rather than a cause or when the scope of the problem is not yet understood.
-
-#### 4.2.2 The Intent Brief
-
-Discovery starts with a person decision about what to build. The Product Owner writes an Intent Brief: a short, structured statement of the business objective, the context behind it and the stakeholders who own the domain knowledge. The Brief is not a specification. It is the input that gives the requirements agent something to work from.
-
-An Intent Brief contains: a business objective, success criteria, known constraints, stakeholders to consult, an indication of complexity and a recommendation on discovery mode (see below). It sits in the backlog alongside Intent Specifications, but at an earlier state. The template is in [Appendix B.1](#b1-the-intent-brief).
-
-A single Intent Brief may produce one Intent Specification or several. A large objective ("build a customer self-service portal") will decompose into multiple specifications during discovery. The Brief is the parent. The specifications are the output.
-
-#### 4.2.3 Agent-led Discovery
-
-Requirements agents interview stakeholders using structured question frameworks. The agent takes over the discovery and drafting work traditionally owned by business analysts. The product owner takes over refinement and sign-off. The implications for existing BA roles are covered in Section 6.8 and the transition guidance in [ADOPTION.md](ADOPTION.md).
-
-The model prescribes the process, not the medium. A requirements agent may interact with stakeholders through text, voice, video or guided forms. The medium will evolve. What matters is the structure: a requirements agent conducts discovery against an Intent Brief, supervised by a product owner, and produces one or more draft Intent Specifications.
-
-The process follows a repeatable pattern:
-
-```mermaid
-flowchart TD
-    A[Product Owner writes Intent Brief] --> B[Requirements Agent conducts structured discovery]
-    B --> C[Agent produces draft Intent Specifications]
-    C --> D[Product Owner refines for business accuracy]
-    D --> E[Stakeholder confirmation]
-    E --> F[Intent Architect reviews for feasibility and scope]
-    F -->|Ready| G[Enters prioritised backlog]
-    F -->|Gaps found| B
-```
-
-1. A product owner writes an Intent Brief and assigns it to a requirements agent.
-2. The requirements agent conducts structured discovery with the stakeholders named in the Brief. The agent asks progressively detailed questions about user personas, business rules, edge cases, integration points, regulatory constraints and acceptance criteria.
-3. The agent produces one or more draft Intent Specifications (see [Appendix B.2](#b2-the-intent-specification)).
-4. The product owner refines each draft for business accuracy, completeness of acceptance criteria, edge case coverage and consistency with existing business rules. They add domain context the agent could not extract from discovery. They correct where the agent has captured the letter of what was said but missed the intent.
-5. The refined specification is presented back to the business stakeholder for confirmation.
-6. The finalised Intent Specification is peer-reviewed by an Intent Architect for feasibility and scope before entering the backlog. If the Intent Architect identifies gaps, the specification returns to the requirements agent for further discovery.
-
-Complex features require multiple sessions across different stakeholders. The requirements agent maintains context across sessions and flags contradictions between them.
-
-#### 4.2.4 Paired Discovery
-
-Not all discovery can run unsupervised. When the domain is ambiguous, the stakeholder contradicts themselves or the subject matter is too complex for the agent to navigate alone, a person needs to be in the loop during the session itself. This is paired discovery: the Product Owner or Intent Architect works alongside the requirements agent in real time, steering the conversation, correcting course and adding context the agent does not have.
-
-This is the same instinct as a BA and a PO sitting in a workshop together because the subject matter is too messy for one person to run alone. The agent is the BA. The person pairs when the complexity warrants it.
-
-The Intent Brief flags this. A Brief marked as high complexity or covering an unfamiliar domain should default to paired discovery. A Brief covering a well-understood change ("add a field", "change a validation rule") can run as standard agent-led discovery. The routing decision belongs to the Product Owner at the point they write the Brief.
-
-Paired discovery is not a failure mode. It is a legitimate operating pattern. Some work is simple enough for autonomous discovery. Some needs a person in the room.
-
-**Problem discovery, not just requirements capture.** The requirements agent can go beyond structured questioning. A stakeholder who says "I need a report showing claims by region" may actually need "I need to understand why claims costs are rising in the North West." The agent probes for the underlying need, challenges assumptions and surfaces the real business problem. The product owner decides whether that problem is the right one to solve.
-
-**Speed matters.** A product owner and a requirements agent should move from an Intent Brief to a Ready Intent Specification in hours, not days. Brief, discovery, draft, refinement, feasibility check, backlog. This cycle repeats throughout the working day. If the specification pipeline slows, agents have nothing to work on. The requirements process is the engine that drives throughput.
-
-### 4.3 Iterating Specifications
-
-Intent Specifications are living documents. They evolve through three feedback loops:
-
-**Pre-implementation iteration.** Before an implementing agent begins work, an Intent Architect reviews the specification for feasibility, scope appropriateness and testability. They may trigger a further requirements interview to resolve gaps.
-
-**Implementation feedback.** When an implementing agent encounters ambiguity during execution, the resolution path depends on the type of ambiguity. Technical clarifications (API contracts, data formats, implementation patterns) can be resolved agent-to-agent: the implementing agent consults the relevant agent (requirements, testing or review) and they resolve it directly. Intent clarifications (what the business actually wants, which behaviour is correct, scope decisions) must always return to a person. If in doubt, escalate to a person. Getting intent wrong is more expensive than asking. When a clarification does require human input, it triggers a focused follow-up with the relevant stakeholder, mediated by the requirements agent. The specification is updated and the implementing agent resumes.
-
-**Post-implementation refinement.** After delivery, the verification process may reveal that the specification itself was incomplete or imprecise, even if the agent followed it correctly. These findings feed back into a specification quality review, improving future intent design.
-
-### 4.4 The Investment in Requirements
-
-The ADM requires more care in requirements, but not more time. The agent-led discovery process is faster than traditional workshops and BA cycles. What changes is precision. A vague specification produces vague output at machine speed, compounding the problem. Precision upfront costs less than rework downstream.
-
-In practice, product owners spend most of their time in a rapid cycle: discovery with stakeholders, refine the agent-generated draft, hand off for feasibility review, move to the next objective. The time previously spent in standups, sprint planning and backlog grooming goes into this cycle instead. The product owner works from an agent-generated draft rather than a blank page. The pace is fast because it has to be: the agent fleet is waiting for work.
-
-### 4.5 Where the ADM Applies
-
-The ADM applies to any work where a person can specify the intent and an agent can execute the implementation. The following are examples, not an exhaustive list.
-
-**Backend and API development.** Business logic, service layers, API endpoints, database operations and background processing. These map well to agent execution because the intent can be precisely specified through acceptance criteria, API contracts and data schemas.
-
-**Frontend development.** UX research and interaction design remain specialist disciplines. The ADM enters the workflow at the implementation stage: agents work from component libraries, design systems and approved designs to generate frontend code. The Design Steward (Section 6.4) owns the design system and codifies the constraints that agents work within. The Intent Specification for UI work includes Design Constraints referencing specific components, interaction patterns and responsive breakpoints. The Design Agent checks agent output against these constraints. Verification includes visual regression testing alongside functional checks.
-
-**Integration development.** Integration work is a natural fit. Integration specifications are inherently precise: API contracts, data mappings, error handling rules and message formats. Intent Specifications for integration work map closely to the technical contracts they implement. Agents working on integrations benefit from clear boundaries and well-defined success criteria.
-
-**Data and analytics.** Data pipeline development, ETL processes and analytics implementations follow the same pattern. Intent Specifications for data work define source systems, transformation logic, quality checks and output schemas. Agents can generate pipeline code, SQL transformations and data quality tests. The Verification Engineer validates that the output data meets business requirements, not just that the code runs.
-
-**Infrastructure and platform engineering.**
-
-Infrastructure-as-code is agent-compatible. Intent Specifications for infrastructure work define the desired state: environments, networking, security groups, scaling policies. Platform Agents generate Terraform, CloudFormation or equivalent configurations. Human oversight is tighter here because infrastructure changes have wider blast radius. All Platform Agent output requires explicit human approval before application.
-
-The ADM covers the cycle from specification to deployment. Activities that precede specification, such as UX research, user testing and product discovery, sit outside this model. These disciplines may have their own agent-assisted workflows, but that is a separate concern. Their output feeds into the ADM as context for Intent Briefs and Intent Specifications. Section 18 defines the broader boundaries.
+| Principle | What it means | Why it matters |
+|---|---|---|
+| 1. Intent over instruction | People define what needs to exist and why, with enough precision that an agent can execute against it. Precision is iterative: an intent improves through the passes in 2.3, not through upfront perfection. | An agent takes the intent literally and fills gaps with assumptions that may be plausible but wrong. The quality of what it delivers rises with the precision of the intent it works against. |
+| 2. One flow for every change | Every change in scope follows the eleven steps in 3.1 and leaves the flow only by the exception routes in 3.2. Platform differences sit in the context profile (the platform's implementation of each step, appendix B) and the deployment approach (section 4), not in a separate process. | One flow gives one process to learn and one basis for assessing the controls and the evidence. |
+| 3. Verification and validation serve different purposes | Verification confirms that the output matches the intent and the standards. Validation confirms that the intent serves the business need. Validation happens before implementation and at acceptance, verification through the checks at step 5, Verify, and the review at step 6, Review. | A change can match its intent exactly and still be the wrong change, so neither replaces the other. |
+| 4. No one approves their own work | No person, agent or model approves a change it produced or attests to the checks on it. An implementing agent cannot override the checks on its own output, and a model reviewing another model's output comments without approving. | The person who formed the intent is a poor judge of the output, and the independence required of people extends to agents and models so that none approves its own output at scale. |
+| 5. A person authorises every production change | Deployment to production and data change in production stay at autonomy level L0, Not used, under 5.1. A person holding the authority authorises them, and no one is the sole authoriser of a change they requested, built or will implement. | Production is where a mistake reaches customers, and accountability frameworks require a person in the chain of responsibility whatever the autonomy below production. |
+| 6. Deploy what passed the checks | Each execution unit (a separately controlled part of an intent, 2.4) becomes a release candidate, an identified object promoted unchanged between environments with its checks and approvals recorded against it as its attestation. Where a platform promotes source, the candidate is linked to the release commit that deploys and the checks run again on that commit. | A rebuild between environments can make the object in production differ from the object that passed the checks. |
+| 7. Each standard has one source and coherence has an owner | Every rule the pipeline enforces is read from the published standard, not a copy, and an agent retrieves the same standard at the point of use (6.2). The system steward owns coherence and the coherence register (section 7). | One published version prevents drift between the rule as written and the rule as enforced. Agents optimise locally, and without an owner for coherence an agent-built codebase drifts towards inconsistency. |
+| 8. Autonomy is set centrally and earned by evidence | What an agent may do is set per step and per class of change (a kind of change the organisation treats alike), in organisation-level settings no project or user can raise. It rises only on an evaluation, a measured test of the agent's output at that step and class, and falls without a meeting (5.4). | A ceiling no project or user can raise lets the security lead and the accountable executive answer for what agents do. |
+| 9. Evidence is created by the systems that do the work | Each record is created by the system that performs the step, without transcription, and carries the reference that links it to the next. Agent-produced work is traceable to the agent, the model, the run identity (the identity issued to one run), the intent and the codebase version. | Transcription breaks the links an assessor follows, and because agent output is not reproducible the control is the trail and a named person's authorisation. |
+| 10. An agent stops rather than guesses | An agent halts at a stop condition, or where its context is missing or out of date, rather than inferring what to do, and records its state so the work resumes. A question inside the delegation boundary in the intent is resolved there, and a question about intent stops the run. | A recorded halt lets an unresolved assumption be checked before work continues. A guess carries it forward and the cost compounds downstream. |
 
 ---
 
-## 5. Architecture and Standards Governance
+## 2. The unit of work
 
-Agents are powerful local optimisers. Given a well-specified task, they will produce working code that satisfies the acceptance criteria. But they have no inherent sense of system-level coherence. Without explicit architectural constraints, a codebase built by multiple agents working on separate stories will drift rapidly towards inconsistency.
+The intent is the unit of work: a specification of one change, complete enough to be executed without further explanation from its author, formed and validated on its work item and built only from its published version.
 
-Architecture and standards must be defined, codified and enforced at two levels.
+### 2.1 What an intent carries
 
-### 5.1 Company-Level Standards
+The work item is the record in the organisation's work management system that carries the request reference and the state of the work, and appendix A carries the template.
 
-These apply across all products and projects within the organisation. They include:
+| Element | What it states | Why it is required |
+|---|---|---|
+| 1. Outcome and measure | The outcome, the measure that will show it, the person who accepts it and the colleagues whose work it changes. | Acceptance at step 11, Confirm and learn, is decided against it. |
+| 2. Scope boundary | What is in scope and, separately, what is out. | An unstated exclusion reads as permission. |
+| 3. Acceptance examples | Concrete examples of correct behaviour, with edge cases and error paths, owned by the business and written before implementation. | An agent may implement a wrong assumption and generate tests that reproduce it. |
+| 4. Contexts and execution units | The delivery contexts affected (each one platform with its own deployment mechanism), the execution units and their order, with a leading context named to hold the published intent where more than one is affected. | It sets the execution environment, the deployment approach and the order of work. |
+| 5. Contracts to honour | The interface, data and architectural contracts each unit honours, by version. | Compatibility across contexts is established before release. |
+| 6. Data and security position | Personal data, permission changes, classification, retention, any protection assessment and the threats the change introduces. | These are gate triggers at step 2, Gate, identified before implementation. |
+| 7. Recovery position | The planned route back if the change fails, per context (section 4), and the evidence required before authorisation. | It is established before authorisation at step 9, Authorise, not discovered at an incident. |
+| 8. Delegated judgement and stop conditions | What the agent may decide for itself, what it must stop and ask about and the conditions that halt a run. | They bound delegated authority and stop execution after an assumption has failed. |
+| 9. Assumptions and open questions | Unverified assumptions, each stated so it can be tested, and open questions with their closing action and owner. | A false assumption surfaces at a checkpoint, not at release, and a unit waits while a question bearing on it is open. |
+| 10. Dependencies | What the change waits on and what waits on it, by execution unit, bound to the release candidates at step 7, Identify. | They set the assembly and release order and feed dependency invalidation under 2.4. |
 
-- Technology stack decisions (languages, frameworks, cloud services)
-- Security standards and compliance requirements
-- Coding conventions (naming, structure, patterns)
-- API design standards
-- Data governance and residency rules
-- Testing standards (coverage expectations, test categories)
-- Design system standards (component libraries, interaction patterns, accessibility requirements, brand rules)
-- Documentation standards
-- Dependency management policies
-- Business rules and domain standards (regulatory calculations, pricing logic, eligibility criteria, service level commitments)
+Every element is answered. Where an element has no content the intent records that it was considered and does not apply, because a blank cannot be distinguished from an omission and an agent reads an unstated constraint as an absent one.
 
-Company-level standards are codified in a machine-readable format that agents consume directly. The specific mechanism varies by tooling (see [Appendix C.4](#c4-tooling-configuration)), but the key point is that these standards are not PDF documents that people read and agents ignore. They are embedded into the agent's operating context.
+### 2.2 The request decision
 
-### 5.2 Project-Level Standards
+A request is a proposal for a change recorded before any specification begins, and it is not the intent. The request decision establishes whether it merits implementation, and the product owner decides on business merit, with the business owner where the outcome is theirs.
 
-These extend company standards with project-specific architectural decisions:
+| Outcome | What it means |
+|---|---|
+| Approve | The request enters the flow at step 1, Intent. |
+| Redirect | An existing capability or planned change meets the need, or the real problem differs from the one described, and the requester is referred. |
+| Defer | The case is valid but a dependency, such as an undecided business process, is outstanding and is named with its owner and a date. |
+| Reject | The case is not justified, or no technology change is needed, and the rationale is retained for any resubmission. |
 
-- Domain model and bounded contexts
-- Service boundaries and integration patterns
-- Database schema conventions
-- State management approach
-- Error handling patterns
-- Performance requirements and constraints
-- Feature flag strategy
+The agent supplies evidence at L1, Advise. The decision stays with people.
 
-Project-level standards are maintained by the System Steward (see Section 6.3) and reviewed at the weekly Strategic Tier session. They are codified in project-level agent configuration files that sit alongside the codebase.
+| What the agent supplies | Why it can |
+|---|---|
+| Whether this was requested before and with what outcome. | The intake channel and the queue of approved intents are searchable records. |
+| Whether an existing capability already does this. | The current-state architecture describes the estate as it is. |
+| Previous failures in the area and other work in progress on the same contexts. | Incident records and the work item system are indexed by system and context. |
 
-### 5.3 Design System Standards
+The review is proportionate: a short conversation for a familiar class of request and a fuller assessment for an unfamiliar class of change, a cross-product change, a business commitment or a previously rejected request. A catalogue change (a low-risk class pre-authorised in the standard change catalogue, section 9) is exempt from the review but still counts against the cap on approved work and receives the go or no-go at step 9. The request record states the problem, the expected benefit or obligation, the business owner, the indicative effort, the alternatives considered and the work displaced, in a short form rather than a business case. Approval requires a completed record.
 
-When a product has a user-facing surface, design constraints are codified and enforced through the same mechanisms as architectural standards: agent configuration files, specification constraints and human verification. The Design Steward role (Section 6.4) owns this coherence. Design system standards include component libraries, interaction patterns, layout conventions, accessibility requirements and brand rules. These sit alongside architectural and coding standards as first-class guardrails for agent behaviour.
+Approved work, whether a person or an agent will implement it, is capped against validation and review capacity, because capping human implementation alone moves demand downstream. The team confirms capacity before approval takes effect, an intent that would exceed it waits and the cap is reviewed at the periodic review in 3.3. The share of requests rejected, redirected or deferred is a measure under 8.2, named request decision outcomes. A rate near zero prompts a sample of the decisions, because indiscriminate approval and effective upstream prioritisation both produce few rejections.
 
-### 5.4 Standards as Agent Guardrails
+### 2.3 Forming and validating the intent
 
-Standards are not advisory. They are guardrails that constrain agent behaviour. When an agent generates code that violates an architectural or design standard, the automated verification pipeline should catch it before it reaches human review. This means standards must be expressed as enforceable rules, not aspirational guidelines.
+An approved request becomes an intent through six passes. The agent drafts at L2, Draft, in headless runs (runs the pipeline invokes without a person at the keyboard), incorporating the decisions people record on the work item at each pass and identifying missing information. The pipeline writes each draft back to the work item.
 
-Examples of enforceable standards: "All API endpoints must return standardised error responses using the ErrorResponse schema." "Database access must use the repository pattern. No direct SQL in service classes." "All new components must include unit tests with a minimum of three test cases covering happy path, validation failure and error handling." "All user-facing components must use the approved component library and meet WCAG 2.1 AA accessibility requirements."
+| Pass | What is added | Who leads it, with the agent drafting |
+|---|---|---|
+| 1. The need | The outcome in the requester's own terms, the measure, the accepting person, the colleagues affected and the exclusions from scope. | The requester with the business analyst. |
+| 2. The behaviour | The required behaviour as concrete worked examples, with edge cases and error paths. | The requester and the business analyst with the test engineer. |
+| 3. The shape | The contexts affected, the execution units, the contracts each unit honours by version and any change to an existing design. | The intent architect: a solution architect or lead engineer according to tier. |
+| 4. The data and security position | Personal data, permissions, classification, retention, any protection assessment and the threats the change introduces with their requirements. | The business analyst with the data engineer, joined by the security lead's delegate where a trigger is met. |
+| 5. The operational position | The recovery position per context, the non-functional expectations and the procedure for reversing a partial deployment. | Whoever led the shape, with the release manager where no context profile covers the recovery position. |
+| 6. The delegation boundary | What the agent may decide for itself, what it must stop and ask about and the conditions that halt a run. | The intent architect with the lead engineer. |
 
----
+Validation precedes implementation and is iterative: the agent drafts, the team supplies missing information and the agent revises until the validators are satisfied. The business analyst validates the expression of the request, the test engineer the acceptance examples and the intent architect confirms the contracts and standards before deciding to publish. No one who shaped the intent declares it validated alone, and an intent that fails validation returns for refinement with the failure counted under 8.2. Validation is proportionate to tier: every validator for a high-tier intent, one person for a standard-tier intent and one team member for a low-tier intent, and a catalogue change is checked against its catalogue entry. The one person is the test engineer where the acceptance examples carry the risk and otherwise the business analyst. Most intents complete the six passes in one working session or in exchanges on the work item. A pattern library of intents for recurring shapes of change, such as a new field, an integration or a report, lets a common change be formed by adaptation rather than from a blank page. Each drafted element receives one of three forms of assessment.
 
-## 6. Roles
+| Form | Elements | What the person does |
+|---|---|---|
+| Ratify | Contexts and execution units, contracts, the data and security position, the recovery position and dependencies. | Checks the draft against stated evidence and records on the work item what it was checked against. |
+| Decide | Outcome and measure, the accepting person, the scope boundary, delegated judgement and stop conditions. | Owns the problem, the alternatives and the criteria, including options the agent did not propose, recording the chosen and rejected options. |
+| Break | Acceptance examples, every assumption and every open question before the unit it bears on is worked. | Tries to falsify the draft and records the cases examined, the evidence considered and any resulting change. |
 
-The ADM redefines human roles and introduces the agent as a formal team member. The work shifts from writing code to shaping intent, verifying outcomes and governing coherence.
+Ratification is substantive because an error in a ratified element can prevent the right checks being selected. A consequential assumption is assessed by break instead, as are the acceptance examples, because an error in them has no downstream verification.
 
-### 6.1 Intent Architect
+The acceptance examples are drafted in a run separate from implementation: the agent that drafts them cannot implement against them or share the implementation run. Separate runs do not establish independence on their own, since two runs may share missing sources or the same misunderstanding of the business and reproduce one assumption. The assurance comes from business-owned expected results and from checks derived from evidence the implementer did not supply.
 
-The Intent Architect combines work that has traditionally sat across senior engineering, business analysis and solution or technical architecture. The Intent Architect translates business need into an executable Intent Specification that is feasible in scope, consistent with system constraints and precise enough for an autonomous agent to deliver without guesswork.
+Only a published version of the intent is built. When the validators have recorded their validations and the intent architect has decided to publish, the work item system publishes that version to the leading context's repository. It goes through a pull request the context's code owners approve (version control's required approvers for a path), and that pull request records the validations rather than commissioning a further review. The merge hands the intent to step 2, Gate, where a trigger is met, and otherwise to step 3, Workspace. The work item then holds the working copy read-only until the intent is reopened, and an agent at step 4, Build, reads only the published version, so an edit on the work item cannot redirect a run.
 
-This role owns feasibility and scope at the delivery boundary. That includes defining acceptance criteria, integration points, non-functional expectations, boundaries, sequencing assumptions and the parts of the problem that should be decomposed before agent execution begins. Where a traditional team might split this work across a business analyst, a senior developer and a solution architect, the ADM brings it together so that the execution handoff is coherent.
+### 2.4 Decomposition and dependencies
 
-This is one of the hardest roles in the model. It requires domain understanding, system-level awareness and the ability to anticipate where an agent will struggle or go wrong. Senior engineers, lead developers, solution architects, technical architects and technically strong business analysts are the natural fit.
+An execution unit is a separately controlled part of an intent, one or more per context, each becoming its own release candidate with its own activation conditions and recovery position. The intent architect decides the decomposition the agent proposes at step 1, recording it in the intent. Each unit is classified on three questions.
 
-The Intent Architect also reviews agent-generated specifications from requirements interviews, ensuring they are feasible, appropriately scoped and consistent with the System Steward's guidance before they enter the backlog. The System Steward and Verification Engineer may also review Intent Specifications before they enter the backlog, particularly for high-complexity or cross-cutting specifications. This is advisory, not a gate. The Intent Architect retains authority to mark a specification as Ready.
+| Classification | What is assessed | Outcome |
+|---|---|---|
+| Implementation | A version-controlled representation, enough in the intent to act within the judgement limits and evaluated tooling for the context. | An agent where all three hold, otherwise a person. |
+| Validation | Independence from the implementer, with business acceptance from the examples and integration and security checks from another source. | Never the implementer. |
+| Release authority | Who gives the go or no-go at step 9. | A person in every case, without determining who implements. |
 
-Agents assist Intent Architects directly. A Review Agent can pre-check specifications for completeness, flagging missing acceptance criteria, undefined integration points, unclear boundaries or ambiguous scope before the person reviews them. This does not replace the Intent Architect's judgement. It removes mechanical errors so the person can focus on the harder questions: is this the right thing to build, is it scoped correctly and will it fit the system?
+Independently completed units are not automatically compatible and a discovery in one platform can invalidate work completed in another, so the intent declares five requirements before release.
 
-### 6.2 Verification Engineer
+| Requirement | What the intent declares | Why |
+|---|---|---|
+| 1. Versioned contracts | Each unit states the contract version it produces and the versions it consumes. | Incompatibility is detectable before deployment. |
+| 2. Dependency invalidation | A change to a contract marks every dependent completed unit for revalidation, and the release manifest (the record of a release's candidates, order and recovery positions, assembled at step 9) cannot include it until then. | Work is not released on evidence that no longer applies. |
+| 3. Coordinated rollout and the partial position | The safe partial-deployment states and the units that must be recovered together where a partial deployment is unsafe. | Recovery is declared, not improvised. |
+| 4. Resumable state | A unit that halts records where it stopped and what it had established. | Work resumes rather than starting again. |
+| 5. An end-to-end test | The path across the contexts is demonstrated working before release. | Component tests passing does not show that the path works, and the product owner's acceptance completes the intent. |
 
-The Verification Engineer reviews agent output against the Intent Specification and structural consistency. Unlike traditional code review, they assess whether the changeset meets the acceptance criteria, includes meaningful tests and avoids hidden debt or inconsistency that automated checks have missed. The Verification Engineer verifies that what was built matches what was specified. Validation of whether the specification itself serves the business intent is the Product Owner's responsibility (see Principle 3).
+A context may contribute several units, each a separately controlled rollout stage. Replacing a field is the general case: one unit expands the schema to carry the new field beside the old, one keeps the two compatible while consumers move and one backfills the data. A final unit removes the old field, and the intent states the safe resting state at every intermediate point.
 
-The Verification Engineer is also the primary assessor of code quality at the governance checkpoint. The Review Agent flags obvious quality issues (duplication, complexity, naming violations) automatically. The Verification Engineer assesses the harder questions: is this code maintainable, is it proportionate to the problem, does it follow the spirit of the standards as well as the letter. Over time, code quality assessment should include whether the codebase is growing proportionately to value delivered, or accumulating bloat from agent-generated boilerplate.
+Dependency invalidation applies to work in progress: a contract change halts a running unit at its next checkpoint and marks it for revalidation before it resumes. Where dependencies are cyclic the units iterate across contexts, an intent whose units cannot be ordered requires further review of its decomposition and a unit that cannot become one release candidate returns to step 1.
 
-They operate as the final quality gate after automated review, testing and security scanning have filtered out basic failures. The role requires experienced engineers who understand systems at a level above individual functions and files. Junior engineers can assist with evidence gathering, but senior judgement is needed for the harder calls.
+### 2.5 Risk tiers
 
-**Verification is risk-tiered.** Human review does not scale linearly with agent output, so the Verification Engineer's attention is allocated by risk rather than spread evenly. A trivial, well-specified change that passes every automated check receives a light confirmation that the output matches the intent. A change that touches a shared service, a regulated calculation, a security boundary or a wide blast radius receives deep review. The complexity assessment in the Intent Specification and the automated pre-checks set the tier. This keeps verification a genuine quality gate as throughput rises, rather than a uniform queue that degrades into a rubber stamp when the fleet outpaces the reviewers.
+Every intent carries a risk tier.
 
-### 6.3 System Steward
+| Tier | Defined by effect |
+|---|---|
+| High | A change that alters a monetary calculation or an input to one, changes how personal data is collected, stored, shared or retained, changes a permission model or a security control, alters a published interface contract, changes the outcome of a customer-facing journey or is a migration-based change against production data. |
+| Standard | A change to behaviour a user or an interface can observe, within an existing journey, calculation or contract, where none of the high-tier conditions applies. |
+| Low | A change that leaves the behaviour a user or an interface can observe unchanged and meets no high-tier condition, such as a refactor, a code comment, a test or internal documentation. |
 
-The System Steward is responsible for coherence across the codebase and the surrounding delivery system. As agents work on individual specifications in isolation, the codebase will naturally drift towards local optimisation at the expense of global consistency. The System Steward owns the architectural direction, maintains the system-level configuration that constrains agent behaviour and identifies when refactoring is needed to restore coherence.
-
-The System Steward also owns technical debt management. They maintain the Coherence Register (see [Appendix B.7](#b7-the-coherence-register)), make explicit accept or remediate decisions on identified debt and commission agent-driven refactoring work when debt reaches unacceptable levels. Technical debt has a concrete impact and a named owner. It appears in the backlog as a governed item, prioritised alongside feature work.
-
-In a multi-product organisation, this role may span multiple products, ensuring that patterns, standards and control points remain coherent across the estate.
-
-### 6.4 Design Steward
-
-The Design Steward is responsible for design coherence across any product with a user-facing surface. Agents can generate UI, but without codified design constraints they produce generic, inconsistent interfaces. The Design Steward owns the design system: component library, interaction patterns, layout conventions, accessibility standards and brand rules.
-
-These constraints are codified in the same way as architectural standards. They live in agent configuration files and feed into Intent Specifications as a Design Constraints section alongside the existing Technical Constraints. The Design Agent (see [Appendix C.3](#c3-agent-capability-and-role-definitions)) applies these constraints during implementation. The Design Steward reviews agent-generated UI as part of the verification process, checking for visual consistency, interaction correctness and accessibility compliance.
-
-This role is optional. It applies only when the product has a user-facing surface. In smaller teams, a single person may hold both System Steward and Design Steward responsibilities if they have both skill sets. In larger teams or design-intensive products, this is a dedicated role. The Design Steward maintains a Design Register (analogous to the Coherence Register) that tracks design decisions, component usage patterns and known deviations. An example Design Steward role profile is provided in the [Profiles folder](Profiles/README.md).
-
-### 6.5 Product Owner (evolved)
-
-The Product Owner becomes significantly more important in this model. A vague story used to get clarified through conversation with a developer. A vague specification now either produces a guess or blocks execution. The tolerance for imprecision drops sharply.
-
-The Product Owner absorbs work previously spread across business analysts and project coordinators. They are accountable for the precision, completeness and priority of Intent Specifications: supervising agent-led discovery, refining agent-generated drafts and responding to implementation clarifications. They must specify what an autonomous system needs to deliver correctly, not what a colleague could have inferred.
-
-In larger organisations or products with distinct domains, multiple Product Owners operate in parallel. Each PO owns a product area or domain, running their own specification pipeline and discovery sessions. The model scales naturally: more POs mean more specifications entering the backlog, which an expanded agent fleet can absorb. What matters is that each specification has a single accountable PO, not that there is a single PO across the entire product.
-
-The Product Owner is also a potential point of failure. Every core ADM role is. If the PO is unavailable, the specification pipeline stalls: no specifications are signed off, clarification requests go unanswered and agents block. If an Intent Architect is absent, specifications queue up unreviewed. If the System Steward is unavailable, coherence guidance stops and agents make decisions without constraint. If the sole Verification Engineer is out, the review queue grows and nothing reaches production. In teams where any core role is held by a single person, a nominated colleague should be cross-trained to provide continuity. For the PO specifically, a nominated Intent Architect should be able to cover specification sign-off and clarification responses. This does not mean the Intent Architect becomes the PO. It means the team does not stall when one person is absent.
-
-### 6.6 The Agent (as team member)
-
-AI agents are formal participants in the delivery team, not tools. They have assigned work items, produce traceable output and are subject to performance evaluation. Agent fleet performance should be measured on completion rate, first-pass acceptance rate, technical debt contribution score and clarification request rate.
-
-A high clarification request rate may indicate poor specification quality rather than poor agent performance. This distinction matters.
-
-The detailed agent capability note and indicative agent role definitions are provided in [Appendix C.3](#c3-agent-capability-and-role-definitions).
-
-Example person and agent role profiles are provided in the [Profiles folder](Profiles/README.md).
-
-### 6.7 Productivity, Estimation and Measurement
-
-The ADM produces dramatically more output per person than a traditional delivery model. Human effort moves from writing code to specification quality, verification quality and system governance.
-
-#### 6.7.1 Estimation is Replaced by Readiness and Empirical Forecasting
-
-Traditional Agile uses story points or time estimates to plan sprint capacity. The ADM has no sprints and no fixed time periods. Agents execute continuously against a prioritised backlog. The relevant question becomes: is this specification ready for agent execution?
-
-The Definition of Ready in [Appendix B.4](#b4-definition-of-ready-for-agents) replaces estimation. A specification that meets the readiness standard can be assigned to an agent. Complexity assessment in the Intent Specification template drives routing and decomposition decisions. If a specification is too large for reliable single-agent execution, the Intent Architect decomposes it. If it requires human pairing, the governance session allocates it. Capacity planning meetings and story point estimation disappear.
-
-**The business still needs forecasting.** Removing estimation from the delivery team does not remove the need for the rest of the organisation to know when change will be ready. Business stakeholders need delivery forecasts to arrange user acceptance testing, schedule training, brief customer service teams, plan communications and coordinate with external partners. This is a weakness in Agile too. Story points give internal velocity but do not translate into dates that business stakeholders can act on.
-
-The ADM addresses this through empirical throughput data. Teams measure actual cycle times by complexity band: small specifications take X hours on average, medium Y, large Z. Over time this builds a reliable empirical model. The Product Owner uses this data to communicate expected delivery windows to business stakeholders. A forecast based on observed throughput is more accurate than one based on estimated story points, because it measures what actually happens rather than what people think will happen. The metrics in Section 14.1 formalise this. Practical guidance on forecasting and business readiness is in [ADOPTION.md](ADOPTION.md).
-
-#### 6.7.2 Raising Specification Throughput
-
-If specification production is the constraint on the whole model (see Section 19), then raising the rate at which good specifications are produced matters as much as governing the output. Three practices help. First, a specification pattern library: reusable templates for recurring shapes such as a CRUD form, an integration or a data pipeline, so common work is specified by adaptation rather than from a blank page. Second, treating specification debt as real: a specification rushed to keep the fleet fed surfaces later as rework, so the clarification rate and first-pass acceptance rate are watched as leading indicators of specification quality. Third, agent assistance for the Intent Architect, not only the requirements agent: a Review Agent that pre-checks a draft for missing acceptance criteria, undefined integration points and unclear boundaries removes mechanical work so the person spends judgement on the harder questions. The Specification Throughput metric in Section 14.1 tracks whether these practices are working.
-
-Detailed guidance on what people do day-to-day, where bottlenecks form and the leading indicators that teams should monitor is also provided in [ADOPTION.md](ADOPTION.md).
-
-### 6.8 Roles That Change, Split or Remain
-
-The ADM restructures the delivery function. Traditional roles may disappear from day-to-day software delivery, split across people and agent responsibilities or remain with a tighter governance focus. The full indicative role transition table is in [ADOPTION.md](ADOPTION.md). Practical guidance on role transition is also in [ADOPTION.md](ADOPTION.md).
-
-### 6.9 Onboarding and Career Paths
-
-The ADM creates new entry points and progression routes. Guidance on career paths, cross-training and how people enter and progress through ADM roles is in [ADOPTION.md](ADOPTION.md).
+Where two tiers could apply the higher applies. The engineer states the tier at step 1, Intent, with the test engineer checking it. Tiering follows the effect of the change, not the platform: a platform that processes financial or personal data does not by itself make a change high tier. On the same platform, adding a field that changes observable behaviour is standard tier where none of the high-tier conditions applies. The tier sets the validators under 2.3, the test expectations the tiering standard under 6.2 sets and the reviewers at step 6, Review. The distribution of tiers is itself a control. A high-tier share that rises materially over a quarter against the product's baseline, or a sample showing incorrect classification, prompts a review of the tier criteria. The system steward and the practice owner for test, the person accountable for the test standard, carry out that review. The share of changes in the high tier is a measure under 8.2 and is a review trigger rather than a target.
 
 ---
 
-## 7. Team Structure
+## 3. The flow
 
-The ADM defines roles and accountabilities, not a fixed organisation chart. Every organisation will staff differently depending on product complexity, regulation, legacy burden and how much broader business change sits around software delivery.
+### 3.1 The eleven steps
 
-The minimum ADM operating shape requires named human accountability for intent (Intent Architect), verification (Verification Engineer), coherence (System Steward), business outcome (Product Owner) and platform governance (Platform Engineer), plus a governed agent fleet. In smaller teams, one person may cover more than one of these. What matters is that the responsibilities are explicit.
+Eleven steps apply to every delivery context. The context profile (appendix B) holds the platform-specific implementation of each step for one context, from its workspace and checks to its release candidate form and recovery position. Agent work runs by default as a headless run under a run identity issued for that run. People shape and decide it through the work item and the pull request, not by supervising a run. In this model a deterministic check enforces a rule that is never waived. A threshold check compares a measured result with a numeric limit set by a practice owner, the person accountable for a discipline's standard, and it may carry an exception under 3.2. The table gives each step's starting autonomy level under 5.1.
 
-Illustrative team structures, scaling guidance, platform engineering detail and caveats on before-and-after comparisons are in [ADOPTION.md](ADOPTION.md). The full illustrative organisation comparison is also in [ADOPTION.md](ADOPTION.md).
+| Step | What happens | The agent's part | Who decides and the evidence | If it fails |
+|---|---|---|---|---|
+| 1 Intent | The approved request becomes an intent carrying the elements in 2.1, decomposed into execution units with contracts and dependencies declared, and the engineer states the tier. | L2, Draft: drafts the intent and proposes the decomposition, the pipeline writing each draft to the work item. | The validators and the intent architect, who decides decomposition and publication. Evidence: the validated intent, published to the repository. | Refinement, with the first-time failure counted. |
+| 2 Gate (where triggered) | A gate applies only where the intent meets one of its triggers, and the team raises it with the material the trigger needs. | L1, Advise: identifies the triggers met and assembles the material. | The gate's owner: the system steward (design), the data owner (data), the security lead (security and privacy), a decider the teams concerned agree (cross-team) or the accountable executive or a holder of recorded delegation (legal, finance and customer outcome). Evidence: the recorded decision (8.1). | The intent waits. An exception comes only from the owner of the decision, with an expiry. |
+| 3 Workspace | An isolated workspace (a branch, sandbox, schema or tenant) is allocated per unit from a versioned definition and refreshed with masked data by pipeline jobs no agent runs. | L0, Not used: the pipeline allocates it, and an agent changes a definition only by pull request. | The platform. Evidence: the environment record and its refresh position. | The unit waits rather than sharing another team's workspace, and scarcity is measured as a platform defect. |
+| 4 Build | The unit is implemented from the published intent, by an agent or a person according to its classification, under the intent's stop conditions and checks the agent cannot disable. | L2: implements in the isolated workspace under a run identity and raises a pull request carrying the work item key. | The accountable engineer. Evidence: the branch, the change and its tests. | The run halts at a stop condition and records its state so the work resumes rather than repeats. |
+| 5 Verify | The acceptance examples, the contract-derived integration tests and the security and data checks run locally and in the pipeline from the same rule versions, the pipeline being authoritative. | L2 to triage a failing check and L3, Execute under gate, to run the pipeline and assemble the evidence, never disabling, skipping, re-running to a pass or attesting against any check. | The pipeline. Evidence: the check results and the findings on the pull request. | The change does not proceed. The failing change is corrected and checked again, a defective check is corrected through the standard's own route and a threshold may carry an exception under 3.2. The pipeline owns bounded retries, keeps every attempt and never lets an agent choose the passing attempt. |
+| 6 Review | The pull request, carrying the intent reference, the tests and the recovery position, is reviewed by the reviewers the gate decisions and the tier require. | L1: an agent on a model different from the one that produced the change reviews first and comments, never approving. | A code owner who did not produce the change approves and merges to the protected destination branch. Evidence: the approvals, bound to the candidate at step 7. | The change is revised, and a disputed review goes to the practice owner rather than being settled by seniority. |
+| 7 Identify | The merged unit becomes one release candidate (a built artefact, a declared-state revision or an ordered migration set), carrying the agent profile version and run identity where an agent built it. | L0: the pipeline checks the exact merged revision, then produces and attests the candidate deterministically. | The platform. Evidence: the attested candidate with every check result and approval recorded against it. | A unit that cannot become one candidate returns to step 1 for review of its decomposition. |
+| 8 Promote | The deployment engine for the context applies the candidate environment by environment below production, with environment values supplied at deployment rather than carried in the change. | L3: prepares and invokes the approved job in non-production under a scoped, short-lived identity. | The pipeline, invoking the deployment engine. Evidence: the deployment history against the same candidate. | Promotion stops at the failed environment and recovery follows the declared position. The unit re-enters at the earliest step the failure affects, and an unchanged candidate keeps its evidence. |
+| 9 Authorise | The release's units are assembled in declared order, contract compatibility is checked, the regression and end-to-end tests run in pre-production and readiness is computed into the release manifest. | L3: computes readiness and assembles the manifest. The decision is a person's. | The release authority, on a change they did not request, build or implement, once the change authorisation is current. Evidence: the manifest naming the exact candidates and recovery positions, with both decisions recorded. | Authorisation is withheld, a unit whose contract assumptions changed is revalidated and a break-fix goes by the emergency route. |
+| 10 Deploy | The authorised candidates are deployed to production in declared order under the authorisation at step 9, with no further approval created. | L0. | No new decision. Evidence: the deployment record against the authorised candidates. | The recovery action and trigger named at step 9 execute at L0, the release authority decides any departure from them or a fix forward by the emergency route and the failure counts against the change failure rate. |
+| 11 Confirm and learn | Health checks run, the end-to-end path is confirmed, the product owner accepts or rejects the work against the acceptance examples and outcome telemetry is read against the intent's measure. | L2: correlates change with telemetry and drafts the post-incident review. Acceptance stays at L0. | The product owner, with the business owner where the outcome is theirs. Evidence: the health result, the acceptance decision and the outcome reading. | A failed health check invokes the recovery decision at step 10. Rejected work and a missed outcome return as a new intent, not reopened in place. |
 
----
+A gate at step 2, Gate, is triggered by the intent rather than applied to every change. The gates are architecture (a new integration or anything outside the agreed standards), data (a model change, a new source, personal data or retention) and security and privacy (a permission change, a new external flow or a vulnerability). The others are cross-team (a shared environment or a release collision), legal (published terms or a customer's rights), finance (a monetary calculation or payment handling) and customer outcome (the content of a customer communication or journey). Each gate has a named decider and a response period, and the accountable person decides on the evidence available once the period passes without advice. The intent architect records the trigger screening at step 1, Intent, and a gate's owner decides any disputed applicability. Each gate decision names the reviewer who confirms at step 6, Review, that the change conforms to the position approved for it.
 
-## 8. Key Artefacts
+Two decisions at step 9, Authorise, are distinct and recorded separately. The change authorisation is given under the organisation's change procedure by whoever holds the production change authority, or by the catalogue's pre-authorisation for a catalogue change. Without it the manifest does not assemble. The release go or no-go is the release authority's, taken on the assembled evidence. It authorises the release rather than the change, a release being one or more candidates assembled and authorised together. The manifest names the exact candidates and their recovery positions, any exception with its owner and expiry, the recovery action and its trigger and the health signals, recovery threshold and observer after deployment.
 
-The ADM depends on a small set of artefacts that make agent execution governable. The most important are the Intent Specification, the Definition of Ready, the Definition of Done, the Coherence Register and the testing strategy.
+The item is complete on the acceptance decision at step 11, Confirm and learn, not on the deployment finishing. Acceptance confirms the delivered behaviour against the acceptance examples validated under 2.3 rather than reopening the specification. The outcome reading against the intent's measure is recorded separately when the measure can be read, with its owner and date recorded before the work item closes.
 
-Detailed templates and worked examples are provided in [Appendix B](#appendix-b-key-artefacts). Section 8 provides the summary; the appendix provides the full artefact definitions including the Intent Brief ([B.1](#b1-the-intent-brief)), the Intent Specification template ([B.2](#b2-the-intent-specification)), the mapping from traditional Agile artefacts ([B.3](#b3-intent-specifications-vs-epics-and-pbis)), the Definition of Ready ([B.4](#b4-definition-of-ready-for-agents)), the Definition of Done ([B.5](#b5-definition-of-done-extended)), the Testing Strategy ([B.6](#b6-testing-strategy)) and the Coherence Register ([B.7](#b7-the-coherence-register)).
+### 3.2 Exceptions and re-entry
 
----
+An exception is a time-limited departure from a control or from the flow, granted by the authority responsible for the rule and never by a weaker route. A threshold exception is granted by the practice owner who set the figure. A policy exception is granted by the policy's owner: the security lead for a blocking security finding, the data owner for data protection, the system steward for an architecture standard and the accountable executive for business risk. Every exception has a named owner and an expiry and is recorded in the release manifest. An expired exception blocks the release of any candidate that still depends on it until the owner remediates or obtains reauthorisation from the granting authority, and a candidate that removes the dependency may proceed.
 
-## 9. Tooling and Agent Governance
+Six never-waived controls bind every authority. The first three are anything that would breach a legal requirement, the rule that only an attested release candidate deploys and the rule that the recovery position is established before authorisation. The other three are approval by someone who did not build the change, the secret and credential rules and the categories of data that may never leave production. Nine conditions suspend or divert work, each with a defined re-entry route.
 
-The ADM is tool-agnostic, but it is not control-agnostic. Agents require explicit boundaries on access, identity, sandboxing, model usage, knowledge sources, resilience measures and security controls.
+| Condition | What happens | Re-entry |
+|---|---|---|
+| An intent fails validation | It returns for refinement at step 1, Intent, and no unit is created. | Revalidation. A pattern of first-time failures goes to the practice owners rather than to the team. |
+| A run reaches a stop condition | The run halts and records its state, and its question goes on the work item. | The engineer answers, with the relevant specialist where it touches architecture, data or security, the intent is republished where it had a gap and the run resumes from the recorded state. |
+| A deterministic check fails | The unit stops at step 5, Verify. The check is never waived. | The corrected change re-enters at step 5, or the practice owner corrects a defective check through the standard's own route and versions the correction. |
+| A threshold is not met | The unit stops at step 5. | The granting owner records a threshold exception, or a policy exception from the security lead for a security severity, against the unit, the pipeline carries it into the manifest before authorisation and the unit proceeds. |
+| Contract assumptions change | Every dependent completed unit is marked for revalidation and cannot enter the manifest until revalidated. A running unit halts at its next checkpoint. | Revalidation against the new contract version, or the intent is reopened where the change is material. |
+| The scope changes | The run halts at its next checkpoint and the product owner decides on the new scope as on a request. | The intent is revised, the triggers and the tier are reassessed and the work re-enters at the earliest step the revision affects. |
+| An environment is unavailable or the cap on approved work is reached | The unit waits rather than moving to a shared workspace or joining an overloaded queue. | The platform owner allocates or refreshes an environment and capped work enters as capacity frees. |
+| An emergency arises | A break-fix change restoring a failed or degraded service leaves the flow at whatever step it has reached and goes to the emergency change authority with the minimum evidence it requires. The six never-waived controls hold before it deploys. A missed cut-off is not an emergency. | The record is completed by the end of the next working day, recording the checks that ran and the evidence that was omitted rather than implying it existed at authorisation, and the permanent fix follows the flow as an intent. During the incident an agent may advise at L1, Advise, on telemetry and draft the fix at L2, Draft, in a workspace, and it acts on nothing in production. |
+| A product spends its error budget | Ordinary releases to that product pause and agent autonomy on it drops a level under 5.4. The error budget is the unreliability a product's service level objective allows over a period. Fixes and security patches continue by their normal route. | The release authority and the product owner agree resumption on the reliability evidence. |
 
-**Tooling maturity note.** The tooling landscape for agentic software delivery is evolving rapidly. The guidance in this section and in [Appendix C](#appendix-c-tooling-and-agent-governance-considerations) reflects the current state of available tools at the time of writing. It should be treated as alpha guidance that will be updated as tooling matures to support ADM patterns natively. Organisations should expect that specific configuration mechanisms, access control models and integration patterns will change. The principles (governed access, scoped identity, provenance, sandboxing) are durable. The implementation details are not.
+### 3.3 The rhythm
 
-**Orchestration maturity varies.** The parts of the model that map cleanly onto every toolchain are the artefacts, the standards files, the sandboxing and the human review gate. The part that does not is orchestration. The Scheduling Agent, which reads the backlog, detects specification overlap and coordinates a fleet, is supported very unevenly. Some tools provide it natively, some give a loop to build on and some have no equivalent. Adopters should check whether their stack supports backlog-aware orchestration or plan to build it. The companion notes in the [Tooling folder](Tooling/README.md) assess this per ecosystem.
+Execution is continuous and event-driven. A headless run is invoked by the pipeline when an event on the work item or in the repository calls for it, and review happens as output arrives rather than at a fixed hour. The minimum rhythm for people is a daily sweep of the review queue and the clarification queue, run as a working review rather than a status meeting. The reviewers work the pull requests, the engineers, the validators and the product owner answer the questions halted runs have placed on the work item and the runs resume. No meeting approves a change: review happens on the pull request at step 6, Review, with authorisation at step 9, Authorise.
 
-Detailed guidance on agent capability, role definitions, access controls, sandboxes, model selection, knowledge management ([C.7](#c7-knowledge-management)), resilience and agent security threats is provided in [Appendix C](#appendix-c-tooling-and-agent-governance-considerations). Separate companion notes on enterprise tooling scenarios are provided in the [Tooling folder](Tooling/README.md).
+A periodic review, weekly or monthly as the organisation chooses, looks at the measures under 8.2, the coherence register, the autonomy levels in force and the open exceptions. It reviews the cap on approved work, reads the tier distribution against the criteria and retires or schedules the items on the coherence register. It reads intent quality from the stop-condition rate and from the acceptance examples changed between draft and publication, commissions remediation as requests under 2.2 and raises or lowers autonomy on the evidence under 5.4.
 
----
+The release rhythm is set per product on evidence, by trust in the product's verification and by what its pipeline supports rather than by agent speed. The product owner and the release authority set it, record it against the product and change it on the measures: release frequency, change failure rate and time to restore.
 
-## 10. Delivery and Governance Cadence
+Where the organisation is regulated, the assurance view in section 9 is built from the same evidence that governs release pace and autonomy.
 
-### 10.1 The Governance Tier: Daily Review
+## 4. Deployment approaches and recovery
 
-The daily governance session replaces both the traditional standup and the sprint review. It is a working session, not a status update.
+Not every change is code that is compiled and packaged. Declarative configuration, infrastructure declared as code and data that cannot simply be replaced are built, identified, promoted and recovered differently, so the model names that difference. A **deployment approach** is the way a change to code, configuration or data is built, identified, promoted and recovered according to what it alters. The model recognises three, each with its own release candidate and recovery position.
 
-**Duration:** 60 minutes
+| Approach | Release candidate and promotion | Recovery |
+|---|---|---|
+| Artefact-based | Built once into a package, or attested as a commit where source is promoted, then promoted unchanged with environment values supplied at promotion | A proven rollback to the previous candidate, tested below production before authorisation |
+| State-based | A versioned revision declaring the desired state. The pipeline validates the plan, one adapter applies it, the result is verified and drift is detected | Restoration of the previous desired state through a new plan towards the previous revision, or a tested compensating change where restoration is unavailable |
+| Migration-based | An ordered set of migrations altering data in place, with a dry run, a snapshot where possible, resumable execution and reconciliation against a stated result | A proven rollback where reversible. Where irreversible, a tested restore and a forward remediation route, with the residual risk accepted in writing |
 
-**Attendees:** Product Owner (facilitates), Verification Engineers, Intent Architects, System Steward. Platform Engineer attends when fleet health or infrastructure issues are flagged. The Delivery Lead may attend but this is a delivery governance session, not a management meeting.
+A change follows the approach of what it alters, not an approach assigned to its platform as a whole. A **delivery context** is one platform or system with its own workspace, pipeline route and deployment engine (the tool that applies a candidate to an environment), and it may carry more than one approach. A platform that is usually artefact-based carries state-based change for its surrounding configuration, and a data platform that is usually state-based carries migration-based change where a structural change moves data.
 
-**Preparation.** Attendees should review their areas before the session begins. Verification Engineers should have reviewed the overnight PR queue and formed an initial view on each changeset. Intent Architects should have reviewed the clarification queue for items in their domain. The Product Owner should have reviewed what was delivered overnight against current priorities. The System Steward should have checked for cross-cutting concerns or coherence issues in the queue. Without this preparation, the session becomes a reading exercise and will overrun. Teams should allow 15 to 30 minutes of individual preparation time before the session.
+A **release candidate** is one execution unit in the form attested at step 7, Identify: a package version, a declared-state revision recorded as a commit or an ordered migration set with its dry-run result and reconciliation expectation. The pipeline produces it once and binds to it the check results from step 5, Verify, the review from step 6, Review, as well as the work item and change record references. An **attestation** is the pipeline's signed record that the named commit or package passed the required checks and reviews, and neither a person nor an agent produces one. The attested object is the one that deploys. The attestation is evidence for its named object and cannot authorise a changed one, so a new revision requires its own checks, review and attestation. It also binds the versions of the standards the checks applied, and the required workflows and accepted check identities are enforced at organisation level outside any run's write scope. The authorisation at step 9, Authorise, names one set of candidates, so a changed set is a new release. Where a platform promotes source, the merge into the destination branch produces a **release commit** distinct from the unit commit. The checks run again on it at the last environment below production, and the authorisation names the release commit with no further merge before deployment.
 
-**Agenda:**
+A **recovery position** is the tested route back to a known good state if a change fails. The model recognises three: a proven rollback, restoration of the previous desired state (or a tested compensating change where restoration is unavailable) and, for a technically irreversible change, a tested restore with a forward remediation route. For a supplier's own release that the organisation cannot reverse, the accountable executive accepts in writing the residual risk of the continuity and remediation measures available, and the supplier's release process stays outside the flow. The intent carries the position as element 7 in 2.1 and the **release manifest**, the record that assembles readiness, exceptions and recovery for a release, records the position for each candidate. No release reaches step 9 without an established recovery position, one of the never-waived controls under 3.2, and for a high-tier change the position is exercised below production first.
 
-1. **Overnight output review (30 mins).** Walk through all agent-generated PRs from the previous cycle. For each: does it pass verification? Does it serve the intent? Approve, reject with feedback or flag for System Steward review.
-2. **Clarification queue (15 mins).** Review all items where agents have requested clarification from a person. Provide answers, update specifications, return items to the backlog.
-3. **Backlog prioritisation (10 mins).** Reorder the Ready backlog based on what has been learned. Move new items to Ready if they pass the Definition of Ready.
-4. **Fleet health check (5 mins).** Are agents blocked? Are there infrastructure issues? Is agent utilisation acceptable?
+A **context profile** holds what is specific to a platform so that the flow stays the same across contexts, from the workspace to the recovery position and the manual fallback under 6.4, and appendix B gives the template. A profile does not determine classification: a change is not a standard change because its route is routine.
 
-**Output:** Updated backlog. Approved PRs merged. Clarifications resolved. Blocked items escalated.
+A deployment approach is distinct from a **deployment strategy** such as blue-green or canary release, and a strategy, governing how a released change is introduced into live service and withdrawn, can be used with any approach. A feature flag, a switch that exposes a deployed change to users when turned on, decouples deployment from release where a change spans several intents. Each intent's candidate deploys behind the flag. The product owner requests activation once every contributing intent is deployed, the activation is itself a production change authorised at step 9, Authorise, as a catalogue change where one is designated, and acceptance at step 11 follows it. A flag that remains after release is recorded in the coherence register until it is retired.
 
-### 10.2 The Strategic Tier: Weekly Review
+## 5. Agents: autonomy and governance
 
-The weekly strategic session addresses what daily governance cannot: system-level coherence, architectural direction and business outcome alignment.
+The model is tool-agnostic but not control-agnostic: agents require explicit boundaries on access, identity, execution environment, model usage and knowledge sources. An **agent** is a software agent built on a language model that reads context and proposes, drafts or executes within the autonomy level assigned to its step and class of change. It runs on the engineering platform under a **run identity**, a scoped short-lived identity issued for each run and recorded in every commit, comment, work item update and log entry, distinct from the person who triggered it.
 
-**Duration:** 90 minutes
+### 5.1 The autonomy ladder
 
-**Attendees:** Product Owner (facilitates), System Steward, Security Lead. Intent Architects and Verification Engineers attend as needed. The Delivery Lead attends where people, capacity or organisational escalation is relevant. In regulated environments, the accountable executive or their delegate should attend periodically.
+An **autonomy level** states what an agent may do at a step of the flow for a **class of change**, a named kind of change such as a unit test, a permission set or a data migration. The model defines five levels, set out below.
 
-**Agenda:**
+| Level | What the agent may do | Applicable controls |
+|---|---|---|
+| L0, Not used | A person or deterministic automation performs the step | The controls of the step itself |
+| L1, Advise | Read context and propose through a comment, with no write access to code, configuration, the work item or any environment | Scoped read-only retrieval and commenting permission, no execution permission |
+| L2, Draft | Write into an isolated workspace or draft an intent, under the same review as a person's work | Branch protection, code ownership and a named person's merge authority |
+| L3, Execute under gate | Run an approved job in non-production, where a deterministic check it cannot override decides whether the work proceeds | The required checks for the step and class, with no agent able to disable, skip, re-run to a pass or self-attest |
+| L4, Execute in production within a scope | Perform a catalogue action in production, inside a named scope, logged in full, with a manual route available | The catalogue entry, the scoped identity, full logging and the suspension route |
 
-1. **Metrics review (15 mins).** Review all ADM metrics (see Section 14). Identify trends. Flag anomalies.
-2. **Architecture coherence (30 mins).** System Steward presents the Coherence Register. Review new architectural decisions. Assess technical debt. Commission refactoring where needed.
-3. **Specification quality review (15 mins).** Are specifications improving? What patterns of clarification requests are recurring? Where do Intent Architects need to invest more detail?
-4. **Business alignment (15 mins).** Product Owner confirms that delivery direction aligns with business outcomes. Raise any strategic pivots that affect the backlog.
-5. **Agent and tooling review (15 mins).** Model performance, cost trends, access control changes, tooling updates.
+A level is assigned to a step and a class, so one agent may execute at L3 for a unit test and only advise at L1 on a permission set. A level at one class authorises nothing at another, and it is held as a ceiling in organisation-level settings that no project or user can raise. The starting levels in 3.1 take effect only after the evaluation and approval under 5.4, and production deployment and production data change stay at L0.
 
-**Output:** Updated Coherence Register. Architecture decisions documented. Specification quality actions assigned. Metrics published.
 
-In regulated environments, the Strategic Tier should feed a recurring assurance and oversight update for the accountable executive, risk forum or equivalent governance body. In many organisations this remains monthly. In faster-moving environments or where change is materially customer-affecting, a fortnightly cadence may be more appropriate. This is a formal oversight overlay fed by the Strategic Tier, not an additional delivery tier.
+L4 is assigned to nothing by default. Its first candidate is production verification at step 11, Confirm and learn: an agent executing the approved health checks, or a scoped catalogue action after a failed check, with deployment and production data change excluded from the scope. A **catalogue change** is an action pre-authorised in the standard change catalogue of section 9.
 
-### 10.3 The Execution Tier
+### 5.2 Agent configuration
 
-Agents work continuously against a prioritised, intent-defined backlog. Each work item that enters the Execution Tier must have passed the Definition of Ready (see [Appendix B.4](#b4-definition-of-ready-for-agents)). Agents pick up the highest-priority ready item, create an isolated feature branch, implement the change, run automated tests and create a pull request linked to the originating work item.
+An **agent profile** is a configuration, not a capability: the context the agent receives, what it can read, what it can write and what approval its output needs before it takes effect. Seven elements, held beside the code or in organisation-level settings every repository inherits, govern how an agent is instructed and what it may reach.
 
-When an agent encounters ambiguity it cannot resolve from the specification, it must stop and flag the item for clarification from a person rather than guessing. The cost of guessing wrong compounds rapidly as downstream work builds on the wrong assumption.
+| Element | What it is | Who owns it |
+|---|---|---|
+| Repository instructions | One instruction file per repository: conventions, test expectations, branching rules and what the agent must never do | Lead engineer |
+| Path-specific instructions | Narrower files for matched paths, so the rules fit each technology | Lead engineer with the practice owner |
+| Standards as retrievable context | The standards of 6.2, retrieved at the point of use | Each standard's owner |
+| The tool allow-list | The systems and tools an agent may reach and the operations permitted at each level, with credentials held as secrets | Platform owner, each addition approved by the security lead |
+| The agent profile | A versioned record of step and class, model, hosting, level, tools, scopes, stop conditions, evaluation and approval (appendix C) | Platform owner, approved under 5.4 |
+| Business and process context | The process the change codifies, with its entities and decision rules, in a form a pipeline check and an agent both read | Process owner with the system steward |
+| Current-state architecture | The estate as built (inventory, designs, interfaces, data model, infrastructure), versioned beside the code and regenerated after each release | System steward with the platform owner |
 
-Agents work in isolated branches within the source control system. They never commit directly to protected branches. Every piece of agent work is reviewable as a discrete, bounded changeset.
+Three permissions are authorised separately, so an advising agent reviews without write access.
 
-#### 10.3.1 Agent Concurrency and Coordination
+| Permission | What it allows | Where it applies |
+|---|---|---|
+| Retrieval | Reading the repository, the standards and any allow-listed system, always read-only | Every level from L1 |
+| Commenting | A review comment on a pull request, or a comment the pipeline posts on the work item, approving nothing | L1 and above |
+| Execution | Writing to a workspace or drafting an intent at L2. Invoking an approved job in non-production at L3. A catalogue action in production at L4 | Only at the level that names it, through a run identity scoped to the run |
 
-The Scheduling Agent (SCH-1) is responsible for orchestrating how work flows through the agent fleet. When an Intent Specification reaches Ready status, the Scheduling Agent assesses what skills are needed to deliver it: implementation, security analysis, performance testing, accessibility checking, documentation. It then determines whether a single agent with the required skills can deliver the work, or whether multiple agents with different specialisms need to coordinate.
+The organisation level is authoritative for every element: a project or a user may add a restriction and cannot remove one, and retrieval beyond the repository is read-only, enforced by the permissions of the authenticated identity. A context source is adopted only where its support status is approved and its access can be revoked, and the pipeline rule prevails over an inconsistent instruction file.
 
-For a well-bounded specification that needs only implementation and standard testing, a single agent working in an isolated feature branch is sufficient. For specifications that span multiple concerns (a new API endpoint that also requires security hardening, performance validation and documentation updates), the Scheduling Agent orchestrates multiple agents working against the same feature branch. It sequences their contributions to avoid conflicts and maintains context across the work. The output remains a single PR for governance review.
+The pipeline, rather than the agent, writes to the work item. The pipeline job binds each run to one work item before it starts and writes to that item alone. It updates the draft only while the item is in refinement and posts a halt question to the item at any step. The run identity only reads the work item, every write is logged against the run and a run at step 4, Build, reads only the published version of the intent.
 
-Multiple agents work concurrently across the fleet, each on separate feature branches. Agents do not commit to protected branches. This isolation prevents direct file-level conflicts during execution. How many agents work in parallel depends on backlog depth, review capacity and cost appetite.
+Instruction files and standards state development requirements, not the configuration of a particular environment. An agent therefore reads the approved process definitions and decision rules the intent names and the current-state architecture for the systems the change touches, rather than inferring them from the code. A run that finds its context missing or out of date stops under principle 10 and the intent records an open question.
 
-The deeper coordination challenge is overlapping scope: two specifications that touch the same service, file or API contract. The Scheduling Agent manages this proactively. Before assigning a Ready specification, it checks the specification boundaries (the "Must not touch" and "Integration points" fields) against all specifications currently in progress. When it detects overlap, it recommends one of three approaches:
+An agent proposes a change to shared context and never approves one: it raises a pull request from its run identity, the content owner approves it and a code owner merges it. An unmerged proposal is not retrievable as context, the same control applies to an agent profile and a misleading entry in a shared source would otherwise be inherited by every later run.
 
-**Combine.** If two specifications affect the same area and are related, the Scheduling Agent flags them for the Intent Architect to merge into a single Intent Specification. One agent delivers both changes in one branch. One PR, one review, no conflict.
+### 5.3 Controls at every level
 
-**Sequence to the same agent.** If two specifications are distinct but overlap on the same code, the Scheduling Agent assigns them sequentially to the same agent working in the same branch. The agent has full context of the first change when it starts the second. The output is either one combined PR or two sequential PRs, but the agent manages its own consistency.
+Nine controls apply at every level above L0. The table below maps each to its threat.
 
-**Sequence to different agents.** If the overlap is minor, the Scheduling Agent holds the second specification until the first PR is merged. The second agent then works against the updated codebase. Simple sequencing, no special handling needed.
+1. **An agent never authorises a change and never publishes a workaround or article it drafted.** The rule that bars a person from authorising a change they requested, built or will implement extends to an agent, and an agent holds no approval authority at all.
+2. **An agent cannot attest to its own work: it may not disable, skip, re-run to a pass or mark as satisfied any check on its own output.** The pipeline, not the agent, writes the attestation.
+3. **Production deployment uses only the published promotion path, and an L4 action uses only its approved catalogue route and scope.** The path is the context profile's promotion sequence under the authorisation at step 9, Authorise. A credential that bypasses either route is a control failure.
+4. **Everything an agent does is logged and retained, under a run identity.** Each run's session record, with barred content removed, reaches the organisation's own store and security monitoring.
+5. **A manual route remains available for every automated step.** A named authority may suspend an automation and fall back to the route, as 6.4 sets out.
+6. **A model is used only where its hosting meets the organisation's data position.** Inference takes place within an approved hosting location or boundary, prompts and outputs are not used for training and the **permitted model list** records each model's provider, hosting, retention and evidence.
+7. **The model that implements a change does not review it.** The drafting, implementing and reviewing models are named separately in the agent profile and the evaluation under 5.4 establishes the reviewing pairing.
+8. **An agent takes instructions only from approved sources, and treats retrieved text as data.** Approved sources are the published intent, the instruction files, the standards and the agent profile with its pinned skills. During refinement a drafting run uses the decisions people record on its bound work item as input to the next draft, and a build uses a republished intent where an answer changes it. A build may also use an authorised clarification answer within the published delegation boundary, and an answer that changes the intent requires republication. Any other instruction found in a work item, a comment or a dependency is prompt injection and cannot override the published intent, the approved instructions or the run's permissions. The run identity's scope, not the agent's judgement, limits what it could reach.
+9. **An agent does not move data or secrets out of a controlled environment.** A run reads no credential beyond its own identity. Production-derived data enters a prompt or an output only after the masking and classification checks the data standard sets, the categories barred from leaving production never do and secret scanning applies to agent output.
 
-When the Scheduling Agent detects overlap that requires a judgement call (which specification should take priority, whether boundaries should be redrawn), it flags the conflict for the Intent Architect or System Steward. The person decides. The Scheduling Agent executes the decision.
+| Threat | Control |
+|---|---|
+| An agent authorises, attests to or publishes its own work | Controls 1 and 2 |
+| A production deployment or an L4 action bypasses its authorised route | Control 3, with deployment at L0 |
+| An agent's actions cannot be attributed or reconstructed | Control 4, with the identity issued per run |
+| An automated step fails with no fallback | Control 5 and the manual fallback |
+| Data or prompts leave the data position through a model | Control 6 and the permitted model list |
+| The producing and reviewing models share the same error | Control 7 and the pairing evaluation under 5.4 |
+| An instruction planted in retrieved content redirects a run | Control 8 and the published intent |
+| Data leaves a controlled environment through agent output | Control 9 |
+| A context source or server is compromised or changes its behaviour | The allow-list, the approved support status and revocable access under 5.2 and suspension under 5.4 |
 
-**Residual conflicts.** When conflicts do occur despite proactive scheduling (edge cases, unanticipated overlap), the implementing agent resolves them as a technical clarification (rebasing against the updated main branch) without requiring human intervention. Only if the conflict involves an intent-level question (which specification's approach should take precedence) does it escalate to the Governance Tier.
+The security lead holds the threat model for the agent platform and reviews it when a model, a surface or a context source is added. A threat without a control is a gap closed by the component's owner before the affected step rises above L1.
 
----
-## 11. Delivery, Release and Working Patterns
+An assistant inside a product is a change like any other: its prompts, retrieval configuration and model version are declarative configuration in version control, released under the flow. Because its output is not deterministic, its acceptance examples carry a threshold over a set of cases rather than one expected answer each.
 
-The ADM enables daily releases. If the Governance Tier approves PRs each morning, approved changes flow through the CI/CD pipeline and reach production the same day. The constraint is whether the organisation trusts its verification process and whether the pipeline supports daily release frequency, not agent speed.
+### 5.4 Raising and lowering autonomy
 
-Release strategy is a Strategic Tier decision. The ADM supports any cadence from continuous to batched. The choice depends on the organisation's risk appetite, regulatory context and pipeline maturity.
+Autonomy is set centrally and earned by evidence under principle 8, and three conditions govern the first delegation of a step and class above L1 as well as every later increase. The first is an **evaluation**: a representative run against the organisation's own historical changes for that step and class, measuring output acceptability and the review and rework required. The second is a recorded period at the level below, set as a number of changes rather than a duration, with every output reviewed and the failure modes named. The third is a versioned agent profile stating the model, tools, scopes and stop conditions. An evaluation covers one class, one model and one reviewing pairing, because a review result is not the same in both directions.
 
-Development environments are ephemeral. Each agent works in an isolated sandbox with an isolated branch, build and test environment. Agents do not step on each other's work. Staging and production environments follow conventional promotion patterns.
+The platform owner approves the first delegation and every increase, with the system steward, the security lead or the data owner for a matter in their remit. The practice owner for the step's work (the owner of that discipline's standard), who did not run the evaluation, accepts it against criteria set before it ran. A merged profile grants nothing by itself: the approval identifies the evaluation supporting it and an increase takes effect only through the attested and authorised release of the platform. A material change to the evaluated model, instructions, skills, context sources or tools suspends execution authority at that step and class until reassessment.
 
-**Coordinated releases and feature flags.** An Intent Specification is the smallest unit of agent execution. It is not necessarily the smallest unit of user-visible release. When multiple Intent Specifications contribute to a larger feature, individual specifications may deploy to production behind a feature flag before the full feature is ready for users. This decouples deployment from release. Code reaches production early, reducing integration risk, but users see the feature only when the Product Owner activates the flag once all contributing specifications are complete. The Strategic Intent (see [Appendix B.3](#b3-intent-specifications-vs-epics-and-pbis)) provides the grouping mechanism. The Product Owner tracks which specifications within a Strategic Intent are complete and decides when to activate the flag. Feature flag management should be reviewed at the Strategic Tier: which flags are active, which should be retired and which are accumulating debt by remaining in the codebase too long.
+A reduction is immediate. The platform owner, the security lead, the release authority or the accountable executive may each order one at any time, without a meeting. Execution identities are issued per run and scoped from the released profile and the organisation-level settings, so a reduction revokes the active identities it affects and binds every later run at once. The platform owner revokes them on the decision and corrects the profile afterwards.
 
-The ADM also supports follow-the-sun and flexible working patterns. Agents work continuously regardless of time zone. Human governance sessions are scheduled to match the team's working hours. Where teams span multiple time zones, governance sessions are staggered so that human review remains timely without requiring antisocial hours.
+The **error budget**, the unreliability a service level objective permits over its window, also governs autonomy. When a product spends its budget, the recorded level for each step on that product above L1 drops by one, with L1 as the floor. The reduction applies to the steps implicated in the failures, or to every step with the reason recorded. When the release authority declares the pause, the platform owner applies the reduction by reissuing execution identities at the lower scope. Ending the pause does not restore a level by itself. The authority that approved the level restores it on the existing evaluation and the reliability evidence where agent-produced change did not contribute to the failures, and otherwise the increase follows this section in full.
 
-Detailed guidance on release progression, environment strategy, feature flags, follow-the-sun patterns, compressed working and the core tension of keeping agents fed is in [ADOPTION.md](ADOPTION.md).
+The platform operates in one of three states: normal, degraded and manual. In the degraded state reduced agent capacity takes only the highest-priority intents, and in the manual state people execute them under the same controls. The platform owner sets cost circuit breakers: alerts when spend per intent exceeds a threshold and hard limits that pause execution at a budget. Where a compromise is suspected, one fast way to pause all agent execution is needed: this halt control has a named owner, is tested before it is needed and pauses execution without losing the provenance of work in flight.
 
----
-## 12. ITIL and Operational Frameworks
+### 5.5 Trust boundaries
 
-The ADM changes how software changes are generated and governed, but the surrounding service obligations remain. Operational disciplines such as change management, incident management, problem management, service level management and configuration management continue to apply. The ADM's provenance model (every change traced from specification to deployment) strengthens change management. Agent-generated changes carry richer metadata than manual ones. Incident and problem management processes feed findings back into the delivery cycle as Intent Briefs, closing the loop between operations and development.
+A **trust boundary** is a point where control passes from one party or environment to another. The model names six, each with its two sides, what crosses it, the control and the owner, so that a reviewer can check the control and an auditor can find its evidence.
 
-Detailed discussion of how the ADM aligns with ITIL is in [Appendix D](#appendix-d-itil-and-operational-frameworks). Practical guidance on day-to-day operations is in [ADOPTION.md](ADOPTION.md).
+| Boundary | Between | What crosses it | Control and owner |
+|---|---|---|---|
+| 1 | The organisation and its supplier services | Source code, pipeline logs and the agent supplier's session content | The residency position decided as a supplier assessment, organisation-level session settings and the supplier terms. Platform owner with the security lead |
+| 2 | The agent supplier and the model providers | Prompts and outputs | The permitted model list, the approved hosting location or boundary and the provider terms on training and retention (control 6). Security lead with the data owner |
+| 3 | The run and the systems it reaches | The actions an agent takes | The run identity scoped to each run, the allow-list and read-only access to the work item. Platform owner |
+| 4 | Retrieved content and the agent's instructions | An instruction carried in retrieved text | Control 8: retrieved text is data, instruction files are pinned and a build reads only the published version of the intent, using an authorised clarification answer only within its delegation boundary. Security lead |
+| 5 | A controlled environment and the repository | Data read in a workspace | Control 9: production-derived content leaves a workspace only after the masking and classification checks the data standard sets, the categories barred from leaving production never do and agent output is scanned for secrets. Data owner with the platform owner |
+| 6 | Non-production and production | A deployment | A person authorises at step 9, Authorise, deployment at step 10, Deploy, is held at L0 and only the attested candidate or release commit deploys. Release authority |
 
----
+An agent's execution sandbox is destroyed when its run ends, and the approved artefacts and recorded checkpoints carry the state a later run needs. An agent session holds no production deployment credential, deterministic deployment uses a separate identity, an L4 action receives only its approved scope and a privacy assessment of the agent platform precedes the pilot.
 
-## 13. Governance for Regulated Environments
+## 6. The engineering platform
 
-The ADM's governance model applies to all environments. In regulated environments, additional controls, accountability frameworks and assurance obligations apply. This section defines the universal governance principles first, then the sector-specific overlays.
+### 6.1 The platform as a product
 
-### 13.1 Provenance and Audit Trail
+The **engineering platform** is the set of environments, pipelines, run identities, allow-lists and shared definitions that carries every change through the flow. It is an internal product: the platform owner named in section 7 is its product owner, it has a backlog, the delivery teams are its users and adoption is its measure, read with the delivery measures in 8.2. A team may decline an optional service, but the shared pipeline and the mandatory checks apply to every repository. The platform provides seven services.
 
-Every agent-generated artefact carries metadata: which agent produced it, which model version was used, which Intent Specification it was working against, which version of the codebase it started from and who approved it for integration. This creates a complete audit trail from business requirement to deployed code. This applies in all environments, not just regulated ones.
+| What it provides | Why |
+|---|---|
+| Environments on request, from versioned definitions, refreshed with masked data by pipeline jobs | Every other service depends on them, and isolated workspaces remove conflicting change |
+| One shared pipeline per deployment approach, called rather than copied and required by policy, or an approved adapter under platform ownership with the same checks and evidence | Identical checks apply to every team and agent, and no agent bypasses the required workflow |
+| Release candidates with the evidence bound to them | Each change stays traceable and readiness can be computed |
+| Publication of approved intents to the repository, with drafts, questions and status written back to the work item by the pipeline | People follow a change in one place and agents build only from a published version |
+| The current-state architecture, regenerated after each release | Agents read the estate as it is built, and a run that finds it missing stops |
+| The release manifest, computed from the records the flow creates | Release preparation is read from the record rather than assembled by hand |
+| Post-deployment health checks and tested recovery | Recovery is exercised rather than assumed |
 
-Provenance records what an agent did. It does not make the output reproducible. The same specification run again may produce different code, because agent output is not deterministic. The control is the provenance trail and a named person's approval of the specific artefact that shipped, not the ability to regenerate it identically. Regulated reviewers should expect this distinction and assess the artefact that was approved rather than a hypothetical re-run.
+The platform reports code, checks, candidates and deployments back to the work item, so a person follows a change there from intake to acceptance, and 8.1 sets out the references that link each record to the next.
 
-### 13.2 Separation of Execution and Approval
+### 6.2 Standards in enforceable form
 
-Agents never approve their own work. The Governance Tier ensures that every piece of agent output receives independent verification from a person before it enters the codebase. This maker-checker separation is a universal governance principle. In regulated environments, it supports the segregation of duties requirements common across financial services, healthcare, government and legal sectors. Organisations should verify that their specific regulatory framework accepts this separation model.
+The practice owners keep ownership of their standards and publish them in a form a pipeline can enforce and an agent can retrieve, with enforceable rules and explicit values rather than aspirational guidance. The first two standards below are published before the first pipeline is built, because that pipeline enforces them.
 
-**Segregation extends to people.** A person who authored or refined an Intent Specification must not be the person who verifies the resulting PR. The specification author has assumptions baked in that make them a poor judge of whether the output matches the intent objectively. When covering for absence, the stand-in must not verify work they specified. In regulated environments this is a firm requirement. In smaller teams where maintaining segregation is difficult, delivery should pause on affected items until someone without a conflict is available. This is a feature of the control framework, not a flaw. Compromising segregation to maintain throughput defeats the purpose of governed delivery.
+| Standard | Owner | Minimum content |
+|---|---|---|
+| Risk tiering and test expectations | Practice owner for test (a lead test engineer) | The test types, coverage figure and performance requirement per tier, the blocking defect severity and the threshold rule for non-deterministic output |
+| The pull request contract | Practice owner for engineering (a lead engineer) | What a pull request carries, its maximum size, who may approve, the required reviewers and the branch and merge rules |
+| Architecture decisions and contracts | System steward | The decision index, the contract format, the versioning and deprecation rules with the notice before retirement and the exception regime |
+| Security policy and thresholds | Security lead | The blocking finding severity, who may suppress, secret and credential rules, approved dependency sources and licences, version pinning with the route for dependency updates and testing beyond static analysis |
+| Data definitions and quality | Data owner | The data dictionary standard, the restatement rule for a published metric and the quality, freshness and lineage checks |
+| The design system | System steward or design steward | The component library every team builds to and the accessibility and usability checks for an interface change |
+| Test data and masking | Practice owner for test with the data owner | The masking rule per environment class, consistency across connected contexts, the refresh cadence and the data that may never leave production |
+| Release candidates, environments and the manifest | Release authority with the platform owner | The candidate per approach, the environment classes and refresh rules and the manifest fields required before authorisation |
+| Non-functional thresholds | System steward | Numeric thresholds per service for response, throughput, run time and capacity, reviewed annually |
+| Service level objectives | Product owner with the operations lead | The objective, its measurement window, the indicator and the exception and resumption decisions, in a versioned approval record |
 
-**Absence and continuity.** In smaller ADM teams, a single person may be the only Verification Engineer, the only System Steward or the only Product Owner. Illness, leave or departure creates a control gap: verification cannot happen, coherence guidance stops or the specification pipeline stalls. Regulated environments must plan for this explicitly. Each core ADM role should have a named backup who is cross-trained to provide continuity (see [ADOPTION.md](ADOPTION.md) Section 5 on cross-training). The backup must be someone who can maintain segregation of duties for the work in question. If no suitable backup is available, delivery on affected items should pause until the role holder returns or a replacement is in place. The Delivery Lead is responsible for maintaining a continuity plan that maps each core role to its backup. This plan should be reviewed at the Strategic Tier and updated when team composition changes.
+The tiering standard sets what each tier requires before authorisation.
 
-### 13.3 Accountability Frameworks
+| Tier | Required before authorisation |
+|---|---|
+| High | Unit and contract tests, regression on the affected path, a performance test where triggered, a security review, exploratory testing, business acceptance in pre-production and an exercised recovery position, recorded in the manifest |
+| Standard | Unit and contract tests to the coverage figure, automated regression on the affected component and a recovery position recorded |
+| Low | The existing tests passing, with no new test required |
 
-Every regulated sector has a form of named human accountability for technology decisions. In financial services, this is the Senior Manager Function (SMF24 under PRA/FCA oversight). In healthcare, the accountable officer under CQC. In government, the Senior Responsible Owner. In legal services, the Compliance Officer for Legal Practice (COLP) under SRA regulation. The principle is universal: a named person must be accountable for the governance of AI-generated change.
+The practice owner for test records each required test, its owner, its step and any agent level in the tiering standard, and the context profile carries the platform-specific checks. An agent drafts acceptance tests at L2, Draft, from the business-owned examples and contract tests from the published contracts, never from its own implementation. It may use implementation detail for a unit test, and that test does not count as acceptance evidence. Manual accessibility checks for interaction patterns that automated checks miss, exploratory testing and penetration testing remain person-led, the last commissioned by the security lead.
 
-The ADM provides this through its three-tier structure: automated verification at the Execution Tier, human validation at the Governance Tier and strategic oversight at the Strategic Tier. The accountable executive does not need to review every PR. They need confidence that the governance structure is working and that exceptions are surfaced.
+### 6.3 The platform contract
 
-That confidence comes from a regular assurance view. The Strategic Tier should produce a recurring update for the accountable executive, risk forum or equivalent governance body. The cadence should be proportionate to the pace and risk of change. Monthly remains common. Fortnightly may be more appropriate where delivery cadence is high, where change is materially customer-affecting or where supervisory expectations are tighter.
+The **platform contract** states the reciprocal commitments between the platform and each team.
 
-A typical assurance update should include: summary of agent-generated change volume, releases and material changes; open incidents, near misses and post-incident actions relating to agent-delivered change; exceptions, waivers and high-risk decisions taken since the previous update; trends in first-pass acceptance, clarification rate, technical debt and quality; material changes to model selection, data residency, access controls or agent permissions; and open regulatory, compliance or control actions requiring attention.
+| The platform commits to | The team commits to |
+|---|---|
+| An environment within a published lead time, refreshed on a published cadence, with an overdue request recorded as a platform defect | Releasing an environment it no longer needs |
+| A shared pipeline that runs the same way for every team, with failures resolved by the platform team | Calling the shared definition rather than forking it and reporting a gap instead of a workaround |
+| A delivery flow faster than the workaround, with a published route to change it | Departing from the flow only with an exception granted by the authority responsible for the rule under 3.2, never against a never-waived control |
+| Standards the pipeline enforces, versioned, with time-limited exceptions visible | Running the checks locally before raising a pull request |
+| Readiness computed into the manifest rather than requested from the team | Keeping the work item, the change and the change record linked |
 
-Regulated oversight demands a regular, decision-ready view of whether controls are working, exceptions are growing and the pace of change remains within risk appetite. A weekly team forum is not sufficient assurance.
+Environment definitions are held centrally in the platform repository: the classes, how each is provisioned, its refresh cadence and its data set, a masked copy or a synthetic set. Provisioning, refresh and masking run as pipeline jobs that no agent runs, so production-derived data passes only through deterministic and logged steps, and an agent changes a definition through a pull request like any code. A shared pre-production class (the class nearest production) connects the contexts as production does with consistent masked data, and the regression and end-to-end tests at step 9, Authorise, run there with the pre-production acceptance of a high-tier change. Each context's definition sets the isolation, reservation and reset rules for that class, so that the tested composition and data state of each release are identifiable and the class does not become a queue.
 
-### 13.4 Regulatory Overlay Templates
+### 6.4 Operating the platform
 
-Different regulated sectors require specific adaptations to the ADM's artefacts and cadences. The core model remains unchanged, but each sector adds an overlay. These overlays are additive. They add sector-specific fields to the Intent Specification, additional checkpoints to the Governance Tier and specific constraints on agent tooling and data access.
+Shared pipelines, templates, checks, standards and agent configurations are software and carry the same engineering controls as other delivered software. A change to one follows the deployment approach of what it alters and carries a change record, and six rules apply.
 
-**Financial services (PRA/FCA regulated).** The Intent Specification template adds a regulatory impact field (Consumer Duty, operational resilience, Solvency II implications). The Governance Tier includes an explicit regulatory sign-off checkpoint for changes affecting policyholder or customer outcomes. The Coherence Register includes a regulatory compliance section tracking open regulatory change items. The provenance trail must be sufficient to satisfy PRA/FCA supervisory review.
+- Versioned and released: a team calls a tagged version, and a breaking change is a new major version with a published window to move.
+- Tested before rollout: a change to a shared pipeline is verified against a representative repository for each deployment approach before it reaches the estate.
+- Rolled out in stages: a change goes to one team, then across a deployment approach, then across the estate.
+- Pinnable: a team can pin a shared definition to its previous version while a regression is resolved, and the pin is recorded.
+- Owned: the platform owner owns the definitions, templates, environment definitions, agent profiles and evaluations. The practice owners own the content of the standards.
+- On the backlog: platform work sits on the platform backlog, with its capacity agreed and its priorities set by the platform owner with the product owners.
 
-**Healthcare (NHS, CQC, clinical safety).** The Intent Specification template adds a clinical risk classification (DCB0129/DCB0160). Changes affecting clinical systems require Clinical Safety Officer involvement at the Strategic Tier. Agent sandboxes must use synthetic patient data. Model selection must comply with NHS data residency requirements. The Governance Tier includes a clinical safety checkpoint for classified changes.
+The platform is on the path to changing and recovering every service, so its recovery objectives are set from the most demanding tolerance among the services that depend on it and recorded with its service level objectives. It enters live support before the first release under the model.
 
-**Government (GDS, Cabinet Office).** The Intent Specification maps to GDS user needs. The Strategic Tier aligns with existing architecture review boards and spending approval processes. Agent compute costs must be framed within Cabinet Office spend control language (cost per transaction, cost per user). Security classification (OFFICIAL, OFFICIAL-SENSITIVE) constrains model selection and deployment location.
+Each context profile records a manual fallback for its automated steps that keeps the controls and evidence of the step it replaces. For promotion and deployment it is the manual route recorded before the context's first release (control 3 in 5.3). It is used while the pipeline or the deployment engine is unavailable, for an emergency change or for an authorised recovery on the release authority's decision. A named person uses it through a time-limited credential issued on the operations lead's authority, and an agent never does. It deploys only a release candidate already attested at step 7, Identify, and a tested route restores the minimum verification and attestation needed before a new candidate deploys while the platform is unavailable. Afterwards the deployment is reconciled into the manifest and the change record, use of the route is reviewed as an incident, each route is exercised in recovery testing and its credential's issue and use reach security monitoring.
 
-**Legal (SRA regulated, legal professional privilege).** Agent sandboxes must be absolutely isolated from client data. The Intent Specification template for legal technology work includes a privilege impact assessment. Model selection must ensure no client data leaves the firm's trust boundary during inference.
+## 7. Accountabilities
 
-Practical guidance on data residency, model governance, incident response in agentic delivery and ethical AI governance is provided in [ADOPTION.md](ADOPTION.md).
+The model names accountabilities rather than posts. An adopter maps each accountability to a post it already has and records any gap with an owner, rather than assuming the post exists. Organisations staff them differently depending on product complexity, regulation, legacy burden and how much broader business change sits around software delivery. In a smaller team one person may hold more than one accountability. What matters is that each is explicit and its holder is named. The model also names a few holders outside the table: the practice owner for a discipline, the operations lead, the process owner and the accountable engineer for a unit. The adopter maps each in the same way, with its authority and its backup. The version 1.1 titles, Intent Architect, Verification Engineer, System Steward and Design Steward, remain available as post names.
 
----
+| Accountability | What it decides and owns | Usually held by |
+|---|---|---|
+| Product owner | The request decision under 2.2, the outcome and measure the intent carries and acceptance at step 11, Confirm and learn. Each intent has one accountable product owner. | A product owner or product manager for the product area |
+| Intent architect | The shape of the intent (its contexts, contracts, decomposition and delegation boundary) and the decision to publish it. | A solution architect or a lead engineer |
+| Validators | The expression of the need and the behaviour (the business analyst) and the acceptance examples (the test engineer). | A business analyst and a test engineer, with no one who shaped the intent declaring it validated alone |
+| Verifier | Verification at step 6, Review, by a code owner who did not produce the change, on agent-produced work as on a person's. Version 1.1 called this post the Verification Engineer. | A code owner named per repository path, an experienced engineer |
+| System steward | Coherence across the estate, the standards, the coherence register and technical debt. Design coherence sits here unless a design steward is appointed. | A chief architect or a lead architect |
+| Release authority | The go or no-go at step 9, Authorise, on a change they did not request, build or implement, together with the release manifest and its ordering. | A release manager, within the production change authority of the operations lead |
+| Platform owner | The engineering platform as a product (environments, pipelines, run identities and allow-lists) and the revocation of identities on suspension. | The product owner or lead engineer of the platform team |
+| Security lead | The security standard and its thresholds, policy exceptions for security, the threat model for the agent platform and approval of each allow-list addition. | The head of information security or a named delegate |
+| Data owner | Data definitions, masking, the personal data position and policy exceptions for data protection, advised by a privacy adviser. | The head of data or a data governance lead |
+| Accountable executive | Business risk acceptance, the assurance view under section 9 and the decisions the organisation reserves to the business, taken before a change is built. | The executive accountable for technology or for the business outcome |
+| The agent | No accountability. A configured participant that advises, drafts or executes under an agent profile and a run identity at the level assigned under 5.1, holding no approval or merge authority. | No one holds it. The platform owner configures it and the evaluation under 5.4 governs its level |
 
-## 14. Measuring Value
+**Segregation.** Principles 4 and 5 bar anyone from approving their own work or being the sole authoriser of a change they requested, built or will implement, and two rules follow from them here. A person who formed an intent does not verify its output, because the assumptions built into the intent make its author a poor judge of whether the output matches it. Where the release authority requested, built or will implement a change, the go or no-go passes to the next holder of the same authority. Independent review at step 6, Review, supports that separation rather than discharging it.
 
-Traditional Agile measures velocity in story points. This metric becomes less meaningful when agents can complete stories at machine speed. The ADM introduces a different measurement framework.
+**Continuity.** Each accountability has a named backup who is cross-trained to cover it and who can keep segregation for the work in question. The backup covers the accountability rather than taking it over, so the team does not stall when one person is absent. A stand-in does not verify work they formed. Where no backup without a conflict is available, delivery on the affected items pauses until the holder returns or a replacement is in place. Delivery pauses rather than compromising segregation, since maintaining throughput at its expense defeats the purpose of governed delivery. The adopter names who keeps the continuity plan that maps each accountability to its backup, with the product owner as the default for a team.
 
-### 14.1 Core Metrics
+**Verification is risk-tiered.** Review by a person does not scale in step with agent output, so the reviewer's attention is allocated by risk rather than spread evenly. A low-tier change that passes every deterministic check at step 5, Verify, receives a confirmation that the output matches the intent. A high-tier change receives a deep review, as does a change of another tier where a shared service, a security boundary or a wide blast radius warrants one. The risk tier under 2.5 and the checks at step 5 set the depth. The reviewer assesses whether the code is maintainable, proportionate to the problem and faithful to the spirit of the standards as well as the letter. Over time the reviewer also assesses whether the codebase grows in proportion to the value delivered or accumulates boilerplate. Allocating attention by risk keeps review a control as throughput rises.
 
-| Metric | What It Measures | Why It Matters |
-|--------|-----------------|---------------|
-| **First-Pass Acceptance Rate** | Percentage of agent PRs approved at the Governance Tier without rework. | Directly measures specification quality and agent effectiveness together. |
-| **Intent-to-Integration Time** | Elapsed time from specification approval to merged code. | Measures end-to-end delivery speed, including governance overhead. |
-| **Technical Debt Ratio** | New debt introduced per unit of delivered functionality. | Ensures speed is not being traded for structural degradation. |
-| **Clarification Rate** | Percentage of items where the agent had to request input from a person. | High rates typically indicate specification quality problems. They can also reflect domain unfamiliarity or genuine ambiguity. Track the trend, not the absolute number. |
-| **Agent Utilisation** | Percentage of time agents are actively working versus waiting for specification availability, governance approval or environment readiness. | Identifies bottlenecks in the backlog pipeline or governance process. |
-| **Human Leverage Ratio** | Specifications delivered per person per week relative to pre-ADM baseline. | Directly maps to operating cost efficiency. The metric that most directly measures the operating model's impact. |
-| **Cost per Intent Specification** | Total agent compute cost per specification, measured in currency (not tokens). Includes inference cost, sandbox compute and CI/CD resource consumption, allocated per specification. | Enables like-for-like cost comparison with delivery by people and tracks efficiency over time. |
-| **Specification Throughput** | Number of Intent Specifications moving from Draft to Ready per day or week. | Measures the design phase output. A declining rate signals a specification bottleneck before it affects agent utilisation. |
-| **Delivery Throughput** | Number of Intent Specifications moving from Ready to Done per day or week. | Measures end-to-end system output. Combined with specification throughput, reveals which phase is constraining delivery. |
-| **Cycle Time by Complexity** | Average elapsed time from Ready to Done, broken down by complexity band (S/M/L). | Provides the empirical data for forecasting. Replaces story point estimation with observed performance. |
-| **Quality Score** | Composite of defects found post-release, rework rate (specifications requiring re-implementation) and specification accuracy (first-pass acceptance rate). Weighting is set by the team and reviewed at the Strategic Tier. | Single measure of delivery quality. Tracks whether speed is being achieved at the expense of correctness. |
-| **Code Health Score** | Ratio of code removed or refactored to code added, weighted by complexity. | Measures whether the codebase is growing proportionately to value delivered, or accumulating bloat. Agent-generated code can be verbose. This metric tracks whether refactoring is keeping pace with generation. |
-| **Security Findings Rate** | Open security findings per release, broken down by severity. | Tracks whether agent-generated code is introducing security risk faster than it is being resolved. |
-| **Performance Regression Rate** | Percentage of releases that trigger a performance regression alert. | Tracks whether delivery speed is degrading system performance. |
-| **Specification Defect Rate** | Percentage of delivered work that met its acceptance criteria but failed to serve the business intent, found at UAT or in production. | Measures validation quality, not just verification. Catches features built correctly to a wrong specification, the failure mode Principle 3 exists to prevent. |
-| **Change Failure Rate** | Percentage of releases that cause an incident, rollback or hotfix. | A measure leadership already trusts. Lets ADM delivery be compared against the pre-ADM baseline and against industry reference points. |
-| **Time to Restore** | Elapsed time from an agent-caused incident being raised to service being restored. | Tests the claim that provenance and fast agent fixes shorten recovery. Pairs with Change Failure Rate. |
+**Design coherence.** Agents can generate user interfaces, but without codified design constraints they tend to produce generic, inconsistent interfaces. The design system standard under 6.2 holds those constraints: the component library, interaction patterns, layout conventions, accessibility standards and brand rules. Design coherence sits with the system steward unless a design steward is appointed. A design steward is appointed where a product has a user-facing surface that warrants a dedicated holder. In a smaller team one person may hold both accountabilities where they have both skill sets.
 
-### 14.2 Feedback Loops
+**Senior judgement.** The model concentrates judgement in senior people and is not a reason to remove them. The intent architect accountability requires domain understanding, system-level awareness and the ability to anticipate where an agent will struggle or go wrong. The verifier accountability requires experienced engineers who understand systems at a level above individual functions and files. Junior engineers assist with evidence gathering while senior judgement takes the harder calls. The system steward owns the architectural direction, maintains the standards and instructions that constrain agent behaviour and identifies when refactoring is needed to restore coherence. Technical debt has a concrete impact and a named owner. It enters the flow as a request decided under 2.2.
 
-Metrics are not just reported. They feed back into improvement.
+## 8. Evidence and measures
 
-Specification quality metrics (clarification rate, first-pass acceptance rate) feed directly into Intent Architect coaching and specification template refinement. The team reviews these metrics at the weekly Strategic Tier. If a particular type of specification consistently generates clarification requests, the template is updated to address that pattern. If an individual Intent Architect's acceptance rate is declining, the person responsible for delivery performance works with them to diagnose whether the problem is specification precision, domain complexity or agent misconfiguration.
+### 8.1 The decision trail
 
-Technical debt metrics feed into the System Steward's remediation planning. When debt reaches defined thresholds, remediation Intent Specifications are created and prioritised alongside feature work.
+The records below form one decision trail from the request to the release. Each record is created without transcription by the system where the decision or the work took place and carries the reference that links it to the next. The request reference links to the work item. The work item key and the intent version link to the branch and the pull request. The release candidate links to the change record, the deployment and the recovery position. A line of deployed code can therefore be traced back to the request and the decisions behind it. A request can be traced forward to the code and the release that carry it. For an agent-implemented unit the release candidate records the agent profile version and the run identity that produced the work, so a misconfigured profile can be traced to the changes it touched.
 
-Cost per Intent Specification trends inform model selection, agent configuration and the balance between agent autonomy and human oversight. If costs are rising without corresponding quality improvement, the team investigates root causes at the Strategic Tier.
+Provenance records what an agent did. It does not make the output reproducible, because the same intent run again may produce different code. The control is therefore the trail and a named person's approval of the artefact that shipped, not the ability to regenerate it identically. A reviewer or an auditor assesses the artefact that was approved rather than a hypothetical re-run.
 
-Quality Score trends inform the overall health of the delivery function. A declining Quality Score triggers a review of verification practices, specification standards and agent configuration.
+| Record | System of record | Owner |
+|---|---|---|
+| The validated intent with its acceptance examples | The work item, with each published version in the repository | Product owner |
+| Versioned code, configuration and migrations | The repository, under branch protection and code ownership | The lead engineer of the owning team |
+| Reviews and merge decisions, including the agent's comments | The pull request record in the repository | The code owners |
+| Findings and suppressions | The scanning the pipeline raises on the pull request | Platform owner, with the security lead for policy |
+| Software bills of materials | The pipeline, with the attestation of each release candidate | Release authority, with the security lead for the format |
+| Test evidence and the test completion record | The test estate, with completion recorded in the release manifest | Practice owner for test |
+| Pipelines and deployment history | The pipeline and each context's deployment engine | Release authority |
+| Defects | The work item, linked to the intent, the release candidate and the change record | Product owner |
+| The release manifest | The pipeline that generates it, linked from the change record | Release authority |
+| Change records and authorisations | The service management system, linked to the manifest and the authorised candidates | Release authority |
+| Exceptions | The release manifest, with a policy exception also on the policy owner's register | The owner who granted it |
+| Architecture decisions and gate decisions | The decision index in the standards repository, each carrying the work item key of the intent it governs | System steward, with each deciding authority |
+| Objectives and error budgets | The telemetry, with a versioned approval record per objective | The operations lead |
+| Agent profiles, evaluations, execution logs and session records | The repository for profiles and evaluations, the organisation's own log store for execution logs and the filtered session record of each run | Platform owner, with the security lead for the session records |
 
-### 14.3 Technical Debt Ownership
+Each record is retained to the organisation's retention schedule and is available to internal audit, external audit and any regulator on request. Custody of a record grants no approval authority.
 
-Technical debt is not an emergent property. It is a managed backlog with an accountable owner. The System Steward owns the technical debt register (part of the Coherence Register). Every item of identified debt has a severity rating, an explicit accept or remediate decision and a target date where applicable.
+### 8.2 Measures
 
-Agents are commissioned to remediate technical debt through dedicated refactoring work items. These items follow the same Intent Specification, Definition of Ready and Definition of Done as feature work. Debt remediation is prioritised alongside feature delivery at the daily Governance Tier.
+Instrumentation comes first. The flow and failure measures cannot be reported until commit, deployment and incident records are linked, so linking them is the first measurement task. Each measure is baselined before a target is set. No target is set where it would distort the decision the measure observes, so request decision outcomes and the share of changes in the high tier carry none. The table gives what each measure should prompt rather than a target.
 
-When technical debt is identified during verification, it is logged in the Coherence Register and flows back as a remediation Intent Specification into the backlog. This closes the loop: debt is identified, governed, remediated and verified through the same process as feature work.
+| Measure | What it should prompt |
+|---|---|
+| First-time validation failure rate | A high rate prompts a review of intent preparation: the template, the intake, the retrieval sources and model performance, investigated before a conclusion is drawn. |
+| Acceptance examples changed between draft and publication | It selects validation records for review. A textual difference does not itself establish challenge and correct examples may survive an effective review unchanged. |
+| Request decision outcomes | A rate of redirect, defer or reject near zero prompts a sample to establish whether every request is approved or prioritisation upstream is effective. |
+| Share of changes in the high tier | A rising share prompts a review of the tier criteria under 2.5, as a trigger rather than a target. |
+| Lead time from approved request to live | Reported by risk tier, its observed distribution informs the forecasts the business needs. A rise prompts a look at the review, clarification and environment queues. |
+| Release frequency per product | It shows whether intervals are shortening and is the evidence for shortening a product's release rhythm under 3.3. |
+| Change failure rate | It shows whether more frequent release brings more failure, on a measure leadership already trusts. A rise holds the release rhythm and prompts a review of autonomy levels. |
+| Time to restore | It measures the time from an incident caused by a change being raised to service being restored. It tests whether provenance and fast fixes shorten recovery. |
+| Human effort per intent | It measures the net change across generation, review and rework, showing whether delegation reduces effort or transfers it. A rise without a quality improvement prompts investigation at the periodic review. |
+| Stop-condition rate | A high rate usually indicates intent quality and can also reflect domain unfamiliarity or real ambiguity. The trend matters more than the absolute number. |
+| Exception rate per context profile | It shows how far teams use the standard route, captured from the manifest. A rise prompts a review of the profile or the standard rather than of the people granting exceptions. |
+| Environment wait time | It shows whether the platform meets its environment commitment. Environment scarcity is a platform defect, so a rising wait time becomes a platform backlog item. |
+| Code health | The ratio of code removed or refactored to code added, weighted by complexity, kept as a sampling signal with its unit and its treatment of a period with no additions defined by the practice owner. A falling ratio prompts a sample of the affected changes for unnecessary growth or duplication, and a confirmed structural issue enters the coherence register. |
 
----
+The practice owner defines each measure's denominator, window and attribution, so that a stop-condition rate per intent is not confused with one per run and first-time validation failure counts from the first formal submission rather than from iterative drafting. Measures feed back into the flow. Where one type of intent repeatedly fails validation or stops, the template, the intake questions or the retrieval sources are updated to address the pattern. Release rhythm and autonomy follow 3.3 and 5.4, and a confirmed structural issue enters the coherence register in appendix D.
 
-## 15. Worked Example: Project Kestrel
+## 9. Working with existing frameworks
 
-A worked example is provided in [KESTREL.md](KESTREL.md) to help bring the model alive in practice. It includes a fictional but realistic project (a customer self-service portal for a UK insurance company), example artefacts (Intent Brief, Intent Specification, PR description with provenance metadata) and a walkthrough of a typical week in ADM delivery.
+**Service management.** The flow governs how a software change is produced. The surrounding service obligations remain: change management, incident management, problem management, service level management and configuration management continue to apply. Service management adds the operational coordination: who communicates with affected users, who decides between a workaround and a fix and who escalates to a third party.
 
----
+The flow produces the change record from its own evidence, as a by-product of the work from step 7, Identify, to step 11, Confirm and learn, rather than as a separate manual gate. The information a change advisory board (CAB) would assess, what changed, what was tested and the recovery position, is already in the decision trail under 8.1. The release manifest is created at step 9, Authorise, from the change record and cannot assemble without it. The service management change type, standard, normal or emergency, is recorded when the intent is published.
 
-## 16. Transitioning to the ADM
+A standard change catalogue pre-authorises classes of repeatable low-risk change. The change authority designates each class on the sponsorship of the function that owns it. The context profile supplies the known procedure and the tested rollback, so a profile alone does not make a change standard. A catalogue change skips the request decision under 2.2, and the catalogue entry supplies its change authorisation at step 9. It still needs a business purpose and an authorised requester, it follows the remaining steps of the flow and it receives the release go or no-go as every release does.
 
-The ADM is an operating model transition, not a tooling rollout. It involves roles, governance, tooling, delivery confidence and workforce change.
+For a normal change the change authorisation and the release go or no-go are recorded separately at step 9. Step 10, Deploy, creates no further approval and production deployment stays at L0, Not used.
 
-The recommended approach is phased: foundations and enablement, a confidence-building pilot, controlled scale-up and then scaled operation. Specific guidance on brownfield adoption, team size adaptation and workforce transition is also provided.
+Emergency change is its own route, for a break-fix only. The emergency change authority authorises it on the minimum evidence that authority requires, the record is reconciled with the full evidence by the end of the next working day and the permanent fix follows the flow as an intent. Emergency releases are recorded separately in the manifest so that the pattern is visible. A missed cut-off or a commitment date is not an emergency.
 
-**Make the codebase legible first.** The model treats the codebase as a knowledge store that agents read. Legacy systems are often not legible enough for that to work. Brownfield adoption usually needs an upfront investment to make the system readable by agents: characterisation tests, clear module boundaries and current documentation. This work is itself ADM delivery, specified and governed the same way as feature work, and it is a precondition for agent productivity rather than a side task.
+Incidents and problems enter the flow as requests. Step 11 initiates the incident procedure when a release causes an incident. Known issues pass to problem management with owners and workarounds before the change record closes. A known error is not published until first-line support can execute the workaround. Under control 1 in 5.3 an agent does not publish a workaround it drafted.
 
-**Run a measured pilot.** Because the model's throughput and headcount claims are not yet backed by published data, the pilot is where an organisation produces its own evidence. A useful pilot fixes a small scope, takes a baseline from the pre-ADM team, then measures the leading indicators from the first day: specification throughput, first-pass acceptance rate, clarification rate, cycle time by complexity and cost per specification. The local ratios that emerge, specifications produced per Intent Architect and pull requests verified per Verification Engineer, are what should size the target operating model, not the figures in this document. Decision gates at the end of the pilot decide whether to scale, adjust or pause.
+Operational service level management continues. Production systems still need service level agreements (SLAs), availability targets and service reviews, owned by whoever manages live services. The flow feeds that discipline with the provenance and test evidence every release carries and does not absorb it. The release manifest and the decision trail feed whatever configuration management database (CMDB) the organisation keeps rather than a separate update process.
 
-Full transition guidance is in [ADOPTION.md](ADOPTION.md).
+**Regulated environments.** The controls in the flow apply in every environment. In a regulated environment additional controls, accountability frameworks and assurance obligations apply. The model meets them as follows.
 
----
+The never-waived controls under 3.2, the segregation rules in section 7 and the decision trail under 8.1 are the provisions a regulator or an auditor reads first. A named person is accountable for the governance of agent-produced change, and the decisions the organisation reserves to the business are named in advance and taken before a change is built. The accountable executive does not review every pull request but needs confidence that the controls work and that exceptions surface.
 
-## 17. Implications for Services Firms
+A periodic assurance view gives the accountable executive, a risk forum or an equivalent body a decision-ready view of whether the controls are working, whether exceptions are growing and whether the pace of change remains within risk appetite. Its cadence is proportionate to the pace and risk of change.
 
-The ADM changes not just how technology services are delivered but what services firms sell. Consultancies, managed service providers and system integrators that sell delivery capacity by the person will find their commercial model challenged by a world where a smaller team with an agent fleet delivers more. The implications are significant: pricing models shift from time and materials to outcome-based delivery, the value proposition moves from staffing to operating model expertise and the skills profile of a delivery team changes fundamentally. Detailed guidance on services firm adaptation is planned for a future revision.
+| The assurance view covers | Content |
+|---|---|
+| Volume | Agent-produced change, releases and material changes since the previous view, by risk tier, with emergency releases shown separately |
+| Incidents | Open incidents, near misses and post-incident actions relating to agent-delivered change |
+| Exceptions | Open and expired exceptions and the high-risk decisions taken since the previous view |
+| Trends | First-time validation failure rate, stop-condition rate, human effort per intent, change failure rate and code health |
+| Agent configuration | Material changes to the permitted model list, hosting, access controls or autonomy levels |
+| Open actions | Regulatory, compliance or control actions awaiting attention |
 
----
+A sector overlay adds fields to the intent under 2.1 and gate triggers at step 2, Gate. It adds constraints on the permitted model list and on data access. It does not change the core. An adopter maps each of its policy requirements to the step or control that discharges it.
 
-## 18. What This Model Is Not
+## 10. Adopting the model
 
-- It is not a replacement for product thinking. Agents execute implementation. People still decide what to build and why.
-- It is not an excuse to cut engineering headcount to zero. The roles in this model are more senior and more critical than in traditional Agile. Smaller teams, yes. Less skilled teams, absolutely not.
-- It is not tool-specific. The ADM works with Claude Code, GitHub Copilot, Cursor or any agentic development tool. The model is about operating structure, not vendor choice.
-- It is not finished. The model will evolve as tooling matures, as organisations accumulate experience and as the broader community contributes feedback.
-- It is not industry-specific. The ADM applies equally to insurance, financial services, healthcare, retail, professional services, education, government or any sector that builds software. The principles of intent-driven specification, governed agent execution and human verification are universal.
-- It is not a design methodology. UX research, user testing and product discovery sit outside the ADM. Their output feeds in as context. But once a product has a user-facing surface, design system governance and UI implementation quality are inside the model. The Design Steward (Section 6.4) and Design Agent enforce design coherence the same way the System Steward enforces architectural coherence.
-- It is not a model for all IT work. The ADM applies wherever developers write code, regardless of platform. Custom development on Salesforce, SAP or Dynamics is software development and follows the same model. Vendor-led or no-code configuration sits outside the boundary. Infrastructure operations and service desk functions require different operating models. The ADM sits alongside these functions. Where the boundary falls depends on how much of the organisation's change is bespoke development versus platform configuration.
+Adoption is an operating model transition rather than a tooling rollout. It proceeds in the order below.
 
----
+**Make the codebase legible first.** The model treats the codebase as a knowledge store that agents read. Legacy systems are often not legible enough for that to work, so brownfield adoption usually needs an upfront investment: characterisation tests, clear module boundaries and current documentation. This work goes through the flow, specified and governed as any other change. It is a precondition for agent productivity rather than a side task. A unit can be agent-implemented only where the change has a version-controlled representation, so a context's first work is whatever makes its changes representable and promotable unchanged.
 
-## 19. Limitations and Open Questions
+**Run a measured pilot.** The pilot is where an organisation produces its own evidence. A useful pilot fixes a small scope, takes a baseline from the team before adoption and measures the leading measures from the first day: lead time, first-time validation failure rate, stop-condition rate and human effort per intent. The security lead completes the threat model and a privacy assessment of the agent platform before the pilot. Security monitoring of the platform is in place before any step rises above L1, Advise. Consumption measured in the pilot sets a spend cap before wider rollout. Decision gates at the end of the pilot decide whether to scale, adjust or pause.
 
-This model is based on practical experience and informed judgement. It is not based on controlled studies. The following limitations and open questions should be read as an honest assessment of what the ADM assumes but cannot yet prove.
+**Start agent advice at L1 and delegate execution only on evidence.** The levels in 3.1 are the levels a step reaches once the evidence under 5.4 supports them. Until then agents advise at L1, Advise, while Workspace, Identify, production deployment and acceptance stay at L0, Not used, and the first delegation at L2, Draft, needs the first-delegation evidence under 5.4 as every later increase does.
 
-**The specification bottleneck.** The ADM assumes that Intent Architects can generate specifications fast enough to keep an agent fleet productively occupied. If they cannot, the model's throughput advantage disappears (see Section 6.7 for how the model manages this and the leading indicators to monitor). Early indications from teams using agentic development tools suggest that specification writing is indeed the constraint, but there is no published data on the sustainable specification rate per Intent Architect across different domains and complexity levels. This is the single most important empirical question the model raises.
+**Publish the first two standards before the first pipeline.** Risk tiering and test expectations and the pull request contract are published before the first pipeline is built, because the first pipeline enforces them.
 
-**Talent scarcity.** The model concentrates judgement in a small number of senior, scarce roles: Intent Architects, System Stewards and Verification Engineers. The market for these people is tight, and the model's economics depend on having enough of them. Most organisations will not be able to hire them at the volume the model implies, so growing them internally through the career paths in Section 6.9 is not optional. If the supply of these roles is the real constraint rather than specification throughput, the operating model scales more slowly than the headline figures suggest.
+**Prove the platform on one delivery context before the next.** The first release of the platform covers one context. Further contexts and self-service follow once the first is in use, with each required standard enforceable before a context uses it. Each context records its manual fallback before its first release and each team submits its low-tier changes as catalogue candidates. Until automatic evidence capture is operating for a context, a manually maintained index records where each release's evidence sits.
 
-**Verification at scale.** The model relies on human verification as the quality backstop. But verification does not scale linearly with agent output. If a team of two Verification Engineers can review 20 PRs per day, and the agent fleet produces 40, either half the output waits or verification standards drop. The model addresses this through automated pre-checks (Review Agent, Security Agent, Testing Agent) but the question remains: at what ratio of agent output to human review capacity does verification become a rubber stamp rather than a genuine quality gate?
+**Keep the implementation plan separate.** The adopter's lifecycle design and its implementation plan are separate documents. The plan is governed by the model and carries the construction work, its sequence and dates, its dependencies and its open items with their owners.
 
-**The "No Silver Bullet" problem.** Fred Brooks argued in 1987 that the essential difficulty of software is in the conceptual structures, not the representation. The ADM relocates the conceptual work from code to specification, but it does not eliminate it. Writing a precise Intent Specification for a complex domain problem is at least as hard as writing the code. The model assumes that this difficulty is manageable through structured requirements processes and agent-led discovery. Whether that assumption holds for highly complex domains (healthcare clinical workflows, financial risk models, real-time systems) is an open question.
+ADOPTION.md carries the phases, team sizing, brownfield guidance, career paths and workforce change.
 
-**Agent quality plateau.** The model assumes that agent output quality will improve over time as models improve. This is likely but not certain. If agent quality plateaus at a level that requires heavy human rework, the economics of the model change. The verification overhead could exceed the implementation savings. Organisations should track first-pass acceptance rates closely. If the rate does not improve over time, the model's cost assumptions need revisiting.
+## 11. What this model is not, and its limits
 
-**Workforce transition evidence.** The illustrative organisation comparison in [ADOPTION.md](ADOPTION.md) shows a reduction from 86 dedicated software delivery roles to 19 in an ADM organisation, approximately 78% for the directly comparable roles. These figures are extrapolated from team structure analysis, not from observed transitions. No organisation has published a case study of a full ADM-style transition with before-and-after headcount, cost and quality data. Until such evidence exists, the reduction figures should be treated as directional estimates, not commitments.
+The model is not a product discovery method. User experience research, user testing and product discovery sit outside it and their output feeds in as context, although design system governance and user interface quality are inside it once a product has a user-facing surface. Agents execute implementation and people still decide what to build and why. It is not a reason to remove senior engineers: the accountabilities in section 7 carry more senior judgement than a conventional team, so the team may be smaller but it is not less skilled. It is not tool-specific. The model is about operating structure rather than vendor choice: what depends on a product sits in the context profile and the agent profile. It is not finished. It will evolve as tooling matures, as organisations accumulate experience and as the community contributes. It does not govern a vendor's own delivery process, infrastructure operations or service desk work, and those sit alongside it under their own operating models. A supplier-produced change that the organisation versions and promotes follows the flow, so the boundary is whether a change is versioned and promoted through the flow, not whether code is written.
 
-**Security maturity.** The agent security threats described in [Appendix C.9](#c9-agent-security-threats) are real and growing. The current state of the art in prompt injection defence is immature. The model identifies the threats but does not claim to solve them. Organisations operating in high-trust environments (financial services, healthcare, government) should treat agent security as an evolving risk that requires continuous investment, not a one-time configuration exercise.
+The model is based on practical experience and informed judgement rather than on controlled studies. The limits below define the boundaries of what it can claim with confidence.
 
-**Tooling dependency.** The model is deliberately tool-agnostic, but in practice it depends on AI agent capabilities that are advancing rapidly and unevenly. A team that builds its operating model around the current capabilities of one provider may find itself locked into assumptions that do not hold when models change. The multi-provider strategy recommended in [Appendix C.8](#c8-agent-fleet-resilience) mitigates this, but tooling volatility remains a genuine risk for early adopters.
+| Limit | What it means for an adopter |
+|---|---|
+| Specification throughput | The model assumes that intents can be formed and validated fast enough to keep the agents occupied, with no published data on the rate one person can sustain across domains. It is the most important empirical question the model raises, so the pilot measures the rate and validation and review capacity caps approved work. |
+| Talent scarcity | The model concentrates judgement in people who can hold the intent architect, system steward and verifier accountabilities, for whom the market is tight. Most organisations will grow them internally rather than hire them. |
+| Verification at scale | Review by a person does not scale in step with agent output and the ratio of agent output to review capacity where review stops being a control is not known. Risk-tiered review and human effort per intent are watched from the first day. |
+| Agent quality plateau | If agent quality plateaus at a level that requires heavy rework by people, the review overhead could exceed the implementation saving. Human effort per intent is tracked and the cost assumptions are revisited if it does not fall. |
+| Workforce transition evidence | No published case study of a full transition with before-and-after cost and quality data is known to the author. The model makes no headcount claim, and the pilot establishes the staffing implications. |
+| Security maturity | Prompt injection defence is immature and the model identifies the threats under 5.3 and 5.5 without claiming to solve them. Agent security is an evolving risk that needs continuous investment rather than a one-time configuration. |
+| Tooling dependency | The model is tool-neutral but depends on agent capabilities that advance unevenly, so assumptions built on one provider's current capability may fail when models change. The permitted model list holds more than one model and the agent profile pins the version. |
+| Code quality trajectory | Agent-generated codebases are new and whether they become more consistent as standards mature or accumulate structural issues that compound is not yet known. The code health ratio is tracked over time and early adopters publish their findings. |
 
-**Code quality trajectory.** Agent-generated codebases are new. After a year of continuous agent-driven development, what does code quality look like? Do codebases become more consistent as standards mature, or do they accumulate subtle structural issues that compound? The Code Health Score and Technical Debt Ratio metrics (Section 14.1) should be tracked longitudinally to answer this question. Early adopters should publish findings.
+The model relocates the conceptual work from code to the intent and does not remove it. Writing a precise intent for a complex domain is at least as hard as writing the code, the essential difficulty Brooks described in 1987. An adopter monitors these limits and contributes findings back to the community as evidence accumulates.
 
-These limitations do not invalidate the model. They define the boundaries of what it can claim with confidence. Organisations adopting the ADM should monitor these open questions and contribute findings back to the community as evidence accumulates.
+## An invitation
 
----
+The Agentic Delivery Model, version 2.0, is published as an open methodology. It is designed to be used, adapted, challenged and improved by practitioners working in real enterprise environments.
 
-## 20. An Invitation
-
-The Agentic Delivery Model is published as an open methodology. It is designed to be used, adapted, challenged and improved by practitioners working in real enterprise environments.
-
-If you are a CTO, CIO or engineering leader navigating this transition, get in touch with the author. If there is sufficient interest, a working group will be established to evolve the model collaboratively. The best frameworks are not written by individuals. They are refined by communities of practice.
-
-The shift from people-led to agent-executed software delivery is the most significant operating model change in enterprise technology since the move to cloud. The organisations that define the model will shape how the industry works for the next decade.
+If you are a chief technology officer, a chief information officer or an engineering leader working through this transition, get in touch with the author. If there is sufficient interest, a working group will be established to evolve the model collaboratively. Frameworks improve when a community of practice refines them. Findings from measured pilots are the evidence the next version will be built on.
 
 ---
 
@@ -626,361 +573,182 @@ CIO / CTO. Founder of [Oxygen Bubbles](https://oxygenbubbles.com), an AI strateg
 
 ---
 
-## Appendix A. Illustrative Organisation Comparison
+## Appendix A. The intent template
 
-The illustrative organisation comparison, including before-and-after charts, the indicative role transition table and the scaling model, is provided in [ADOPTION.md](ADOPTION.md).
-
----
-
-## Appendix B. Key Artefacts
-
-### B.1 The Intent Brief
-
-The Intent Brief is the entry point for the design phase. It is written by the Product Owner before discovery begins. Its purpose is to give the requirements agent a scoped objective to work from and to signal to the team how discovery should be conducted.
-
-An Intent Brief is deliberately short. It is not a specification. It captures enough context to scope a discovery session and route the work appropriately.
+The template carries the request record and the ten elements of the intent in the order given under 2.1. Every element is answered, including "considered, does not apply". The work item holds the working copy while the intent is formed and validated. The repository holds each published version, the only version a build uses.
 
 ```
-Intent Brief: [Brief title]
-Ref: IB-[sequential number]
+INTENT
+Work item: [key]
+Title: [short title naming the change]
+Status: draft | in validation | published | in build | released | accepted
+Risk tier: high | standard | low
+Published version: [identifier, blank until published]
 
-Business Objective:
-[One to three sentences. What the business wants to achieve and why.]
+REQUEST RECORD
+Request reference: [reference]
+Problem: [what is wrong or missing, in the requester's own terms]
+Expected benefit or obligation: [the measurable benefit, or the obligation that requires the change]
+Business owner: [name]
+Indicative effort: [order of magnitude]
+Alternatives considered: [including doing nothing]
+Work displaced: [what waits if this is approved]
+Decision and rationale: [approve | redirect | defer | reject, with the reason and the date]
 
-Success Criteria:
-[How will we know this has been achieved? Observable outcomes, not implementation detail.]
+1 OUTCOME AND MEASURE
+[the outcome in the business owner's terms, the observable measure that shows it is achieved, the person who accepts it and the colleagues whose work it changes]
 
-Known Constraints:
-[Regulatory, technical, timeline or dependency constraints known at this stage.]
+2 SCOPE BOUNDARY
+In scope: [the change to make]
+Must follow: [patterns, services and schemas]
+Must not touch: [boundaries and services out of scope]
 
-Stakeholders:
-[Named individuals or roles who own the domain knowledge for this objective.]
+3 ACCEPTANCE EXAMPLES
+Given [precondition] when [action] then [expected result]
+Given [precondition] when [action] then [expected result]
+[edge cases and error paths follow the main path]
 
-Complexity: [Low / Medium / High]
-Discovery Mode: [Agent-led / Paired]
-[Low complexity + familiar domain = agent-led. High complexity, ambiguous domain or unfamiliar territory = paired.]
+4 CONTEXTS AND EXECUTION UNITS
+Leading context: [the context whose repository holds the published version]
+Unit [n]: [context, what it alters, deployment approach, rollout order and the conditions for its activation]
 
-Notes:
-[Any additional context that would help the requirements agent scope the discovery.]
-```
+5 CONTRACTS TO HONOUR
+Unit [n]: [interfaces, services and schemas, with each contract version produced and each version consumed]
 
-A single Intent Brief may produce one or many Intent Specifications. The Brief is the parent artefact. It remains in the backlog as a reference linking the resulting specifications to the original business objective.
+6 DATA AND SECURITY POSITION
+[data touched and its classification, masking, permissions changed, retention, any protection assessment, the threats introduced with their requirements and the gates triggered]
 
----
+7 RECOVERY POSITION
+[the planned recovery position for each unit among the three under section 4, the safe partial states, the units recovered together and the proof required before authorisation]
 
-### B.2 The Intent Specification
+8 DELEGATED JUDGEMENT AND STOP CONDITIONS
+Inside the boundary: [decisions the agent may take and record]
+Stop conditions: [what halts the run for a person]
 
-Replaces the user story as the primary unit of work. An Intent Specification is iterated between agents and people before entering the backlog. The requirements agent drafts it from stakeholder interviews. The Intent Architect refines it for feasibility and scope. The Product Owner approves it for business accuracy.
+9 ASSUMPTIONS AND OPEN QUESTIONS
+[each assumption, stated so it can be tested, with its owner. Each open question with its closing action and owner]
 
-**Template:**
+10 DEPENDENCIES
+Unit [n]: [what it waits on, what waits on it and their state, bound to the release candidate identifiers at step 7]
 
-```
-INTENT SPECIFICATION
-====================
-ID: [ADO/Jira work item ID]
-Title: [Concise, action-oriented title]
-Status: Draft | In Review | Ready | In Progress | Done
-
-BUSINESS INTENT
-What: [What capability or change is needed]
-Why: [Business outcome this serves]
-Who: [User personas affected]
-
-ACCEPTANCE CRITERIA (Gherkin format, from Behaviour-Driven Development)
-1. GIVEN [precondition] WHEN [action] THEN [expected result]
-2. GIVEN [precondition] WHEN [action] THEN [expected result]
-3. [Additional criteria as needed]
-
-TECHNICAL CONSTRAINTS
-- Must follow: [specific patterns, services, schemas]
-- Must not touch: [boundaries, services out of scope]
-- Integration points: [APIs, services, databases involved]
-
-DESIGN CONSTRAINTS (if applicable)
-- Component library: [specific components to use]
-- Layout and interaction patterns: [relevant patterns from the design system]
-- Accessibility requirements: [WCAG level, specific considerations]
-- Brand and visual rules: [any applicable brand constraints]
-
-TEST EXPECTATIONS
-- Unit tests: [specific scenarios required]
-- Integration tests: [specific interactions to verify]
-- Edge cases: [specific boundary conditions to cover]
-
-COMPLEXITY ASSESSMENT
-- Agent autonomy: Full | Needs human pairing | Requires decomposition
-- Estimated scope: S / M / L
-- Dependencies: [list any blocking items]
+AUTONOMY CLASSIFICATION
+Unit [n]: [agent-implemented at the approved level for its step and class, or person-implemented]. Validation and release authority stay with people, and production deployment, production data change and acceptance stay at L0
 
 PROVENANCE
-- Requirements source: [stakeholder interviews, dates]
-- Drafted by: [requirements agent, model version]
-- Refined by: [Intent Architect name]
-- Approved by: [Product Owner name]
+Drafted by: [agent profile and version, run identity]
+Shaped by: [intent architect]
+Validated by: [business analyst, test engineer, each with the evidence relied on]
+Published version: [identifier and repository]
+Approved by: [product owner, request decision and date]
 ```
 
-**A note on notation.** The template uses Gherkin because it is widely understood and maps cleanly to automated tests. Some spec-driven tooling uses EARS (Easy Approach to Requirements Syntax) instead. Either is acceptable. What matters is that acceptance criteria are precise, testable and unambiguous, not the notation that expresses them.
+Acceptance examples may be written in Gherkin, as the template shows, or in EARS (Easy Approach to Requirements Syntax). Either notation is acceptable, since the notation matters less than the examples being concrete, executable and business-owned. Where the output is not deterministic the examples carry a threshold over a set of cases rather than a single expected result.
 
-### B.3 Intent Specifications vs Epics and PBIs
+## Appendix B. The context profile template
 
-Organisations transitioning from traditional Agile will ask how Intent Specifications map to the familiar Epic, Feature and Product Backlog Item (PBI) hierarchy. The mapping is:
+A context profile is the approved route from a request to production for one delivery context. It holds what is specific to a platform, so that the flow in section 3 holds nothing specific to any. A platform enters the flow only through a context profile. Until it has one its changes follow their existing route.
 
-**Epics map to Strategic Intents and Intent Briefs.** A Strategic Intent is a high-level business objective ("Launch customer self-service portal", "Migrate claims processing to event-driven architecture"). It sits above the Intent Brief and provides context for a group of related work. The Product Owner breaks a Strategic Intent into one or more Intent Briefs, each scoping a specific area for discovery. Some Intent Briefs are strategic in their own right. A large epic might produce several Intent Briefs, each of which produces one or more Intent Specifications through the discovery process. Strategic Intents are discussed at the weekly Strategic Tier. Intent Briefs are the working units that feed the specification pipeline.
+```
+CONTEXT PROFILE
+Delivery context: [the platform and its build and deployment mechanism]
+Profile owner and version: [name, version, date approved]
 
-**Features become Intent Specifications.** An Intent Specification represents a coherent unit of business intent ("Build the policy amendment request form with validation and submission to the amendments API"). It is the primary unit of work in the ADM, equivalent to a feature in traditional Agile but specified with significantly more precision.
+Deployment approaches carried: [artefact-based | state-based | migration-based, the usual one first]
+Workspace and allocation: [the isolated place a change is made, how the pipeline allocates it from a versioned definition and how it is refreshed]
+Local check: [what an engineer runs before raising a pull request, from the same rule versions the pipeline uses]
+Pull request contract reference: [the published contract and its version]
+Verification checks at step 5: [the deterministic checks and thresholds, by risk tier]
+Release candidate form: [what step 7 produces and attests and the identifier it carries]
+Promotion sequence and environment values: [the deployment engine, the environment order and what is supplied as an environment value rather than carried]
+Recovery position and its proof: [the position that applies and the evidence the manifest carries]
+Post-deployment verification: [the health checks that provide the evidence for acceptance at step 11]
+Manual fallback route: [the route used when the pipeline or engine is unavailable, keeping the controls and deploying only an attested candidate]
+Catalogue changes designated: [the classes pre-authorised for this context and the entry for each]
+```
 
-**PBIs are not needed.** In traditional Agile, a feature is decomposed into PBIs (user stories, tasks) because a developer needs work items sized to fit a sprint. In the ADM, the agent handles decomposition internally. It reads the Intent Specification, determines the implementation steps and executes them. The boundary shifts from "what can a developer do in a day" to "what is a coherent unit of business intent." If an Intent Specification is too large for a single agent to execute reliably, the Intent Architect decomposes it into smaller specifications. But the decomposition is at the intent level, not the task level.
+Any exception to a step is recorded in the profile with its owner and expiry. An operation that needs a named person's approval in addition to the authorisation at step 9, Authorise, is listed in the profile and resolves to an accountability in section 7. A destructive change and a permission change that widens access are examples.
 
-The full hierarchy is: Strategic Intent (the objective) to Intent Brief (the scoped discovery input) to Intent Specification (the executable unit of work). This replaces the traditional epic, feature, PBI hierarchy with a simpler structure where each level has a clear purpose. The overhead of maintaining three-level backlog hierarchies with dependencies, estimates and sprint allocations disappears. The backlog becomes a prioritised list of Intent Specifications grouped under Strategic Intents, with Intent Briefs tracking work that is still in the discovery phase.
+## Appendix C. The agent profile template
 
-**Strategic Intent is a lightweight label, not a formal template.** It exists to group related Intent Specifications for visibility and coordination, particularly for release management (see Section 11 on feature flags). It does not require its own approval workflow, governance session or template. If the backlog tool supports a parent grouping (epic, initiative, tag), use that. The point is traceability and coordination, not process overhead. The ADM deliberately avoids recreating the Epic/Feature/PBI hierarchy it replaces.
+An agent profile is the versioned record for one agent. It is held in version control and changed only through a pull request. An increase in level takes effect only through the attested release of the platform and a reduction takes effect at once. The organisation-level settings, meaning the autonomy ceiling, the permitted model list and the allow-list, are held outside the profile and are authoritative over it. The run identity is issued per run and scoped from the profile at the point of issue.
 
-### B.4 Definition of Ready (for Agents)
+```
+AGENT PROFILE
+Profile identifier and version: [identifier, version]
+Step and class of change served: [step, class]
+Autonomy level: [L0 | L1 | L2 | L3 | L4]
+Model and version: [model, version, pinned]
+Inference hosting and provider: [hosting location or boundary, provider, from the permitted model list]
+Tools it may call: [each tool, from the allow-list]
+Scopes it holds: [the read, comment, write and execute permissions for the step and class, bounded by the approved autonomy level]
+Context sources it reads: [each approved source and its permitted scope]
+Instruction files at pinned versions: [repository and path instructions and skills, each with its version]
+Stop conditions: [what halts the run]
+Reviewing model pairing: [the model that reviews this agent's output, as the evaluation established]
+Evaluation reference and result: [evaluation identifier, changes evaluated, acceptability, review and rework measured]
+Period at the level below: [number of changes, completed on]
+Approval record: [approving authority, practice owner who accepted the evaluation, date]
+Suspension conditions: [what suspends execution authority, including a material configuration change]
+```
 
-A work item is Ready for agent execution when:
+## Appendix D. The coherence register
 
-- The Intent Specification is complete and peer-reviewed
-- Architectural constraints are explicit
-- Automated test expectations are defined
-- The item is appropriately scoped (one coherent change, not a multi-concern epic)
-- Integration boundaries are clear
-- There are no unresolved dependencies
+The coherence register serves three purposes. It is a decision log, a record of significant technical decisions, their rationale and their review dates. It is a technical debt register, where every identified item of debt is logged, severity-rated and given an explicit accept or remediate decision with a target date where applicable. It is a coherence risk tracker, a living record of where the codebase is at risk of drifting towards inconsistency. The system steward owns the register and presents it at the periodic review under 3.3.
 
-Items that do not meet the Definition of Ready must not enter the Execution Tier. This is the primary quality gate in the entire model.
-### B.5 Definition of Done (Extended)
-
-A work item is Done when:
-
-- All acceptance criteria pass
-- Automated tests pass (unit, integration, security scan)
-- A Verification Engineer has verified that the output matches the Intent Specification and is structurally consistent
-- The Product Owner has validated that the output serves the business intent (see Principle 3)
-- The System Steward has confirmed system coherence (or deferred with explicit rationale)
-- For user-facing changes, the Design Steward has confirmed design coherence (component usage, interaction patterns, accessibility compliance)
-- Technical debt has been assessed and scored
-- The PR is merged to the target branch
-- The originating work item is updated with provenance metadata (agent, model, specification version, timestamps)
-### B.6 Testing Strategy
-
-The Intent Specification template includes test expectations for unit and integration tests. But agent-generated code also needs to be validated against non-functional requirements that cut across individual specifications.
-
-**Performance and load testing.** Performance requirements should be stated in the Intent Specification where they apply: response time thresholds, throughput expectations, resource consumption limits. The Testing Agent can generate performance test harnesses alongside functional tests, but performance testing often requires dedicated environments with production-like data volumes and infrastructure. The Platform Engineer is responsible for provisioning these environments. Performance test results should be reviewed at the Governance Tier alongside functional verification.
-
-**Accessibility testing.** For user-facing work, accessibility requirements (WCAG compliance level, screen reader compatibility, keyboard navigation) should be stated in the Intent Specification as acceptance criteria. Agents can run automated accessibility checks (axe, Lighthouse) as part of the test suite. Manual accessibility testing by a Verification Engineer or specialist remains necessary for interaction patterns that automated tools miss.
-
-**Security testing.** The Security Agent provides continuous scanning of agent-generated code for dependency vulnerabilities, secret exposure and injection risks. For applications with higher security requirements, the Intent Specification should reference specific security standards (OWASP Top 10, PCI DSS, NHS Data Security and Protection Toolkit) and the Testing Agent should include security-focused test scenarios. Penetration testing remains a human-led activity, commissioned at the Strategic Tier and scoped against the current release.
-
-**System integration testing (SIT).** Individual Intent Specifications are tested in isolation, but features that span multiple specifications or interact with external systems need integration validation. SIT confirms that components work together correctly: data flows between services, API contracts are honoured and system boundaries behave as expected. SIT specifications should be created as distinct Intent Specifications, referencing the component specifications they validate. The Testing Agent generates and maintains the integration suite.
-
-**End-to-end testing.** Beyond SIT, full end-to-end validation confirms that user journeys work from start to finish across the complete system. End-to-end test specifications should be created as distinct Intent Specifications. The Testing Agent generates and maintains the end-to-end suite. The Verification Engineer validates that it covers the critical paths.
-
-**Operational acceptance testing (OAT).** Before a release reaches production, it should pass operational acceptance criteria: monitoring and alerting are in place, logging is adequate for incident diagnosis, backup and recovery procedures work, performance under expected load is acceptable and deployment runbooks are current. OAT criteria should be defined at the Strategic Tier and reviewed periodically. The Platform Agent can automate routine OAT checks. The Platform Engineer is responsible for confirming operational readiness before release.
-
-**Regression testing.** Every Intent Specification delivery must pass the existing regression suite before the PR is created. The Testing Agent maintains and extends the regression suite as new specifications are delivered. Regression failures block the PR from reaching the Governance Tier. The Verification Engineer monitors whether regression coverage is keeping pace with delivery volume. As the codebase grows through agent-generated contributions, regression coverage becomes a leading indicator of long-term quality.
-
-**User acceptance testing (UAT).** The ADM does not eliminate the need for business users to validate that what was built serves their needs. UAT is a validation activity owned by the Product Owner and business stakeholders. It happens after verification (the Verification Engineer confirming the output matches the specification) and before the Product Owner confirms that the feature flag should be activated or the change released to users. UAT scope should be defined in the Intent Brief or Intent Specification under acceptance criteria. For specifications grouped under a Strategic Intent, UAT may be more meaningful at the Strategic Intent level (testing the complete feature) rather than at the individual specification level. The Product Owner coordinates UAT timing with business stakeholders. Practical guidance on coordinating UAT with the ADM cadence is in [ADOPTION.md](ADOPTION.md).
-
-The model does not prescribe specific testing tools. It prescribes that non-functional requirements are explicit in specifications, that automated testing covers more than just unit and integration and that gaps in automated coverage are identified and addressed at the Governance Tier.
-
-### B.7 The Coherence Register
-
-The Coherence Register serves three purposes. First, it is an architectural decision log: a record of significant technical decisions, their rationale and their review dates. Second, it is a technical debt register: every identified item of debt is logged, severity-rated and given an explicit accept or remediate decision. Third, it is a coherence risk tracker: a living record of where the codebase is at risk of drifting towards inconsistency.
-
-The Coherence Register is the agenda anchor for the weekly Strategic Tier session. The System Steward presents it. The team reviews new decisions, assesses debt and evaluates risks. When debt is marked for remediation, the System Steward creates a remediation Intent Specification that flows back into the prioritised backlog, where it is picked up by agents and delivered through the same process as feature work.
-
-This replaces heavyweight architecture documents with a living, actionable register.
-
-**Template:**
+The decision log is the decision index named under 8.1. It holds architecture decisions, design departures and the gate decisions at step 2, Gate, each carrying the work item key of the intent it governs. Technical debt is a managed register with an accountable owner rather than an emergent property. When debt is marked for remediation, the system steward raises a request. Once approved under 2.2 the remediation enters the flow as an intent and is delivered like feature work, so debt is identified, governed, remediated and verified in one loop. A stale feature flag, a retained local pipeline definition and a bespoke component built where configuration would have served are each register entries. Design decisions sit in the same register, with the design steward owning their entries where one is appointed.
 
 ```
 COHERENCE REGISTER
-==================
 Last updated: [date]
-System Steward: [name]
+Owner: [the system steward]
 
-ARCHITECTURAL DECISIONS
-| ID | Decision | Date | Rationale | Review Date |
-|----|----------|------|-----------|-------------|
-| AD-001 | Use event-driven pattern for policy amendments | 2026-03-15 | Decouples amendment processing from core policy service | 2026-06-15 |
+DECISION LOG
+| ID | Decision | Work item | Date | Rationale | Review date |
+| AD-[n] | [the decision taken] | [key] | [date] | [why] | [date] |
 
-KNOWN TECHNICAL DEBT
-| ID | Description | Severity | Owner | Decision | Target Date |
-|----|-------------|----------|-------|----------|-------------|
-| TD-001 | Duplicate validation logic in claims and policy services | Medium | System Steward | Remediate | 2026-04-30 |
-| TD-002 | Legacy API schema in partner integration | Low | System Steward | Accept (until v2 migration) | N/A |
+TECHNICAL DEBT
+| ID | Description | Severity | Owner | Decision | Target date |
+| TD-[n] | [the item] | [high, medium or low] | [name] | [accept or remediate] | [date, or none] |
 
 COHERENCE RISKS
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| Agent-generated services diverging on error handling patterns | High | Medium | Enforce error handling standard in agent configuration |
+| ID | Risk | Likelihood | Impact | Control |
+| CR-[n] | [where the codebase is drifting] | [high, medium or low] | [high, medium or low] | [the standard or check that answers it] |
 ```
-## Appendix C. Tooling and Agent Governance Considerations
 
-Agents require explicit boundaries on what they can and cannot access. Unrestricted agent access to production systems, sensitive data or external services creates unacceptable risk.
-
-### C.1 Access Controls
-
-Agent tooling must support granular permission models:
-
-- **File system access.** Agents should only access the repository and directories relevant to their assigned work item. They must not access credentials, configuration files containing secrets or unrelated codebases.
-- **Command execution.** Agents should be restricted to approved commands. Test execution, linting and build commands are typically permitted. Direct database access, deployment commands and infrastructure changes must be blocked.
-- **Network access.** Agents should be restricted to approved endpoints. Package registries and documentation sites are typically permitted. Arbitrary internet access should be blocked.
-- **Service access.** Agents connecting to backlog systems (Azure DevOps, Jira) should have read access to assigned work items and write access limited to comments and status updates. They should not be able to delete or reassign work items.
-
-As tooling matures, organisations should expect to implement more granular code access controls. Today, file system access is typically scoped at the repository level. In the future, access controls may restrict agents to specific modules, services or bounded contexts within a repository, limiting the blast radius of any single agent to the area it is working on. Organisations with large monorepos or shared codebases should monitor tooling developments in this area and tighten access boundaries as the capability becomes available.
-
-### C.2 Agent Identity and Authentication
-
-Agents are not generic processes. Each agent has a defined identity, a scoped role and an audit-traceable authentication path.
-
-- **Identity.** Each agent instance operates under a named service identity (e.g. IMP-3, TST-1) that is recorded in all commits, PR comments, work item updates and log entries. This identity is distinct from the person who configured or triggered the agent.
-- **Authentication.** Agents authenticate to systems (source control, backlog tools, CI/CD, artefact registries) using scoped service accounts with the minimum permissions required for their role. Implementation agents have write access to feature branches and read access to the backlog. Testing agents have read access to code and write access to test results. No agent has access to production environments, secrets vaults or deployment pipelines.
-- **Skills and capabilities.** Each agent role has a configured set of skills and tool access appropriate to its function. A requirements agent has access to stakeholder communication channels and specification templates. An implementation agent has access to the codebase, linting tools and test runners. A documentation agent has access to documentation repositories and style guides. Skills are not shared indiscriminately. They are scoped per role.
-
-This discipline ensures that agent actions are traceable, auditable and constrained. It also means that a compromised or misbehaving agent has limited blast radius.
-
-### C.3 Agent Capability and Role Definitions
-
-Modern AI agents are general-purpose. An implementation agent can write code, generate tests, produce documentation and analyse security vulnerabilities. The model does not assume that each agent role maps to a narrow set of skills. What differentiates agent roles is not capability but configured context and access scope. A requirements agent and an implementation agent may be the same underlying model, but they are given different system prompts, different access to repositories and data and different write permissions. The role boundaries exist for governance and traceability, not because of technical limitation.
-
-This distinction matters. Organisations should not treat agent roles as job descriptions that require hiring agents with specific skills. They should treat them as configurations: what context does the agent receive, what can it read, what can it write and what approvals are required before its output takes effect. Example person and agent role profiles are provided in the [Profiles folder](Profiles/README.md).
-
-| Agent Role | Purpose | Configured Context | Access Scope |
-|---|---|---|---|
-| **Requirements Agent** | Conducts structured stakeholder interviews. Drafts Intent Specifications. Maintains context across sessions and flags contradictions. | Specification templates, domain glossary, existing backlog, stakeholder communication protocols | Read: backlog, existing specifications. Write: draft specifications, interview transcripts |
-| **Implementation Agent** | Implements changes against Intent Specifications. Creates feature branches, writes code, runs tests and creates PRs. | Codebase standards, approved system patterns, framework conventions, build and test configuration | Read: codebase, specifications, standards. Write: feature branches only. Execute: build, test, lint |
-| **Testing Agent** | Generates and maintains test suites. Runs regression testing. Validates coverage against test expectations in specifications. | Test strategy, coverage targets, test framework configuration, mutation testing rules | Read: codebase, specifications, test expectations. Write: test files. Execute: test runners |
-| **Review Agent** | Performs automated code review against standards. Identifies drift, security issues and style violations. Resolves technical clarifications agent-to-agent. | Coding standards, structural constraints, review checklists, known anti-patterns | Read: codebase, standards, PRs. Write: review comments |
-| **Documentation Agent** | Maintains API documentation, user guides and technical documentation. Updates documentation when code changes. | Documentation standards, style guide, API schema definitions, audience profiles | Read: codebase, API schemas, existing docs. Write: documentation files |
-| **Platform Agent** | Manages CI/CD pipeline configuration, environment provisioning and infrastructure-as-code. Operates under tighter human oversight. | Infrastructure patterns, pipeline templates, environment specifications, cost constraints | Read: infrastructure config, pipeline definitions. Write: non-production config only. Human approval required for all changes |
-| **Refactoring Agent** | Executes targeted refactoring work commissioned by the System Steward. Addresses technical debt items from the Coherence Register. | Coherence Register entries, target patterns, dependency maps, test preservation rules | Read: codebase, Coherence Register, standards. Write: feature branches. Execute: build, test, lint |
-| **Security Agent** | Performs continuous security scanning of agent-generated code. Checks for dependency vulnerabilities, secret exposure, injection risks and compliance with security standards. Flags issues before code reaches human review. | Security policies, OWASP rules, dependency vulnerability databases, compliance requirements, secret detection patterns | Read: codebase, PRs, security standards, vulnerability databases. Write: security findings, review comments |
-| **Design Agent** | Applies the design system to agent-generated UI. Checks component usage, layout consistency, accessibility compliance and responsive behaviour against codified design constraints. Acts as an automated pre-check before the Design Steward reviews. | Design system documentation, component library, accessibility standards, brand guidelines, interaction patterns | Read: codebase, design system, specifications. Write: design review comments, accessibility findings |
-| **Scheduling Agent** | Reviews the Ready backlog before work is assigned. Checks specification boundaries against work already in progress. Detects overlapping scope and recommends the assignment approach. Flags conflicts for the Intent Architect or System Steward when a person judgement call is needed. | Ready backlog, in-progress work items, specification boundaries, agent fleet status | Read: backlog, specifications, agent work status. Write: assignment recommendations, conflict flags |
-
-### C.4 Tooling Configuration
-
-At the time of writing, the main agent development tools each implement configuration differently. Claude Code uses CLAUDE.md files and `--allowedTools` flags. Cursor uses `.cursorrules` and workspace settings. GitHub Copilot uses `copilot-instructions.md` and repository-level policies. A cross-tool standard has also emerged in the form of AGENTS.md, a single instructions file now read by several of the major tools, which reduces the need to maintain a separate configuration file per tool. These examples are illustrative of current tooling. The specifics will change as tooling evolves. The model does not depend on any particular implementation.
-
-Regardless of tooling, the principle is consistent: agents operate within explicitly defined boundaries. Standards, system constraints and access controls are codified in agent configuration files that sit alongside the codebase, not in documents that people read and hope agents follow. The Platform Engineer described in Section 7 is responsible for configuring and maintaining these boundaries.
-
-### C.5 Agent Sandboxes
-
-Agents execute in isolated sandboxes. Each sandbox is an ephemeral environment (container, VM or equivalent) created for a specific work item and destroyed on completion. Sandbox isolation includes:
-
-- **File system isolation.** The agent can access only the repository and working directories relevant to its assigned work item. No access to other repositories, shared drives or user home directories.
-- **Network isolation.** Outbound access is restricted to approved endpoints (package registries, documentation sites, approved APIs). Arbitrary internet access is blocked.
-- **Command restrictions.** The agent can run approved commands (build, test, lint). It cannot execute deployment commands, access databases directly or modify infrastructure.
-- **Ephemeral lifecycle.** Sandboxes are created when work begins and destroyed when the work item is complete (PR created) or abandoned. No persistent state carries between work items. This limits the impact of any single agent failure or compromise.
-
-### C.6 Model Selection and Data Residency
-
-The choice of AI model affects both capability and data governance. Organisations must document:
-
-- Which models are approved for use (and which are not)
-- Where inference occurs (cloud region, provider)
-- Whether source code leaves the organisational trust boundary during inference
-- Data retention policies of the model provider
-- Whether BYOK (Bring Your Own Key) is used to route inference through organisational accounts
-
-Most organisations should expect to use more than one model. Different agent roles will justify different models based on capability, reliability, latency and cost. A requirements or documentation agent may use a lower-cost model. A complex implementation or review task may justify a more capable and more expensive model. The goal is not standardisation on one model. It is controlled selection of the right model for the role, skill profile and cost base.
-
-These decisions are reviewed at the Strategic Tier and documented in the Coherence Register.
-
-### C.7 Knowledge Management
-
-Agents are ephemeral. They do not accumulate institutional knowledge across sessions. When an implementation agent completes a work item and its sandbox is destroyed, everything that agent learned about the codebase, the domain quirks and the undocumented assumptions disappears with it.
-
-This makes explicit knowledge management critical. The ADM addresses this at three levels.
-
-**Codebase as knowledge.** The most important knowledge store is the codebase itself. Well-structured code, meaningful naming, clear module boundaries and comprehensive test suites encode knowledge that any future agent can consume. The System Steward's architectural standards exist partly for this reason: consistent patterns are self-documenting.
-
-**Agent configuration as knowledge.** The company and project-level agent configuration files capture the decisions, constraints and conventions that agents need to operate effectively. These files are living documents, updated at each Strategic Tier session as new patterns emerge. They are the closest thing the ADM has to institutional memory.
-
-**Documentation as knowledge.** The Documentation Agent (DOC-1) maintains API documentation, architecture decision records and technical guides. These are not afterthoughts. They are first-class deliverables that feed directly into future agent context. When a new implementation agent picks up a work item, the documentation is part of the context it receives alongside the specification and the codebase.
-
-**Cross-session continuity.** For complex work that spans multiple agent sessions, the Intent Specification itself provides continuity. The specification captures not just the original requirement but also clarifications, architectural decisions and implementation notes accumulated during delivery. When work transfers between agent sessions, the specification is the handover document.
-
-### C.8 Agent Fleet Resilience
-
-Organisations that depend on an agent fleet for delivery need to plan for the fleet becoming unavailable. Model provider outages, API rate limits, infrastructure failures and cost overruns can all interrupt agent execution.
-
-**Degraded operating modes.** The ADM should define three operating states. Normal: agents execute continuously against the backlog. Degraded: agent capacity is reduced (provider outage, rate limiting, budget constraint). Manual: agents are unavailable entirely.
-
-In degraded mode, the team prioritises the Ready backlog more aggressively, routing only the highest-priority items to the reduced agent capacity. Lower-priority items wait. The Governance Tier session acknowledges the constraint and adjusts expectations.
-
-In manual mode, people execute the highest-priority work items directly. This is temporary and inefficient, but it ensures delivery does not stop entirely. The ADM team structure (Intent Architects and Verification Engineers who understand the codebase deeply) means the people can execute work. They will be slower, but they are not helpless.
-
-**Multi-provider strategy.** Organisations should avoid single-provider dependency. If the primary model provider experiences an outage, the team should be able to switch to an alternative provider. This requires that agent configuration, prompts and tooling are not locked to a single vendor. The model selection decisions in [Appendix C.6](#c6-model-selection-and-data-residency) should include approved fallback providers.
-
-**Cost circuit breakers.** Agent compute costs can spike unexpectedly, particularly when agents enter loops, encounter ambiguous specifications or generate excessive rework. Platform Engineers should implement cost circuit breakers: alerts that fire when spend per specification exceeds defined thresholds, and hard limits that pause agent execution when daily or weekly budgets are reached.
-
-**A fleet halt control.** Cost is not the only reason to stop the fleet at once. If a compromise is suspected, whether a prompt injection spreading through shared context, a poisoned dependency or a misbehaving agent, the team needs a single, fast way to pause all agent execution immediately. This kill switch should be a named control with a named owner, tested before it is needed, and it should pause execution without losing the provenance of work already in flight. Treat it as a first-class operational control alongside the cost circuit breaker, not an afterthought.
-
-### C.9 Agent Security Threats
-
-Traditional application security focuses on protecting systems from external attackers. Agentic delivery introduces a new attack surface: the agents themselves.
-
-**Prompt injection.** Agents consume context from multiple sources: the codebase, specifications, configuration files, documentation, third-party tool outputs and dependency packages. Any of these can contain instructions that manipulate agent behaviour. A malicious or compromised dependency could include comments, docstrings or metadata that instruct an agent to exfiltrate code, modify security controls or introduce backdoors. Prompt injection can be direct (an attacker crafting input specifically to manipulate the agent) or indirect (malicious instructions embedded in data the agent consumes as part of its normal workflow, such as a poisoned npm package README or a compromised API response). The Security Agent should scan for prompt injection patterns in all inputs, but this is an evolving threat and no scanner catches everything. Defence in depth is essential: sandboxing limits what an injected agent can access, scoped permissions limit what it can do and the Governance Tier's human review is the critical backstop.
-
-**Poisoned memory and context.** Agents that persist context across sessions (through specification notes, configuration files or documentation) are vulnerable to context poisoning. If an attacker or a malfunctioning agent writes misleading information into a shared context source, subsequent agents inherit that false context and act on it. The ephemeral sandbox model described in [Appendix C.5](#c5-agent-sandboxes) mitigates this for implementation sessions, but shared artefacts like architectural documentation, configuration files and the Coherence Register are potential vectors. Changes to shared context should require the same governance review as code changes.
-
-**Third-party tools and MCP servers.** Agents connect to external systems through Model Context Protocol (MCP) servers and other tool integrations. Each connection is a trust boundary. A compromised MCP server could feed false data to an agent, redirect its actions or harvest information from its context. Organisations should audit third-party tool integrations with the same rigour they apply to software dependencies: verified sources, version pinning, regular security reviews and the principle of least privilege for what data each tool can access. This is no longer hypothetical. A large number of exposed MCP servers have been disclosed across IDEs and internal tools, and a widely used MCP package was found to be missing an authentication layer, leaving work items, repositories and credentials reachable without valid access. Tool poisoning, where instructions are hidden in tool metadata that the agent reads but the user does not see, is now a recognised attack pattern.
-
-**Supply chain attacks through agent tooling.** Agent configuration files, prompt templates and tool definitions are code. They should be treated as code: version-controlled, reviewed, signed and deployed through the same governance pipeline as application code. An attacker who gains write access to an agent's configuration can control its behaviour without touching the application codebase.
-
-The System Steward and Security/Compliance Lead should jointly own the agent threat model, reviewing it at the Strategic Tier alongside traditional application security concerns. OWASP now publishes a Top 10 for Agentic Applications, which gives organisations a standardised starting framework for this work. This is a new discipline. Most organisations do not yet have mature practices for securing autonomous agent operations. Building those practices early, before the fleet scales, is considerably easier than retrofitting them.
-
-### C.10 Dependency Governance and Software Controls
-
-Agents introduce and update software dependencies as part of implementation. Without governance, this creates risk: unnecessary dependencies, version conflicts, licence violations and supply chain vulnerabilities.
-
-**Dependency policy.** The System Steward defines which dependency sources are approved (registries, internal packages, vetted open-source libraries). Agents must not introduce dependencies from unapproved sources. The Security Agent scans all new or updated dependencies for known vulnerabilities, licence compliance and provenance. Dependencies that fail these checks block the PR from reaching the Governance Tier.
-
-**Version pinning and update cadence.** Agent configuration should enforce version pinning for all dependencies. Automated dependency update tools (Dependabot, Renovate or equivalent) should generate Intent Specifications for dependency updates rather than allowing agents to update dependencies opportunistically during feature work. This keeps dependency changes visible, reviewable and governed.
-
-**Software Bill of Materials (SBOM).** Every release should include a machine-readable SBOM generated from the dependency tree. This supports regulatory requirements (particularly in financial services and government) and enables rapid response when a vulnerability is disclosed in a widely used library. The Platform Agent can generate SBOMs as part of the CI/CD pipeline.
-
-**Licence compliance.** Agents do not inherently understand licence obligations. A dependency that is technically excellent may carry a licence incompatible with the organisation's commercial model or regulatory constraints. The Security Agent should check licence compatibility as part of its dependency scan. The System Steward defines the approved licence list. Exceptions require explicit approval at the Governance Tier.
-
-**Runtime software controls.** Dependency governance covers what agents introduce into the codebase. Equally important is what agents can download or access at runtime during execution. Agents operating in sandboxes (see [C.5](#c5-agent-sandboxes)) should be restricted to approved package registries, approved tool binaries and approved external resources. Arbitrary downloads from the internet, installation of unapproved tools or execution of scripts fetched from external sources must be blocked at the network and sandbox level. This is not part of the delivery model itself, but it is a critical infrastructure control without which the model's governance assumptions do not hold. The Platform Engineer is responsible for configuring and maintaining these controls. The Security Lead should audit them periodically.
-
----
-
-## Appendix D. ITIL and Operational Frameworks
-
-### D.1 ITIL in an Agentic World
-
-ITIL was designed for the same world as Agile: people execute work, other people coordinate. Many organisations assume the ADM must simply coexist with their ITIL processes. That assumption deserves scrutiny.
-
-ITIL's core processes compensate for people's limitations: manual change records because deployments were risky, CAB meetings because no one person could assess cross-system impact, incident runbooks because diagnostic knowledge lived in people's heads. In an agentic delivery environment, several of these constraints no longer apply. The right question is what ITIL still contributes that the ADM does not already provide.
-
-**Change management: absorbed into the governance model.** Traditional change management exists because human-driven deployments are unpredictable. A developer writes code, a reviewer checks it, a release manager packages it and a CAB assesses whether it is safe to deploy. Each handoff introduces risk.
-
-In the ADM, every change carries provenance metadata (which agent, which model, which specification, which codebase version). Every change passes through automated verification at the Execution Tier and validation by people at the Governance Tier. Every change is deployed through a repeatable, automated pipeline. The information that a CAB would assess (what changed, what was tested, what is the rollback path) is already captured in the ADM's artefacts.
-
-For most organisations, the ADM's Governance Tier replaces the CAB for software changes. The exception is organisations where a separate operational change authority is mandated by regulation or contractual obligation. In those cases, the ADM should aim to automate the change record from its own metadata, producing the record as a byproduct of the process rather than as a separate manual gate. The goal is zero additional overhead for change management, not a parallel approval process that duplicates what the Governance Tier already does.
-
-Organisations still in the early stages of ADM adoption may retain a lightweight change approval step as a transitional measure. This should be time-limited, with a clear plan to retire it as confidence in the ADM's governance matures.
-
-**Incident management: the ADM makes it faster.** ITIL incident management provides a structured process for restoring service. This structure remains valuable, but the ADM changes how it works in practice.
-
-When agent-generated code causes an incident, the provenance metadata makes root cause identification faster than in traditional environments (see Section 13.1). An implementation agent can produce a fix in minutes rather than hours. The Governance Tier provides verification before deployment. The entire cycle from incident to verified fix can compress from hours to under an hour.
-
-What ITIL adds is the operational coordination: who communicates to affected users, who decides whether to invoke a workaround or wait for a fix, who escalates to third parties. These are coordination activities for people that the ADM does not address directly. A lightweight incident coordination process is valuable. A heavyweight ITIL incident management process with multiple priority matrices, escalation tiers and SLA clocks adds overhead without proportional benefit when the fix itself is fast.
-
-**Problem management: absorbed into the Coherence Register.** ITIL problem management identifies root causes and structural issues. In the ADM, this is the System Steward's domain. The Coherence Register already tracks architectural risks, technical debt and recurring quality issues. When a pattern of incidents reveals a structural problem, the System Steward creates a remediation Intent Specification and prioritises it in the backlog.
-
-A separate problem management process, with its own records, its own review meetings and its own backlog, duplicates work the System Steward is already doing. The ADM absorbs problem management into the existing governance structure rather than running it as a parallel process.
-
-**Service level management: operational SLM continues.** ITIL SLAs measure availability, response times and resolution times. These metrics remain relevant for operational services and the ADM does not replace them. Production systems still need SLAs, availability targets and service reviews. What changes is the delivery side. For software delivery performance, the ADM's own metrics (Section 14) are more meaningful than ITIL delivery SLAs. Intent-to-Integration Time, Quality Score and Cost per Intent Specification tell leadership more about delivery health than traditional ITIL SLAs.
-
-The Strategic Tier should review the impact of recent releases on service availability. Operational SLM continues as a separate discipline, owned by whoever manages live services. The ADM feeds into it (every release carries provenance and test evidence) but does not absorb it.
-
-**Configuration management: superseded by provenance.** ITIL configuration management maintains a CMDB (Configuration Management Database) that records the relationships between IT assets. In practice, CMDBs are notoriously difficult to keep accurate because they rely on people to update them.
-
-The ADM's provenance requirements produce a richer, more accurate record than any manually maintained CMDB. Every deployed change carries metadata linking it to a specification, an agent session, a model version and a codebase state. This is a live, automatically generated configuration record. Organisations should feed ADM provenance data into whatever asset management tool they use rather than maintaining a separate CMDB update process.
-
-The default position: retire ITIL processes that duplicate ADM governance. Keep what addresses different concerns, primarily operational incident coordination and service availability monitoring. Regulated environments may need to retain specific processes for compliance, but the goal should be automation and integration, not parallel manual processes.
-
----
+## Appendix E. Defined terms
+
+| Term | Meaning |
+|---|---|
+| Acceptance examples | Concrete, business-owned examples of correct behaviour, including edge cases and error paths, held as executable tests. |
+| Agent | A software agent built on a language model that advises, drafts or executes within an assigned autonomy level under a run identity. An assistant inside a product is not one. |
+| Agent profile | The versioned record for one agent: what it serves, its level, model, tools, scopes, stop conditions and approval (appendix C). |
+| Allow-list | The organisation-level list of the systems, servers and tools an agent may reach and the operations permitted. |
+| Attestation | The pipeline's signed record that a named commit or release candidate passed the required checks and reviews. It applies only to that object and cannot authorise a changed one. |
+| Autonomy level | One of five levels under 5.1, from L0, Not used, to L4, Execute in production within a scope, assigned to a step and class of change. |
+| Catalogue change | A change in a pre-authorised class of repeatable low-risk change, with the context profile supplying the procedure and the tested rollback. |
+| Class of change | The category, by tier and effect, that carries an autonomy level, so a level at one class does not authorise another. |
+| Coherence register | The system steward's register of architecture decisions, technical debt and coherence risks (appendix D). |
+| Context profile | The approved route from a request to production for one delivery context (appendix B). |
+| Delivery context | One technology platform with its own build and deployment mechanism, determined by the estate rather than chosen. |
+| Deployment approach | How a change is built, identified, promoted and recovered according to what it alters: artefact-based, state-based or migration-based. It is distinct from a deployment strategy such as canary. |
+| Deterministic check | A pipeline check that enforces a rule that is never waived, distinct from a threshold check that may carry an exception. No agent may disable, skip, re-run to a pass or mark any check as satisfied. |
+| Engineering platform | The environments, pipelines, run identities, allow-lists and shared definitions provided to every team as an internal product (section 6). |
+| Evaluation | A test of an agent against the organisation's own historical changes for a step and class, measuring acceptability and the review and rework required. |
+| Exception | A time-limited departure from a control or from the flow, granted by the authority responsible for the rule, with a named owner and an expiry, recorded in the manifest and never setting aside a never-waived control. |
+| Execution unit | A separately controlled part of an intent, each its own release candidate with its own recovery position and autonomy classification. |
+| Flow, the | The single sequence of eleven steps under 3.1 that applies to every change in every context. |
+| Intent | The unit of work: a specification complete enough to execute without further explanation, carrying the ten elements under 2.1 and built only from its published version. |
+| Never-waived control | One of the six controls under 3.2 that no exception can set aside. |
+| Permitted model list | The organisation-level record of each model an agent may use, with its provider, hosting location, version and retention terms. |
+| Recovery position | One of the three tested positions under section 4: proven rollback, restoration of the previous desired state (or a compensating change where restoration is unavailable) or, for an irreversible change, a tested restore with a forward remediation route. |
+| Release candidate | One execution unit in the form attested at step 7, Identify, with a unique identifier binding its checks, review and references, promoted unchanged. |
+| Release commit | On a platform that promotes source, the destination-branch commit used for deployment, distinct from the unit commit and named by the authorisation. |
+| Release manifest | The record assembling readiness, ordering, exceptions and the recovery position for a release, created from the change record at step 9, Authorise. |
+| Request | The recorded statement of a need that enters the request decision under 2.2, with its problem, expected benefit or obligation and business owner. |
+| Risk tier | High, standard or low, defined by the effect of the change under 2.5, with the higher tier applying where two could. |
+| Run identity | The scoped, short-lived identity issued for each agent run, carrying its permissions and the log of its actions. |
+| Step | One stage of the flow, with a defined input, one operation to one standard and a defined output, implemented per platform by the context profile. |
+| Threshold | A numeric figure a standard sets, such as a coverage level or a performance limit, that the pipeline checks and that may carry a threshold exception from the practice owner who set it. |
+| Validation | The assessment that the intent is the right change, made before implementation under 2.3 and confirmed at step 11, Confirm and learn. |
+| Verification | The assessment that the change conforms to the intent and the standards, by deterministic checks at step 5, Verify, then a reviewer at step 6, Review. |
+| Work item | The record where a request becomes an intent, holding the working copy and each validator's record and linking to the branch, pull request and release candidate. |

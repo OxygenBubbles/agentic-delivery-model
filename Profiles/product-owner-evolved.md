@@ -2,14 +2,15 @@
 profile_type: human_role
 role_id: ADM-H-PRODUCT-OWNER-EVOLVED
 role_name: Product Owner (Evolved)
-mission: Own business outcome, delivery priority and the business quality of Intent Specifications in an agentic delivery system.
-primary_tiers:
-  - design
-  - strategic
-accountable_to: Product Lead
+mission: Own the request decision, the business outcome, delivery priority and acceptance of the delivered outcome in an agentic delivery system.
+accountability: product owner
+steps:
+  - 1 Intent, the request decision and the acceptance examples
+  - 11 Confirm and learn
+accountable_to: set by the adopter
 works_with:
   - Intent Architect
-  - Requirements Agent
+  - Drafting agent (step 1, L2)
   - Verification Engineer
   - Business Stakeholders
 ---
@@ -27,19 +28,19 @@ The ADM does not reduce the need for business judgement. It increases it. The Pr
 ## Primary outcomes
 
 - The backlog reflects current business priority rather than historical accumulation.
-- Intent Specifications are accurate, complete enough from a business perspective and ready for feasibility and scope shaping.
+- Intents are accurate, complete enough from a business perspective and ready for feasibility and scope shaping.
 - Business clarification is fast, precise and well recorded.
 - Delivered changes solve the right problem rather than just implementing the requested feature.
 
 ## Core accountabilities
 
 - Define and prioritise business outcomes.
-- Initiate and supervise requirements discovery with stakeholders.
-- Review and refine draft Intent Specifications for business accuracy, policy fit and edge-case completeness.
-- Approve Intent Specifications before they enter execution readiness review.
-- Answer business clarification questions during delivery quickly and precisely.
-- Accept delivered outcomes from a business perspective.
-- Keep backlog ordering, timing and business rationale current.
+- Record requests and decide them on business merit: approve, redirect, defer or reject (section 2.2 of the model).
+- Review and refine draft intents for business accuracy, policy fit and edge-case completeness, and own the acceptance examples.
+- Decide the outcome and measure the intent carries, with the business analyst validating the expression of the need and the behaviour before implementation (section 2.3 of the model).
+- Answer business stop conditions during delivery quickly and precisely.
+- Accept delivered outcomes at step 11, Confirm and learn.
+- Keep the ordering of approved requests, their timing and business rationale current, within the cap on approved work.
 
 ## Decisions this role owns
 
@@ -51,30 +52,31 @@ The ADM does not reduce the need for business judgement. It increases it. The Pr
 
 ## Key artefacts
 
-- Owns business priority and business acceptance for Intent Specifications.
+- Owns the request decision, business priority and acceptance for each intent.
 - Maintains backlog quality and ordering.
 - Records business clarification decisions and acceptance outcomes.
 - Provides the business rationale that keeps delivery aligned with value.
 
-## Cadence participation
+## Part in the flow and the rhythm
 
-- Design work: active throughout discovery, refinement and sign-off.
-- Governance Tier: facilitates the daily session, drives business clarifications and acceptance decisions.
-- Strategic Tier: facilitates the weekly session, reviews business outcomes, delivery trends and priority changes.
+- Step 1: active throughout request decisions, drafting and validation.
+- Daily sweep: answers business stop conditions in the clarification queue and makes acceptance decisions.
+- Periodic review: reviews business outcomes, the measures, delivery trends and priority changes.
 
 ## Working interfaces
 
 - With business stakeholders: turns need, policy and operational reality into precise intent.
-- With the Requirements Agent: guides discovery and corrects shallow or misleading draft output.
+- With the drafting agent: guides discovery and corrects shallow or misleading draft output.
 - With the Intent Architect: works through where business ambition and execution feasibility diverge.
 - With the Verification Engineer: confirms whether the delivered behaviour solves the intended problem.
 
 ## What this role is not
 
-- It is not a ticket administration role.
+- It is not a work item administration role.
 - It is not a substitute business analyst writing long documents without owning priority.
 - It is not a delivery coordination role in disguise.
 - It is not the owner of technical constraints or structural standards.
+- It is not the release authority for a change it requested.
 
 ## Common failure modes
 
@@ -82,15 +84,19 @@ The ADM does not reduce the need for business judgement. It increases it. The Pr
 - Allowing the backlog to fill with weakly justified work.
 - Being unavailable when clarifications are needed.
 - Confusing a stakeholder request with the actual business problem.
-- Approving specifications that are directionally right but operationally incomplete.
+- Approving intents that are directionally right but operationally incomplete.
 
 ## Measures of effectiveness
 
 - Rework caused by business ambiguity.
 - Time to resolve business clarification.
 - Stakeholder confidence and trust.
-- Backlog quality and freshness.
+- Request decision outcomes and first-time validation failure rate.
 - Delivery of intended business outcomes.
+
+## How this post is likely to change
+
+This is a forecast rather than a requirement of the model, and it is paced by the autonomy an organisation raises on evidence under section 5.4, not by dates. The product owner is likely to spend more time on outcome measures and on acceptance at step 11, Confirm and learn. As the effort to build falls, the request decision is likely to become the main lever on what delivery achieves. The cap on approved work is likely to make prioritisation sharper. The request decision and acceptance stay with a person at every level of autonomy, and request decision outcomes under section 8.2 show how the lever is being used.
 
 ## Strong background fit
 
